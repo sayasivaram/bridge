@@ -42,7 +42,7 @@ on novelty, a working app, a 10–15 page report, and a ≤10-slide deck.
 
 ### Token usage visible in the UI
 - Every agent run shows **input tokens, cached input tokens, output tokens, and estimated cost**
-  in the UI. Also log them (DB table) so the report can quote real numbers per run, per user per
+  in the UI (plus cache-write tokens, which are billed separately; see "Prices" below). Also log them (DB table) so the report can quote real numbers per run, per user per
   month, and at 100 / 10,000 users.
 
 ### Safety (graded, each defense needs a test)
@@ -105,10 +105,42 @@ Tier 3 needs a real user trying it and measured improvement versus how couples d
   what's next.
 - **Demo video (optional):** 2–3 min screen recording, a backup if the app won't run for staff.
 
+## Calling gpt-6-luna through Portkey (same setup as Homework 5 and 6)
+- OpenAI SDK pointed at Portkey: `base_url="https://api.portkey.ai/v1"`, `api_key=<key>`, and
+  header `x-portkey-api-key: <key>`. Model `"gpt-6-luna"`.
+- Use the **Responses API** (`/v1/responses`). Portkey's gpt-6-luna rejects function tools on
+  `/v1/chat/completions` while reasoning is on.
+- Responses report the served model as `gpt-6-luna`, `gpt-6-luna-global`, or a dated snapshot
+  (`gpt-6-luna-2026-09-22`). Accept only those; fail loudly on anything else.
+- If both keys are present, Portkey wins (already built in `app/config.py`).
+
+## Prices and cost accounting
+Prices live in `data/prices.json` (gpt-6-luna, per 1M tokens, from MGT 409 Lecture 11):
+
+| Token type | $ / 1M |
+|---|---|
+| Plain (uncached) input | 0.10 |
+| Cached input (cache read) | 0.01 |
+| Cache write | 0.125 |
+| Output (includes reasoning) | 0.50 |
+
+- Cost = tokens × price ÷ 1,000,000. The API's `input_tokens` **includes** cached and
+  cache-write tokens, so `uncached = input − cached − cache_write`.
+- Log and display all four counts (input, cached input, cache write, output) per run, plus
+  reasoning tokens for reference. Cache write must be shown: it is billed separately.
+
+## What Homework 6 measured about caching on this deployment (design around it)
+- The provider behind Portkey caches the **longest run of messages that exactly match an earlier
+  call**; it does not honor an explicit breakpoint by itself.
+- Nearly all input that isn't read from the cache is billed as a **cache write** ($0.125/1M),
+  which is *more* than plain input. So the variable tail of each prompt costs extra, every call.
+- Tool definitions are sent before the instructions, so they are part of the cached opening.
+  Keep tool schemas stable.
+- Implications for Closer: keep the stable prefix (tools, system prompt, safety rules, couple
+  profile) byte-identical and in front; keep the variable tail (this week's moments, the request)
+  as short as possible; avoid extra model calls that resend the whole prefix.
+
 ## Open questions (resolve as we go)
-- Exact Portkey call pattern (base URL / headers) and gpt-6-luna per-token prices for cost
-  estimates.
-- Which key wins if both `PORTKEY_API_KEY` and `OPENAI_API_KEY` are present (default plan:
-  prefer Portkey + gpt-6-luna).
+- SDK: plain `openai` SDK (fewer dependencies) vs. pydantic-ai as in HW5/6. Leaning plain `openai`.
 - Agent architecture (proposed: a guard step for input safety, the three feature agents, and a
   shared output checker for grounding/privacy/coach boundary).
