@@ -1,0 +1,7 @@
+fastapi==0.159.0
+uvicorn==0.54.0
+python-dotenv==1.2.4
+
+# For running the tests
+pytest==9.1.1
+httpx2==2.16.0
