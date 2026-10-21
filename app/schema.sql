@@ -11,6 +11,7 @@ CREATE TABLE IF NOT EXISTS couples (
     together_since  TEXT,                       -- ISO date
     apart_since     TEXT,                       -- ISO date the long distance started
     profile         TEXT NOT NULL DEFAULT '',   -- short shared description: interests, call habits
+    inside_jokes    TEXT NOT NULL DEFAULT '',   -- one per line; both partners can see these
     created_at      TEXT NOT NULL DEFAULT (datetime('now'))
 );
 
@@ -21,6 +22,7 @@ CREATE TABLE IF NOT EXISTS users (
     name                TEXT NOT NULL,
     city                TEXT,
     timezone            TEXT,                   -- IANA name, e.g. "America/New_York"
+    shared_stressors    TEXT NOT NULL DEFAULT '',  -- what this partner CHOSE to share they're stressed about
     daily_token_budget  INTEGER,                -- NULL = use the app default
     created_at          TEXT NOT NULL DEFAULT (datetime('now')),
     UNIQUE (couple_id, role)
@@ -105,9 +107,10 @@ CREATE TABLE IF NOT EXISTS llm_calls (
     output_tokens       INTEGER NOT NULL DEFAULT 0,
     reasoning_tokens    INTEGER NOT NULL DEFAULT 0,  -- already included in output_tokens
     cost_usd            REAL NOT NULL DEFAULT 0,
-    latency_ms          INTEGER
+    latency_ms          INTEGER,
+    gateway_cache       TEXT                    -- Portkey response cache: 'HIT', 'MISS', or NULL
 );
 CREATE INDEX IF NOT EXISTS idx_llm_calls_user_time ON llm_calls (user_id, created_at);
 
 -- Bump when the schema changes; app/db.py refuses to open an older database.
-PRAGMA user_version = 2;
+PRAGMA user_version = 4;

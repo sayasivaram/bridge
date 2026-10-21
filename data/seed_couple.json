@@ -4,20 +4,27 @@
     "name": "Priya & Leo",
     "together_since": "2023-06-10",
     "apart_since": "2025-08-20",
-    "profile": "Priya (Partner A) lives in New Haven, CT and is a second-year grad student. Leo (Partner B) lives in London and works as a product designer. Together since June 2023, long-distance since August 2025. London is 5 hours ahead of New Haven. They have a long call on Sunday (morning for Priya, afternoon for Leo) and a short call on Wednesday evening London time. They both love cooking, running, and indie music. They visit each other about every three months; the next visit is in December."
+    "profile": "Priya (Partner A) lives in New Haven, CT and is a second-year grad student. Leo (Partner B) lives in London and works as a product designer. Together since June 2023, long-distance since August 2025. London is 5 hours ahead of New Haven. They have a long call on Sunday (morning for Priya, afternoon for Leo) and a short call on Wednesday evening London time. They both love cooking, running, and indie music. They visit each other about every three months; the next visit is in December.",
+    "inside_jokes": [
+      "Gerald: the pigeon who commutes on the Tube. Any pigeon in either city is now Gerald.",
+      "\"Very Wes Anderson\": their code for anything oddly symmetrical or pastel.",
+      "The Honeycrisp tax: whoever visits has to bring a bag of Honeycrisp apples."
+    ]
   },
   "users": [
     {
       "role": "A",
       "name": "Priya",
       "city": "New Haven",
-      "timezone": "America/New_York"
+      "timezone": "America/New_York",
+      "shared_stressors": "Recruiting season and job interviews."
     },
     {
       "role": "B",
       "name": "Leo",
       "city": "London",
-      "timezone": "Europe/London"
+      "timezone": "Europe/London",
+      "shared_stressors": "A heavy stretch at work with tight deadlines."
     }
   ],
   "moments": [

@@ -54,6 +54,14 @@ You need **Python 3.11 or newer** (`python3 --version` to check).
    The status box says whether a key was found and where it came from. If no key is found,
    `run.py` stops and lists the exact places it looked.
 
+## What you can do
+
+- **Moment Jar:** add small moments (text, a mood, an optional photo or song), shared with your
+  partner or private. Switch partners with **Viewing as** to see the other side.
+- **Prep for our call:** the Call-Topic Agent turns the last 7 days of *shared* moments into 5
+  conversation starters (each showing the moment it came from) plus one deeper question. The
+  badge shows that run's tokens and cost; "How this was made" shows each step.
+
 ## Reset the demo data
 
 ```bash
@@ -66,6 +74,13 @@ python -m app.seed --reset
 pytest
 ```
 
+The tests use a fake model, so they spend no tokens. To also run the live check against
+gpt-6-luna (a malicious moment the real model must ignore, about $0.001):
+
+```bash
+CLOSER_LIVE=1 pytest -k live -s
+```
+
 ## Project layout
 
 ```
@@ -73,6 +88,7 @@ app/
   config.py    finds the API key (.env in repo, then one folder up), limits
   llm.py       the one model wrapper: gpt-6-luna via Portkey, token counts, cost,
                logging, per-user daily token budget, per-request step limit
+  agents/      AI agents (call_topics.py: the Call-Topic Agent)
   moments.py   Moment Jar data access; the partner-privacy rule lives in its SQL
   prompting.py wraps user text in escaped tags before it goes into any prompt
   schema.sql   database tables

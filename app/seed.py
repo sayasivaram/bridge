@@ -48,15 +48,15 @@ def seed(db_path: Path | str = DB_PATH, today: date | None = None, reset: bool =
 
         c = data["couple"]
         couple_id = conn.execute(
-            "INSERT INTO couples (name, together_since, apart_since, profile) VALUES (?, ?, ?, ?)",
-            (c["name"], c["together_since"], c["apart_since"], c["profile"]),
+            "INSERT INTO couples (name, together_since, apart_since, profile, inside_jokes) VALUES (?, ?, ?, ?, ?)",
+            (c["name"], c["together_since"], c["apart_since"], c["profile"], "\n".join(c.get("inside_jokes", []))),
         ).lastrowid
 
         user_ids = {}
         for u in data["users"]:
             user_ids[u["role"]] = conn.execute(
-                "INSERT INTO users (couple_id, role, name, city, timezone) VALUES (?, ?, ?, ?, ?)",
-                (couple_id, u["role"], u["name"], u["city"], u["timezone"]),
+                "INSERT INTO users (couple_id, role, name, city, timezone, shared_stressors) VALUES (?, ?, ?, ?, ?, ?)",
+                (couple_id, u["role"], u["name"], u["city"], u["timezone"], u.get("shared_stressors", "")),
             ).lastrowid
 
         def when(item: dict) -> str:

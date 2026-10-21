@@ -21,6 +21,31 @@
   </header>
 
   <main class="container">
+    <!-- Call-Topic Agent -->
+    <section id="call-prep" class="card prep-card">
+      <div class="prep-head">
+        <div>
+          <h2><i class="e">📞</i>Prep for your next call with <span class="partner-name">partner</span></h2>
+          <p class="muted small">Turns the last 7 days of shared moments into conversation starters.
+            Private moments are never used.</p>
+        </div>
+        <button type="button" class="primary" id="prep-btn">Prep for our call</button>
+      </div>
+      <p id="prep-msg" class="form-msg" role="status"></p>
+      <div id="prep-result" hidden>
+        <div class="prep-meta">
+          <span id="prep-window" class="muted small"></span>
+          <span id="token-badge" class="token-badge"></span>
+        </div>
+        <ol id="starter-list" class="starters"></ol>
+        <div id="deeper" class="deeper" hidden></div>
+        <details class="trace">
+          <summary>How this was made</summary>
+          <ol id="trace-list"></ol>
+        </details>
+      </div>
+    </section>
+
     <section id="page-jar" class="jar">
       <!-- Quick add -->
       <form id="add-form" class="card add-card" autocomplete="off">

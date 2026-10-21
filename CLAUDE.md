@@ -109,6 +109,8 @@ Tier 3 needs a real user trying it and measured improvement versus how couples d
 - **Only `app/moments.py` reads the `moments` table.** Its SQL applies the privacy rule.
   A test fails if any other module in `app/` queries `moments` directly. Do the same for pulses
   (private notes) when that feature is built.
+- **Agents live in `app/agents/`** (one module each) and call the model only via `app/llm.py`.
+  Each has a stable `SYSTEM_PROMPT`, validates model output in code, and retries at most once.
 - **Agents get moments only via `moments.for_prompt(..., output_for=...)`.** Use the id of the
   partner who will see the output, or `moments.BOTH` when both will see it (shared only).
 - **User text goes into prompts only via `app/prompting.py`** (`wrap` / `moments_block`): it is
@@ -151,6 +153,19 @@ Prices live in `data/prices.json` (gpt-6-luna, per 1M tokens, from MGT 409 Lectu
 - Implications for Closer: keep the stable prefix (tools, system prompt, safety rules, couple
   profile) byte-identical and in front; keep the variable tail (this week's moments, the request)
   as short as possible; avoid extra model calls that resend the whole prefix.
+
+## Measured on this deployment while building the Call-Topic Agent (Oct 21)
+- **Portkey has an exact-match response cache** on the course key. An identical request comes back
+  with `x-portkey-cache-status: HIT`, the same response id and the original usage numbers, but
+  no model call. `app/llm.py` reads that header: a HIT costs $0 and doesn't count toward the
+  daily budget (`llm_calls.gateway_cache`). Side effect: pressing "Prep" twice with no new
+  moments returns the same starters.
+- **Prompt caching works**: the Call-Topic stable prefix (system prompt + profile, ~1,470 tokens)
+  is read from cache on later calls, by either partner (1,467 of ~1,900 input tokens).
+- **Reasoning dominates output**: 240 to 1,200 reasoning tokens per run (40-75% of output).
+  Per-run cost varied $0.00038-$0.00091 for the same prompt. Lowering reasoning effort is the
+  obvious cost lever to test (and check it doesn't hurt starter quality).
+- Strict JSON-schema output (`text.format` json_schema) works on the Responses API.
 
 ## Open questions (resolve as we go)
 - Agent architecture (proposed: a guard step for input safety, the three feature agents, and a

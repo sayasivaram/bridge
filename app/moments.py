@@ -176,3 +176,11 @@ def _save_image(data_url: str) -> str:
     name = f"{uuid.uuid4().hex}.{ext}"
     (db.UPLOADS_DIR / name).write_bytes(raw)
     return name
+
+
+def private_texts(conn: sqlite3.Connection, couple_id: int) -> list[str]:
+    """Every private moment's text in a couple. For OUTPUT leak checks only (never into a prompt)."""
+    rows = conn.execute(
+        "SELECT m.text FROM moments m WHERE m.couple_id = ? AND m.visibility = 'private'", (couple_id,)
+    ).fetchall()
+    return [r[0] for r in rows]

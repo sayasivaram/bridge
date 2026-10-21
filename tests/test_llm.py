@@ -14,6 +14,7 @@ from app.llm import (
     Usage,
     load_prices,
     price,
+    tokens_used_today,
 )
 from tests.conftest import FakeClient, fake_response
 
@@ -149,3 +150,19 @@ def test_missing_key_fails_with_clear_message(tmp_path):
     msg = str(err.value)
     assert str(repo / ".env") in msg and str(tmp_path / ".env") in msg
     assert "PORTKEY_API_KEY" in msg
+
+
+def test_portkey_cache_hit_costs_nothing_and_skips_the_budget(seeded_db):
+    """Portkey answers identical requests from its own cache (x-portkey-cache-status: HIT).
+    The reported usage is the original call's, but nothing was billed."""
+    llm = make_llm(seeded_db, FakeClient(fake_response(gateway_cache="HIT")))
+    run = RunContext(user_id=PRIYA)
+
+    result = llm.call(run, "call_topics", "a", "b")
+
+    assert result.gateway_cache == "HIT" and result.cost["total"] == 0
+    assert run.summary()["gateway_cache_hits"] == 1 and run.summary()["cost_usd"] == 0
+    with session(seeded_db) as conn:
+        row = conn.execute("SELECT gateway_cache, cost_usd, input_tokens FROM llm_calls").fetchone()
+        assert (row["gateway_cache"], row["cost_usd"], row["input_tokens"]) == ("HIT", 0, 1000)
+        assert tokens_used_today(conn, PRIYA) == 0  # free, so it doesn't use up the allowance

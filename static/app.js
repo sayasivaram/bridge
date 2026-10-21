@@ -88,6 +88,7 @@ async function switchUser(userId) {
   state.userId = userId;
   localStorage.setItem("closer.userId", String(userId));
   resetForm();
+  clearCallPrep(); // starters were written for the other partner
   await loadMe();
 }
 
@@ -284,6 +285,105 @@ async function deleteMoment(id) {
   await loadMoments();
 }
 
+// ---------- call prep (Call-Topic Agent) ----------
+
+function setupCallPrep() {
+  $("prep-btn").addEventListener("click", runCallPrep);
+}
+
+function clearCallPrep() {
+  $("prep-result").hidden = true;
+  setPrepMsg("");
+}
+
+function setPrepMsg(text, isError = false) {
+  const el = $("prep-msg");
+  el.textContent = text;
+  el.className = "form-msg " + (text ? (isError ? "form-msg--error" : "muted") : "");
+}
+
+async function runCallPrep() {
+  const btn = $("prep-btn");
+  btn.disabled = true;
+  btn.classList.add("loading");
+  btn.textContent = "Reading your jar";
+  clearCallPrep();
+  try {
+    const data = await api("/api/call-prep", { method: "POST" });
+    renderCallPrep(data);
+  } catch (err) {
+    setPrepMsg(err.message, true);
+  } finally {
+    btn.disabled = false;
+    btn.classList.remove("loading");
+    btn.textContent = "Prep for our call";
+  }
+}
+
+function renderCallPrep(data) {
+  const since = new Date(data.window.since + "T12:00:00");
+  const until = new Date(data.window.until + "T12:00:00");
+  const fmt = (d) => d.toLocaleDateString(undefined, { month: "short", day: "numeric" });
+  $("prep-window").textContent =
+    `From ${data.moment_count} shared moments, ${fmt(since)} – ${fmt(until)}`;
+
+  if (!data.starters.length) {
+    setPrepMsg(data.moment_count
+      ? "Couldn't build starters that pass the safety checks this time. Please try again."
+      : "No shared moments in the last 7 days yet. Drop a few in the jar first.");
+  }
+
+  const u = data.usage;
+  const badge = $("token-badge");
+  badge.textContent =
+    `${u.calls} call${u.calls === 1 ? "" : "s"} · ${u.input_tokens.toLocaleString()} in ` +
+    `(${u.cached_tokens.toLocaleString()} cached) · ${u.output_tokens.toLocaleString()} out · ` +
+    `$${u.cost_usd.toFixed(5)}` +
+    (u.gateway_cache_hits ? ` · ⚡ ${u.gateway_cache_hits === u.calls ? "" : u.gateway_cache_hits + " "}Portkey cache hit` : "");
+  badge.title =
+    `Input ${u.input_tokens} = cached ${u.cached_tokens} + cache write ${u.cache_write_tokens} + plain ` +
+    `${u.input_tokens - u.cached_tokens - u.cache_write_tokens}\nOutput ${u.output_tokens} ` +
+    `(reasoning ${u.reasoning_tokens})\nModel ${data.model || "none"}` +
+    (u.gateway_cache_hits ? `\nPortkey answered ${u.gateway_cache_hits} call(s) from its response cache: no model call, $0` : "");
+
+  const list = $("starter-list");
+  list.innerHTML = "";
+  for (const s of data.starters) {
+    const li = el("li", "starter");
+    li.append(el("p", "topic", s.topic), el("p", "opener", s.opener), sourceList(s.moments));
+    list.appendChild(li);
+  }
+
+  const deeper = $("deeper");
+  deeper.innerHTML = "";
+  deeper.hidden = !data.deeper_question;
+  if (data.deeper_question) {
+    const d = data.deeper_question;
+    deeper.append(el("div", "label", "When you have time: one deeper question"),
+      el("p", "question", d.question), el("p", "why", d.why), sourceList(d.moments));
+  }
+
+  const trace = $("trace-list");
+  trace.innerHTML = "";
+  for (const line of data.trace) {
+    trace.appendChild(el("li", line.trim().startsWith("Dropped:") ? "dropped" : "", line.trim()));
+  }
+  $("prep-result").hidden = false;
+}
+
+function sourceList(moments) {
+  const box = el("div", "sources");
+  for (const m of moments) {
+    const src = el("div", `source moment--${m.mood}`);
+    const who = m.author_name === state.me.user.name ? "You" : m.author_name;
+    const text = m.text.length > 110 ? m.text.slice(0, 107) + "…" : m.text;
+    src.append(el("i", "", MOOD_EMOJI[m.mood] || "•"), el("b", "", `${who} · ${formatTime(m.created_at)}`), ` — ${text}`);
+    if (m.song) src.append(` 🎵 ${m.song}`);
+    box.appendChild(src);
+  }
+  return box;
+}
+
 // ---------- helpers ----------
 
 function el(tag, className, text) {
@@ -304,5 +404,6 @@ function isoDate(d) {
 
 setupAddForm();
 setupWeekNav();
+setupCallPrep();
 showSetupStatus();
 setupUserSwitch();

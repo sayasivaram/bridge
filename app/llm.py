@@ -1,6 +1,8 @@
 """The one wrapper every agent uses to call the model.
 
 Each call:
+  0. (Portkey's exact-match response cache may answer instead of the model: a HIT is logged
+     with its reported tokens but costs $0 and doesn't count against the budget.)
   1. counts as a step in the user's request (hard cap: MAX_STEPS_PER_REQUEST),
   2. is refused up front if it would push the user past their daily token budget,
   3. goes to gpt-6-luna through Portkey (OpenAI SDK, Responses API, same as Homework 5),
@@ -77,6 +79,7 @@ class LLMResult:
     usage: Usage
     cost: dict[str, float]  # per token type, plus "total"
     latency_ms: int
+    gateway_cache: str | None = None  # Portkey's x-portkey-cache-status: "HIT", "MISS", or None
 
 
 @dataclass
@@ -110,6 +113,7 @@ class RunContext:
             "output_tokens": usage.output_tokens,
             "reasoning_tokens": usage.reasoning_tokens,
             "cost_usd": round(sum(r.cost["total"] for r in self.results), 8),
+            "gateway_cache_hits": sum(r.gateway_cache == "HIT" for r in self.results),
         }
 
 
@@ -159,11 +163,11 @@ def build_client(settings: Settings) -> Any:
 
 
 def tokens_used_today(conn: sqlite3.Connection, user_id: int) -> int:
-    """Total tokens this user's calls used since midnight UTC."""
+    """Total tokens this user's calls used since midnight UTC (Portkey cache hits are free)."""
     today = datetime.now(timezone.utc).strftime("%Y-%m-%d")
     row = conn.execute(
         "SELECT COALESCE(SUM(input_tokens + output_tokens), 0) FROM llm_calls "
-        "WHERE user_id = ? AND created_at >= ?",
+        "WHERE user_id = ? AND created_at >= ? AND COALESCE(gateway_cache, '') != 'HIT'",
         (user_id, today),
     ).fetchone()
     return int(row[0])
@@ -217,22 +221,30 @@ class LLM:
         user_input: str,
         max_output_tokens: int = config.MAX_OUTPUT_TOKENS,
         cache_key: str | None = None,
+        json_schema: tuple[str, dict] | None = None,
     ) -> LLMResult:
-        """One model call. `instructions` = stable prefix, `user_input` = variable tail."""
+        """One model call. `instructions` = stable prefix, `user_input` = variable tail.
+
+        json_schema=(name, schema) asks for strict structured JSON output (Responses API).
+        """
         run.step(f"model call by {agent_name}")
         with session(self.db_path) as conn:
             self.check_budget(conn, run.user_id, estimate_tokens(instructions + user_input) + max_output_tokens)
 
         started = time.perf_counter()
         try:
-            extra = {"prompt_cache_key": cache_key} if cache_key else {}  # e.g. "couple-1-topics"
-            resp = self.client.responses.create(
-                model=config.MODEL,
-                instructions=instructions,
-                input=user_input,
-                max_output_tokens=max_output_tokens,
-                **extra,
-            )
+            extra: dict[str, Any] = {"prompt_cache_key": cache_key} if cache_key else {}  # e.g. "couple-1-topics"
+            if json_schema:
+                name, schema = json_schema
+                extra["text"] = {"format": {"type": "json_schema", "name": name, "schema": schema, "strict": True}}
+            request = dict(model=config.MODEL, instructions=instructions, input=user_input,
+                           max_output_tokens=max_output_tokens, **extra)
+            raw_api = getattr(self.client.responses, "with_raw_response", None)
+            if raw_api is not None:  # read Portkey's headers too
+                raw = raw_api.create(**request)
+                resp, gateway_cache = raw.parse(), raw.headers.get("x-portkey-cache-status")
+            else:
+                resp, gateway_cache = self.client.responses.create(**request), None
             served = getattr(resp, "model", None)
             if not served or not _SERVED_MODEL.match(served):
                 raise ModelMismatchError(f"Response came from {served!r}; only {config.MODEL!r} is allowed.")
@@ -242,7 +254,9 @@ class LLM:
 
         usage = usage_from_response(resp)
         cost = price(usage, self.prices)
-        self._log(run, agent_name, served, usage, cost, started)
+        if gateway_cache == "HIT":  # answered from Portkey's cache: the model wasn't called
+            cost = {k: 0.0 for k in cost}
+        self._log(run, agent_name, served, usage, cost, started, gateway_cache=gateway_cache)
         result = LLMResult(
             text=resp.output_text or "",
             agent_name=agent_name,
@@ -250,22 +264,24 @@ class LLM:
             usage=usage,
             cost=cost,
             latency_ms=int((time.perf_counter() - started) * 1000),
+            gateway_cache=gateway_cache,
         )
         run.results.append(result)
         return result
 
-    def _log(self, run, agent_name, model, usage, cost, started, error: Exception | None = None) -> None:
+    def _log(self, run, agent_name, model, usage, cost, started, error: Exception | None = None,
+             gateway_cache: str | None = None) -> None:
         with session(self.db_path) as conn:
             conn.execute(
                 "INSERT INTO llm_calls (user_id, agent_name, request_id, model, status, error, "
                 "input_tokens, cached_tokens, cache_write_tokens, output_tokens, reasoning_tokens, "
-                "cost_usd, latency_ms) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+                "cost_usd, latency_ms, gateway_cache) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
                 (
                     run.user_id, agent_name, run.request_id, model,
                     "error" if error else "ok",
                     f"{type(error).__name__}: {error}"[:300] if error else None,
                     usage.input_tokens, usage.cached_tokens, usage.cache_write_tokens,
                     usage.output_tokens, usage.reasoning_tokens, cost["total"],
-                    int((time.perf_counter() - started) * 1000),
+                    int((time.perf_counter() - started) * 1000), gateway_cache,
                 ),
             )

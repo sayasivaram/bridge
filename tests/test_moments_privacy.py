@@ -134,5 +134,6 @@ def test_prompt_for_both_partners_has_no_private_moments_at_all(seeded_db):
 def test_only_the_privacy_layer_reads_the_moments_table():
     app_dir = Path(app.main.__file__).parent
     reads = re.compile(r"\b(FROM|JOIN)\s+moments\b", re.IGNORECASE)
-    offenders = [p.name for p in app_dir.glob("*.py") if p.name != "moments.py" and reads.search(p.read_text())]
+    offenders = [str(p.relative_to(app_dir)) for p in app_dir.rglob("*.py")  # includes app/agents/
+                 if p.name != "moments.py" and reads.search(p.read_text())]
     assert offenders == [], f"These modules query moments directly, bypassing app/moments.py: {offenders}"

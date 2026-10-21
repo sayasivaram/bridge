@@ -16,12 +16,23 @@ from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, Field
 
 from app import db, moments
-from app.config import REPO_DIR, load_settings
+from app.agents import call_topics
+from app.config import REPO_DIR, MissingAPIKeyError, load_settings
+from app.llm import LLM, BudgetExceededError, StepLimitError
 from app.seed import seed
 
 STATIC_DIR = REPO_DIR / "static"
 
 settings = load_settings()
+_llm: LLM | None = None
+
+
+def get_llm() -> LLM:
+    """The shared model wrapper (tests replace this with one that uses a fake client)."""
+    global _llm
+    if _llm is None:
+        _llm = LLM(settings)
+    return _llm
 
 
 @asynccontextmanager
@@ -114,6 +125,24 @@ def moment_image(moment_id: int, x_user_id: int | None = Header(default=None)) -
     if path is None or not path.is_file():
         raise HTTPException(404, "Photo not found.")
     return FileResponse(path, headers={"Cache-Control": "private, no-store"})
+
+
+@app.post("/api/call-prep")
+def call_prep(x_user_id: int | None = Header(default=None)) -> dict:
+    """Call-Topic Agent: 5 starters + 1 deeper question from the last 7 days of shared moments."""
+    with db.session() as conn:
+        user = current_user(conn, x_user_id)
+    try:
+        return call_topics.run(get_llm(), user["id"])
+    except BudgetExceededError as err:
+        raise HTTPException(429, str(err)) from None
+    except StepLimitError as err:
+        raise HTTPException(503, str(err)) from None
+    except MissingAPIKeyError:
+        raise HTTPException(503, "No API key is set up, so AI features are off. See the README.") from None
+    except Exception as err:  # network/API trouble: say so plainly, keep details in the server log
+        print(f"call-prep failed: {type(err).__name__}: {err}")
+        raise HTTPException(502, "The AI service didn't answer properly. Please try again in a moment.") from None
 
 
 app.mount("/static", StaticFiles(directory=STATIC_DIR), name="static")
