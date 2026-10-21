@@ -16,6 +16,7 @@ def seeded_db(tmp_path, monkeypatch):
     path = tmp_path / "closer.db"
     seed(path, today=TODAY)
     monkeypatch.setattr(db, "DB_PATH", path)  # the API endpoints use this database
+    monkeypatch.setattr(db, "UPLOADS_DIR", tmp_path / "uploads")
     return path
 
 

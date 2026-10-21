@@ -9,7 +9,11 @@
 <body>
   <header class="topbar">
     <div class="brand">Closer</div>
-    <div class="tagline">Stay close between calls.</div>
+    <nav class="tabs" aria-label="Sections">
+      <button class="tab tab--active" data-page="jar">Moment Jar</button>
+      <button class="tab" disabled title="Coming soon">Pulse</button>
+      <button class="tab" disabled title="Coming soon">Rituals</button>
+    </nav>
     <label class="user-switch">
       <span>Viewing as</span>
       <select id="user-select" aria-label="Switch partner"></select>
@@ -17,13 +21,67 @@
   </header>
 
   <main class="container">
-    <section class="card">
-      <h1 id="greeting">Welcome</h1>
-      <p id="couple-line" class="muted"></p>
-      <p>The Moment Jar, Connection Pulse, and Ritual Builder are on their way.</p>
-      <div id="status" class="status status--loading">Checking setup…</div>
+    <section id="page-jar" class="jar">
+      <!-- Quick add -->
+      <form id="add-form" class="card add-card" autocomplete="off">
+        <h2>Drop a moment in the jar</h2>
+        <p class="muted small" id="add-hint">Little things from your day, so your next call has something real to start with.</p>
+
+        <div class="field">
+          <textarea id="m-text" maxlength="500" rows="3"
+            placeholder="A funny thing, a song stuck in your head, a small win, a worry…"></textarea>
+          <div class="counter"><span id="m-count">0</span>/500</div>
+        </div>
+
+        <fieldset class="moods" aria-label="Mood">
+          <label><input type="radio" name="mood" value="funny" checked><span><i>😂</i>Funny</span></label>
+          <label><input type="radio" name="mood" value="sweet"><span><i>🥰</i>Sweet</span></label>
+          <label><input type="radio" name="mood" value="stressful"><span><i>😣</i>Stressful</span></label>
+          <label><input type="radio" name="mood" value="proud"><span><i>🌟</i>Proud</span></label>
+          <label><input type="radio" name="mood" value="random"><span><i>🎲</i>Random</span></label>
+        </fieldset>
+
+        <div class="attach-row">
+          <button type="button" class="chip-btn" id="btn-photo"><i>📷</i>Add photo</button>
+          <button type="button" class="chip-btn" id="btn-song"><i>🎵</i>Add song</button>
+          <input type="file" id="m-photo" accept="image/jpeg,image/png" hidden>
+        </div>
+        <div id="song-field" class="field" hidden>
+          <input type="text" id="m-song" maxlength="120" placeholder="Song title - Artist">
+        </div>
+        <div id="photo-preview" class="photo-preview" hidden>
+          <img id="photo-img" alt="Selected photo">
+          <button type="button" class="remove" id="photo-remove" aria-label="Remove photo">×</button>
+        </div>
+
+        <div class="visibility" role="radiogroup" aria-label="Who can see this">
+          <label><input type="radio" name="visibility" value="shared" checked>
+            <span><b><i>💞</i>Share with <span class="partner-name">partner</span></b><small>you both see it</small></span></label>
+          <label><input type="radio" name="visibility" value="private">
+            <span><b><i>🔒</i>Private</b><small>only I see it</small></span></label>
+        </div>
+
+        <button type="submit" class="primary" id="add-btn">Add to jar</button>
+        <p id="add-msg" class="form-msg" role="status"></p>
+      </form>
+
+      <!-- This week's moments -->
+      <section class="card list-card">
+        <div class="week-bar">
+          <button class="icon-btn" id="week-prev" aria-label="Previous week">‹</button>
+          <div>
+            <h2 id="week-title">This week</h2>
+            <p class="muted small" id="week-sub"></p>
+          </div>
+          <button class="icon-btn" id="week-next" aria-label="Next week">›</button>
+        </div>
+        <ul id="moment-list" class="moment-list"></ul>
+        <p id="empty" class="empty" hidden>The jar is empty this week. Drop in the first moment.</p>
+      </section>
     </section>
   </main>
+
+  <footer class="footer"><span id="status" class="status">Checking setup…</span></footer>
 
   <script src="/static/app.js"></script>
 </body>

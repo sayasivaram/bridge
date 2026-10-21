@@ -10,7 +10,13 @@ from pathlib import Path
 from app.config import REPO_DIR
 
 DB_PATH = REPO_DIR / "data" / "closer.db"
+UPLOADS_DIR = REPO_DIR / "data" / "uploads"  # moment images; served only through the privacy check
 SCHEMA_PATH = Path(__file__).with_name("schema.sql")
+SCHEMA_VERSION = 2  # keep in sync with PRAGMA user_version in schema.sql
+
+
+class SchemaOutdatedError(RuntimeError):
+    """The database file was made by an older version of the schema."""
 
 
 def connect(db_path: Path | str | None = None) -> sqlite3.Connection:
@@ -22,7 +28,14 @@ def connect(db_path: Path | str | None = None) -> sqlite3.Connection:
 
 
 def init_db(conn: sqlite3.Connection) -> None:
-    """Create any missing tables. Safe to run on an existing database."""
+    """Create any missing tables. Safe to run on an existing database of the same version."""
+    has_tables = conn.execute("SELECT 1 FROM sqlite_master WHERE name = 'couples'").fetchone()
+    version = conn.execute("PRAGMA user_version").fetchone()[0]
+    if has_tables and version != SCHEMA_VERSION:
+        raise SchemaOutdatedError(
+            f"data/closer.db uses schema version {version}, but this code needs {SCHEMA_VERSION}. "
+            "Rebuild the demo database with: python -m app.seed --reset"
+        )
     conn.executescript(SCHEMA_PATH.read_text(encoding="utf-8"))
     conn.commit()
 

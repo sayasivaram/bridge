@@ -12,7 +12,7 @@ def test_seed_counts(seeded_db):
     with session(seeded_db) as conn:
         n = {t: conn.execute(f"SELECT COUNT(*) FROM {t}").fetchone()[0]
              for t in ("couples", "users", "moments", "pulses", "rituals", "ritual_feedback")}
-    assert n == {"couples": 1, "users": 2, "moments": 26, "pulses": 6, "rituals": 5, "ritual_feedback": 6}
+    assert n == {"couples": 1, "users": 2, "moments": 31, "pulses": 6, "rituals": 5, "ritual_feedback": 6}
 
 
 def test_seed_covers_last_three_weeks_and_leaves_this_week_open(seeded_db):
@@ -21,8 +21,15 @@ def test_seed_covers_last_three_weeks_and_leaves_this_week_open(seeded_db):
         weeks = [r[0] for r in conn.execute("SELECT DISTINCT week_start FROM pulses ORDER BY 1")]
 
     assert first >= week_start(1, TODAY).isoformat()
-    assert last < TODAY.isoformat()  # nothing in the future
+    assert last <= TODAY.isoformat()  # nothing in the future
     assert weeks == ["2026-09-28", "2026-10-05", "2026-10-12"]  # no pulse yet for the current week
+
+
+def test_seed_puts_some_moments_in_the_current_week(seeded_db):
+    monday = TODAY.isoformat()[:8] + "19"  # TODAY is Wed 2026-10-21, so this week starts Mon 10-19
+    with session(seeded_db) as conn:
+        n = conn.execute("SELECT COUNT(*) FROM moments WHERE date(created_at) >= ?", (monday,)).fetchone()[0]
+    assert n == 5  # so the jar isn't empty on a fresh clone
 
 
 def test_seed_has_a_drift_signal_for_the_pulse_agent(seeded_db):
@@ -48,7 +55,7 @@ def test_seed_includes_private_content_for_privacy_tests(seeded_db):
 
 
 def test_seed_is_idempotent(seeded_db):
-    assert seed(seeded_db, today=TODAY)["moments"] == 26  # running again adds nothing
+    assert seed(seeded_db, today=TODAY)["moments"] == 31  # running again adds nothing
 
 
 def test_users_endpoint_lists_both_partners(seeded_db):

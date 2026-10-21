@@ -10,9 +10,10 @@ __pycache__/
 venv/
 .pytest_cache/
 
-# Local databases (rebuilt from seed)
+# Local databases (rebuilt from seed) and uploaded photos
 *.db
 *.sqlite3
+data/uploads/
 
 # OS / editor
 .DS_Store

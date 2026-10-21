@@ -105,6 +105,16 @@ Tier 3 needs a real user trying it and measured improvement versus how couples d
   what's next.
 - **Demo video (optional):** 2–3 min screen recording, a backup if the app won't run for staff.
 
+## Code conventions for privacy and untrusted text (keep these as features are added)
+- **Only `app/moments.py` reads the `moments` table.** Its SQL applies the privacy rule.
+  A test fails if any other module in `app/` queries `moments` directly. Do the same for pulses
+  (private notes) when that feature is built.
+- **Agents get moments only via `moments.for_prompt(..., output_for=...)`.** Use the id of the
+  partner who will see the output, or `moments.BOTH` when both will see it (shared only).
+- **User text goes into prompts only via `app/prompting.py`** (`wrap` / `moments_block`): it is
+  HTML-escaped and tagged. `UNTRUSTED_DATA_RULES` goes in every agent's stable system prompt.
+- The frontend renders user text with `textContent`, never `innerHTML`.
+
 ## Calling gpt-6-luna through Portkey (same setup as Homework 5 and 6)
 - OpenAI SDK pointed at Portkey: `base_url="https://api.portkey.ai/v1"`, `api_key=<key>`, and
   header `x-portkey-api-key: <key>`. Model `"gpt-6-luna"`.

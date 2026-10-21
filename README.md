@@ -73,6 +73,8 @@ app/
   config.py    finds the API key (.env in repo, then one folder up), limits
   llm.py       the one model wrapper: gpt-6-luna via Portkey, token counts, cost,
                logging, per-user daily token budget, per-request step limit
+  moments.py   Moment Jar data access; the partner-privacy rule lives in its SQL
+  prompting.py wraps user text in escaped tags before it goes into any prompt
   schema.sql   database tables
   db.py        SQLite helpers
   seed.py      loads the demo couple
@@ -81,6 +83,7 @@ data/
   seed_couple.json   demo couple (edit freely)
   prices.json        gpt-6-luna prices per 1M tokens
   closer.db          created on first run (not committed)
+  uploads/           moment photos (not committed)
 static/      single-page frontend (HTML, CSS, vanilla JS)
 tests/       pytest tests (use a fake model client, so no tokens are spent)
 run.py       starts the server

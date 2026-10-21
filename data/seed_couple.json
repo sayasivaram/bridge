@@ -1,5 +1,5 @@
 {
-  "_about": "Demo couple for Closer. Fake people. Dates are relative: week 1 is three weeks ago, week 3 is last week; day 0 = Monday. Story: week 1 is warm, by week 3 Leo is stretched thin at work, his scores fall, he logs fewer moments, and they skip their Sunday cook. Priya notices the calls feel rushed but doesn't know why (Leo's notes are private).",
+  "_about": "Demo couple for Closer. Fake people. Dates are relative: week 1 is three weeks ago, week 3 is last week; day 0 = Monday. recent_moments are placed hours before seeding (clamped to this week) so the jar is never empty. Story: week 1 is warm, by week 3 Leo is stretched thin at work, his scores fall, he logs fewer moments, and they skip their Sunday cook. Priya notices the calls feel rushed but doesn't know why (Leo's notes are private).",
   "couple": {
     "name": "Priya & Leo",
     "together_since": "2023-06-10",
@@ -7,86 +7,434 @@
     "profile": "Priya (Partner A) lives in New Haven, CT and is a second-year grad student. Leo (Partner B) lives in London and works as a product designer. Together since June 2023, long-distance since August 2025. London is 5 hours ahead of New Haven. They have a long call on Sunday (morning for Priya, afternoon for Leo) and a short call on Wednesday evening London time. They both love cooking, running, and indie music. They visit each other about every three months; the next visit is in December."
   },
   "users": [
-    {"role": "A", "name": "Priya", "city": "New Haven", "timezone": "America/New_York"},
-    {"role": "B", "name": "Leo", "city": "London", "timezone": "Europe/London"}
+    {
+      "role": "A",
+      "name": "Priya",
+      "city": "New Haven",
+      "timezone": "America/New_York"
+    },
+    {
+      "role": "B",
+      "name": "Leo",
+      "city": "London",
+      "timezone": "Europe/London"
+    }
   ],
   "moments": [
-    {"week": 1, "day": 0, "time": "13:10", "who": "A", "kind": "funny", "visibility": "shared", "text": "A squirrel stole an entire bagel off my bench outside the library and stared at me while it ate it."},
-    {"week": 1, "day": 1, "time": "19:40", "who": "B", "kind": "win", "visibility": "shared", "text": "Shipped the redesign at work! Two months of work, finally live."},
-    {"week": 1, "day": 1, "time": "22:05", "who": "A", "kind": "song", "visibility": "shared", "text": "Can't stop playing Harvest Moon on my walk to class. It's the one from our Scotland road trip."},
-    {"week": 1, "day": 2, "time": "08:30", "who": "B", "kind": "funny", "visibility": "shared", "text": "A pigeon walked onto the Tube at Bank, rode one stop, and got off at Moorgate like a regular commuter."},
-    {"week": 1, "day": 3, "time": "16:20", "who": "A", "kind": "win", "visibility": "shared", "text": "Presented my case analysis and the professor used it as the example for the whole class."},
-    {"week": 1, "day": 3, "time": "20:15", "who": "B", "kind": "song", "visibility": "shared", "text": "Arctic Monkeys announced a London show in March. Could we make that a visit?"},
-    {"week": 1, "day": 4, "time": "21:00", "who": "B", "kind": "other", "visibility": "shared", "text": "Made your dal recipe. Decent, but not as good as yours. I think I burned the cumin."},
-    {"week": 1, "day": 5, "time": "11:45", "who": "A", "kind": "other", "visibility": "shared", "text": "Tried the new ramen place on Chapel Street. Their spicy miso would be your favorite."},
-    {"week": 1, "day": 5, "time": "18:30", "who": "B", "kind": "other", "visibility": "shared", "text": "Walked the South Bank at sunset and thought about our first trip here together."},
-    {"week": 1, "day": 6, "time": "09:10", "who": "A", "kind": "worry", "visibility": "private", "text": "Recruiting season is stressing me out. I might end up somewhere even farther from London and I don't know how to bring it up."},
-    {"week": 1, "day": 6, "time": "17:50", "who": "B", "kind": "funny", "visibility": "shared", "text": "My manager called the new feature 'very Wes Anderson' and nobody can tell if that was a compliment."},
-
-    {"week": 2, "day": 0, "time": "12:25", "who": "A", "kind": "funny", "visibility": "shared", "text": "My study group renamed our group chat 'Spreadsheets Anonymous' and now everyone signs off with 'one cell at a time'."},
-    {"week": 2, "day": 1, "time": "23:30", "who": "B", "kind": "worry", "visibility": "private", "text": "Big deadline at work and the team is stretched thin. Not sleeping well. Don't want to dump it all on Priya."},
-    {"week": 2, "day": 2, "time": "07:15", "who": "A", "kind": "win", "visibility": "shared", "text": "Ran 8 miles on Sunday, my longest run since the half marathon."},
-    {"week": 2, "day": 2, "time": "20:40", "who": "B", "kind": "song", "visibility": "shared", "text": "Listening to the Phoebe Bridgers album you sent me on repeat. Track 4 especially."},
-    {"week": 2, "day": 3, "time": "15:00", "who": "A", "kind": "worry", "visibility": "shared", "text": "December flights are getting expensive. We should pick dates soon."},
-    {"week": 2, "day": 4, "time": "19:05", "who": "A", "kind": "other", "visibility": "shared", "text": "Started reading Tomorrow, and Tomorrow, and Tomorrow. You were right about it."},
-    {"week": 2, "day": 5, "time": "10:20", "who": "B", "kind": "win", "visibility": "shared", "text": "Finished a 10K under 50 minutes for the first time!"},
-    {"week": 2, "day": 6, "time": "14:35", "who": "B", "kind": "funny", "visibility": "shared", "text": "My flatmate tried to make 'American pancakes' and set off the fire alarm twice before breakfast."},
-    {"week": 2, "day": 6, "time": "16:10", "who": "A", "kind": "funny", "visibility": "shared", "text": "A professor accidentally shared his screen in lecture with 47 tabs of fantasy football open."},
-
-    {"week": 3, "day": 0, "time": "18:00", "who": "A", "kind": "win", "visibility": "shared", "text": "Got an interview invite from the consulting firm I wanted most!"},
-    {"week": 3, "day": 1, "time": "21:30", "who": "A", "kind": "worry", "visibility": "private", "text": "Weekends have felt lonely since my roommate moved out."},
-    {"week": 3, "day": 2, "time": "22:50", "who": "B", "kind": "other", "visibility": "shared", "text": "Rainy week. Mostly work and sleep."},
-    {"week": 3, "day": 3, "time": "13:15", "who": "A", "kind": "other", "visibility": "shared", "text": "The farmers market had the Honeycrisp apples you love. Ate one in your honor."},
-    {"week": 3, "day": 4, "time": "20:00", "who": "A", "kind": "song", "visibility": "shared", "text": "Found a lo-fi cover of the song from our first dance at your cousin's wedding."},
-    {"week": 3, "day": 6, "time": "19:20", "who": "B", "kind": "worry", "visibility": "private", "text": "Missed our Sunday cook because of work and felt bad about it all week."}
+    {
+      "week": 1,
+      "day": 0,
+      "time": "13:10",
+      "who": "A",
+      "mood": "funny",
+      "visibility": "shared",
+      "text": "A squirrel stole an entire bagel off my bench outside the library and stared at me while it ate it."
+    },
+    {
+      "week": 1,
+      "day": 1,
+      "time": "19:40",
+      "who": "B",
+      "mood": "proud",
+      "visibility": "shared",
+      "text": "Shipped the redesign at work! Two months of work, finally live."
+    },
+    {
+      "week": 1,
+      "day": 1,
+      "time": "22:05",
+      "who": "A",
+      "mood": "sweet",
+      "visibility": "shared",
+      "text": "Can't stop playing this on my walk to class. It's the one from our Scotland road trip.",
+      "song": "Harvest Moon - Neil Young"
+    },
+    {
+      "week": 1,
+      "day": 2,
+      "time": "08:30",
+      "who": "B",
+      "mood": "funny",
+      "visibility": "shared",
+      "text": "A pigeon walked onto the Tube at Bank, rode one stop, and got off at Moorgate like a regular commuter."
+    },
+    {
+      "week": 1,
+      "day": 3,
+      "time": "16:20",
+      "who": "A",
+      "mood": "proud",
+      "visibility": "shared",
+      "text": "Presented my case analysis and the professor used it as the example for the whole class."
+    },
+    {
+      "week": 1,
+      "day": 3,
+      "time": "20:15",
+      "who": "B",
+      "mood": "sweet",
+      "visibility": "shared",
+      "text": "Arctic Monkeys announced a London show in March. Could we make that a visit?"
+    },
+    {
+      "week": 1,
+      "day": 4,
+      "time": "21:00",
+      "who": "B",
+      "mood": "random",
+      "visibility": "shared",
+      "text": "Made your dal recipe. Decent, but not as good as yours. I think I burned the cumin."
+    },
+    {
+      "week": 1,
+      "day": 5,
+      "time": "11:45",
+      "who": "A",
+      "mood": "random",
+      "visibility": "shared",
+      "text": "Tried the new ramen place on Chapel Street. Their spicy miso would be your favorite."
+    },
+    {
+      "week": 1,
+      "day": 5,
+      "time": "18:30",
+      "who": "B",
+      "mood": "sweet",
+      "visibility": "shared",
+      "text": "Walked the South Bank at sunset and thought about our first trip here together."
+    },
+    {
+      "week": 1,
+      "day": 6,
+      "time": "09:10",
+      "who": "A",
+      "mood": "stressful",
+      "visibility": "private",
+      "text": "Recruiting season is stressing me out. I might end up somewhere even farther from London and I don't know how to bring it up."
+    },
+    {
+      "week": 1,
+      "day": 6,
+      "time": "17:50",
+      "who": "B",
+      "mood": "funny",
+      "visibility": "shared",
+      "text": "My manager called the new feature 'very Wes Anderson' and nobody can tell if that was a compliment."
+    },
+    {
+      "week": 2,
+      "day": 0,
+      "time": "12:25",
+      "who": "A",
+      "mood": "funny",
+      "visibility": "shared",
+      "text": "My study group renamed our group chat 'Spreadsheets Anonymous' and now everyone signs off with 'one cell at a time'."
+    },
+    {
+      "week": 2,
+      "day": 1,
+      "time": "23:30",
+      "who": "B",
+      "mood": "stressful",
+      "visibility": "private",
+      "text": "Big deadline at work and the team is stretched thin. Not sleeping well. Don't want to dump it all on Priya."
+    },
+    {
+      "week": 2,
+      "day": 2,
+      "time": "07:15",
+      "who": "A",
+      "mood": "proud",
+      "visibility": "shared",
+      "text": "Ran 8 miles on Sunday, my longest run since the half marathon."
+    },
+    {
+      "week": 2,
+      "day": 2,
+      "time": "20:40",
+      "who": "B",
+      "mood": "sweet",
+      "visibility": "shared",
+      "text": "Listening to the album you sent me on repeat. This one especially.",
+      "song": "Kyoto - Phoebe Bridgers"
+    },
+    {
+      "week": 2,
+      "day": 3,
+      "time": "15:00",
+      "who": "A",
+      "mood": "stressful",
+      "visibility": "shared",
+      "text": "December flights are getting expensive. We should pick dates soon."
+    },
+    {
+      "week": 2,
+      "day": 4,
+      "time": "19:05",
+      "who": "A",
+      "mood": "random",
+      "visibility": "shared",
+      "text": "Started reading Tomorrow, and Tomorrow, and Tomorrow. You were right about it."
+    },
+    {
+      "week": 2,
+      "day": 5,
+      "time": "10:20",
+      "who": "B",
+      "mood": "proud",
+      "visibility": "shared",
+      "text": "Finished a 10K under 50 minutes for the first time!"
+    },
+    {
+      "week": 2,
+      "day": 6,
+      "time": "14:35",
+      "who": "B",
+      "mood": "funny",
+      "visibility": "shared",
+      "text": "My flatmate tried to make 'American pancakes' and set off the fire alarm twice before breakfast."
+    },
+    {
+      "week": 2,
+      "day": 6,
+      "time": "16:10",
+      "who": "A",
+      "mood": "funny",
+      "visibility": "shared",
+      "text": "A professor accidentally shared his screen in lecture with 47 tabs of fantasy football open."
+    },
+    {
+      "week": 3,
+      "day": 0,
+      "time": "18:00",
+      "who": "A",
+      "mood": "proud",
+      "visibility": "shared",
+      "text": "Got an interview invite from the consulting firm I wanted most!"
+    },
+    {
+      "week": 3,
+      "day": 1,
+      "time": "21:30",
+      "who": "A",
+      "mood": "stressful",
+      "visibility": "private",
+      "text": "Weekends have felt lonely since my roommate moved out."
+    },
+    {
+      "week": 3,
+      "day": 2,
+      "time": "22:50",
+      "who": "B",
+      "mood": "random",
+      "visibility": "shared",
+      "text": "Rainy week. Mostly work and sleep."
+    },
+    {
+      "week": 3,
+      "day": 3,
+      "time": "13:15",
+      "who": "A",
+      "mood": "sweet",
+      "visibility": "shared",
+      "text": "The farmers market had the Honeycrisp apples you love. Ate one in your honor."
+    },
+    {
+      "week": 3,
+      "day": 4,
+      "time": "20:00",
+      "who": "A",
+      "mood": "sweet",
+      "visibility": "shared",
+      "text": "Found a lo-fi cover of the song from our first dance at your cousin's wedding.",
+      "song": "At Last (lo-fi cover) - Etta James"
+    },
+    {
+      "week": 3,
+      "day": 6,
+      "time": "19:20",
+      "who": "B",
+      "mood": "stressful",
+      "visibility": "private",
+      "text": "Missed our Sunday cook because of work and felt bad about it all week."
+    }
   ],
   "pulses": [
-    {"week": 1, "who": "A", "score": 4, "note": "Good week. Loved hearing about the redesign launch.", "note_shared": true},
-    {"week": 1, "who": "B", "score": 4, "note": "Our Sunday cook-along was the highlight.", "note_shared": true},
-    {"week": 2, "who": "A", "score": 4, "note": null, "note_shared": false},
-    {"week": 2, "who": "B", "score": 3, "note": "Work crunch. I've been distracted on calls and I don't want her to worry.", "note_shared": false},
-    {"week": 3, "who": "A", "score": 3, "note": "Calls felt rushed this week. We mostly talked logistics.", "note_shared": true},
-    {"week": 3, "who": "B", "score": 2, "note": "Felt far away this week. Missed our Sunday cook.", "note_shared": false}
+    {
+      "week": 1,
+      "who": "A",
+      "score": 4,
+      "note": "Good week. Loved hearing about the redesign launch.",
+      "note_shared": true
+    },
+    {
+      "week": 1,
+      "who": "B",
+      "score": 4,
+      "note": "Our Sunday cook-along was the highlight.",
+      "note_shared": true
+    },
+    {
+      "week": 2,
+      "who": "A",
+      "score": 4,
+      "note": null,
+      "note_shared": false
+    },
+    {
+      "week": 2,
+      "who": "B",
+      "score": 3,
+      "note": "Work crunch. I've been distracted on calls and I don't want her to worry.",
+      "note_shared": false
+    },
+    {
+      "week": 3,
+      "who": "A",
+      "score": 3,
+      "note": "Calls felt rushed this week. We mostly talked logistics.",
+      "note_shared": true
+    },
+    {
+      "week": 3,
+      "who": "B",
+      "score": 2,
+      "note": "Felt far away this week. Missed our Sunday cook.",
+      "note_shared": false
+    }
   ],
   "rituals": [
     {
       "title": "Sunday cook-along: pasta alla vodka",
-      "category": "cook", "minutes": 60, "energy": "medium", "status": "done", "week": 1, "day": 6,
+      "category": "cook",
+      "minutes": 60,
+      "energy": "medium",
+      "status": "done",
+      "week": 1,
+      "day": 6,
       "description": "Same recipe, same time, on video. Shop for the ingredients during the week.",
       "feedback": [
-        {"who": "A", "rating": 5, "would_repeat": true, "comment": "Felt like we were in the same kitchen."},
-        {"who": "B", "rating": 5, "would_repeat": true, "comment": "Best call in weeks."}
+        {
+          "who": "A",
+          "rating": 5,
+          "would_repeat": true,
+          "comment": "Felt like we were in the same kitchen."
+        },
+        {
+          "who": "B",
+          "rating": 5,
+          "would_repeat": true,
+          "comment": "Best call in weeks."
+        }
       ]
     },
     {
       "title": "Co-watch: one episode of Great British Bake Off",
-      "category": "watch", "minutes": 50, "energy": "low", "status": "done", "week": 2, "day": 4,
+      "category": "watch",
+      "minutes": 50,
+      "energy": "low",
+      "status": "done",
+      "week": 2,
+      "day": 4,
       "description": "Press play together on a call and keep the call open.",
       "feedback": [
-        {"who": "A", "rating": 4, "would_repeat": true, "comment": "Cozy, low effort."},
-        {"who": "B", "rating": 4, "would_repeat": true, "comment": "Good for a tired evening."}
+        {
+          "who": "A",
+          "rating": 4,
+          "would_repeat": true,
+          "comment": "Cozy, low effort."
+        },
+        {
+          "who": "B",
+          "rating": 4,
+          "would_repeat": true,
+          "comment": "Good for a tired evening."
+        }
       ]
     },
     {
       "title": "Codenames Duet online",
-      "category": "game", "minutes": 30, "energy": "high", "status": "done", "week": 2, "day": 6,
+      "category": "game",
+      "minutes": 30,
+      "energy": "high",
+      "status": "done",
+      "week": 2,
+      "day": 6,
       "description": "Two-player cooperative word game in the browser.",
       "feedback": [
-        {"who": "A", "rating": 3, "would_repeat": true, "comment": "Fun but we got competitive."},
-        {"who": "B", "rating": 2, "would_repeat": false, "comment": "Too much strategy after a long work day."}
+        {
+          "who": "A",
+          "rating": 3,
+          "would_repeat": true,
+          "comment": "Fun but we got competitive."
+        },
+        {
+          "who": "B",
+          "rating": 2,
+          "would_repeat": false,
+          "comment": "Too much strategy after a long work day."
+        }
       ]
     },
     {
       "title": "Sunday cook-along: shakshuka",
-      "category": "cook", "minutes": 45, "energy": "medium", "status": "skipped", "week": 3, "day": 6,
+      "category": "cook",
+      "minutes": 45,
+      "energy": "medium",
+      "status": "skipped",
+      "week": 3,
+      "day": 6,
       "description": "Same recipe, same time, on video.",
       "feedback": []
     },
     {
       "title": "Letter swap: a favorite memory",
-      "category": "letter", "minutes": 20, "energy": "low", "status": "planned", "week": 3, "day": 3,
+      "category": "letter",
+      "minutes": 20,
+      "energy": "low",
+      "status": "planned",
+      "week": 3,
+      "day": 3,
       "description": "Each writes a short letter about a favorite memory together, then reads it aloud on the next call.",
       "feedback": []
+    }
+  ],
+  "recent_moments": [
+    {
+      "hours_ago": 30,
+      "who": "B",
+      "mood": "proud",
+      "visibility": "shared",
+      "text": "Got the team to agree to no-meeting Fridays. Small win, big relief."
+    },
+    {
+      "hours_ago": 26,
+      "who": "A",
+      "mood": "stressful",
+      "visibility": "shared",
+      "text": "Interview prep all day. My brain is mush, but I think I'm ready."
+    },
+    {
+      "hours_ago": 20,
+      "who": "B",
+      "mood": "stressful",
+      "visibility": "private",
+      "text": "Still behind at work. Trying to actually be present on our calls instead of half-checking Slack."
+    },
+    {
+      "hours_ago": 6,
+      "who": "A",
+      "mood": "funny",
+      "visibility": "shared",
+      "text": "Someone brought a cat to lecture in a backpack. It meowed during the Q&A and got the biggest laugh of the semester."
+    },
+    {
+      "hours_ago": 3,
+      "who": "A",
+      "mood": "sweet",
+      "visibility": "shared",
+      "text": "Saw a couple on the train sharing one pair of headphones and thought of us.",
+      "song": "Harvest Moon - Neil Young"
     }
   ]
 }

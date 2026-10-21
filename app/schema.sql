@@ -26,17 +26,22 @@ CREATE TABLE IF NOT EXISTS users (
     UNIQUE (couple_id, role)
 );
 
--- Moment Jar: small things from the week.
--- visibility 'shared' = partner can see it and agents may use it for both partners.
--- visibility 'private' = only the author sees it; agents use it only when helping the author.
+-- Moment Jar: small things from the week. Read ONLY through app/moments.py, which applies
+-- the privacy rule in every query:
+-- visibility 'shared'  = partner can see it; agents may use it for either partner.
+-- visibility 'private' = only the author sees it; agents use it only for output to the author.
+-- A moment has at most one attachment: a song (free text) or an image (file in data/uploads/).
 CREATE TABLE IF NOT EXISTS moments (
     id          INTEGER PRIMARY KEY,
     couple_id   INTEGER NOT NULL REFERENCES couples(id),
     author_id   INTEGER NOT NULL REFERENCES users(id),
-    kind        TEXT NOT NULL CHECK (kind IN ('funny', 'song', 'worry', 'win', 'other')),
+    mood        TEXT NOT NULL CHECK (mood IN ('funny', 'sweet', 'stressful', 'proud', 'random')),
     text        TEXT NOT NULL CHECK (length(text) BETWEEN 1 AND 500),
+    song        TEXT CHECK (song IS NULL OR length(song) BETWEEN 1 AND 120),  -- "Title - Artist"
+    image_file  TEXT,                           -- server-generated file name, never user-supplied
     visibility  TEXT NOT NULL DEFAULT 'shared' CHECK (visibility IN ('shared', 'private')),
-    created_at  TEXT NOT NULL DEFAULT (datetime('now'))
+    created_at  TEXT NOT NULL DEFAULT (datetime('now')),  -- UTC
+    CHECK (song IS NULL OR image_file IS NULL)
 );
 CREATE INDEX IF NOT EXISTS idx_moments_couple_time ON moments (couple_id, created_at);
 
@@ -103,3 +108,6 @@ CREATE TABLE IF NOT EXISTS llm_calls (
     latency_ms          INTEGER
 );
 CREATE INDEX IF NOT EXISTS idx_llm_calls_user_time ON llm_calls (user_id, created_at);
+
+-- Bump when the schema changes; app/db.py refuses to open an older database.
+PRAGMA user_version = 2;

@@ -4,17 +4,20 @@
     python -m app.seed --reset   # wipe the database and start over
 
 Dates are relative to today, so the demo always shows "the last three weeks":
-week 1 starts on the Monday three weeks ago, week 3 is last week. The current week has no
-pulse yet, so you can do a live check-in in the demo. Seed times are stored as UTC.
+week 1 starts on the Monday three weeks ago, week 3 is last week. A few moments land earlier
+this week so the jar isn't empty. The current week has no pulse yet, so you can do a live
+check-in in the demo. Seed times are stored as UTC.
 """
 
 from __future__ import annotations
 
 import argparse
 import json
-from datetime import date, timedelta
+import shutil
+from datetime import date, datetime, time, timedelta, timezone
 from pathlib import Path
 
+from app import db
 from app.config import REPO_DIR
 from app.db import DB_PATH, init_db, session
 
@@ -29,11 +32,14 @@ def week_start(week: int, today: date) -> date:
 
 def seed(db_path: Path | str = DB_PATH, today: date | None = None, reset: bool = False) -> dict[str, int]:
     """Create the schema and load the demo couple. Returns row counts per table."""
-    today = today or date.today()
+    now = datetime.now(timezone.utc).replace(tzinfo=None) if today is None else datetime.combine(today, time(12))
+    today = now.date()
     data = json.loads(SEED_PATH.read_text(encoding="utf-8"))
     db_path = Path(db_path)
-    if reset and db_path.exists():
-        db_path.unlink()
+    if reset:
+        db_path.unlink(missing_ok=True)
+        if db_path.resolve() == DB_PATH.resolve():
+            shutil.rmtree(db.UPLOADS_DIR, ignore_errors=True)  # photos belong to the old database
 
     with session(db_path) as conn:
         init_db(conn)
@@ -57,11 +63,17 @@ def seed(db_path: Path | str = DB_PATH, today: date | None = None, reset: bool =
             day = week_start(item["week"], today) + timedelta(days=item["day"])
             return f"{day.isoformat()} {item.get('time', '12:00')}:00"
 
-        for m in data["moments"]:
+        this_monday = datetime.combine(today - timedelta(days=today.weekday()), time(0, 5))
+        for i, m in enumerate(data["moments"] + data["recent_moments"]):
+            if "hours_ago" in m:  # this week's moments: relative to now, but never before Monday
+                stamp = max(now - timedelta(hours=m["hours_ago"]), this_monday + timedelta(minutes=i))
+                created = stamp.strftime("%Y-%m-%d %H:%M:%S")
+            else:
+                created = when(m)
             conn.execute(
-                "INSERT INTO moments (couple_id, author_id, kind, text, visibility, created_at) "
-                "VALUES (?, ?, ?, ?, ?, ?)",
-                (couple_id, user_ids[m["who"]], m["kind"], m["text"], m["visibility"], when(m)),
+                "INSERT INTO moments (couple_id, author_id, mood, text, song, visibility, created_at) "
+                "VALUES (?, ?, ?, ?, ?, ?, ?)",
+                (couple_id, user_ids[m["who"]], m["mood"], m["text"], m.get("song"), m["visibility"], created),
             )
 
         for p in data["pulses"]:
