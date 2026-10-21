@@ -88,3 +88,8 @@ def test_song_and_photo_together_is_rejected(seeded_db):
     r = TestClient(app.main.app).post("/api/moments", headers={"X-User-Id": "1"},
                                       json={"text": "hi", "mood": "funny", "song": "x", "image": png})
     assert r.status_code == 400
+
+
+def test_text_keeps_quotes_and_apostrophes_readable():
+    tag = wrap("moment", "I'm \"fine\" & you?")
+    assert tag == "<moment>I'm \"fine\" &amp; you?</moment>"  # no &#x27; noise, still no raw &
