@@ -31,6 +31,16 @@ REPO_DIR = Path(__file__).resolve().parent.parent
 
 MODEL = "gpt-6-luna"
 KEY_NAMES = ("PORTKEY_API_KEY", "OPENAI_API_KEY")
+PORTKEY_BASE_URL = "https://api.portkey.ai/v1"
+
+# Safety limits (see app/llm.py). A user's own users.daily_token_budget overrides the default.
+DEFAULT_DAILY_TOKEN_BUDGET = 50_000  # tokens per user per day, about 10 typical runs
+MAX_STEPS_PER_REQUEST = 6  # model calls + tool calls allowed in one user request
+MAX_OUTPUT_TOKENS = 1_500  # cap on any single model reply
+
+
+class MissingAPIKeyError(RuntimeError):
+    """Raised when neither .env location nor the shell has a supported key."""
 
 
 def env_file_candidates(repo_dir: Path = REPO_DIR) -> list[Path]:
@@ -54,6 +64,19 @@ class Settings:
     @property
     def ai_enabled(self) -> bool:
         return self.api_key is not None
+
+    def require_api_key(self, repo_dir: Path = REPO_DIR) -> str:
+        """Return the key, or fail with a message that says exactly where we looked."""
+        if self.api_key:
+            return self.api_key
+        repo_env, parent_env = env_file_candidates(repo_dir)
+        raise MissingAPIKeyError(
+            "No API key found. Closer looked for PORTKEY_API_KEY or OPENAI_API_KEY in:\n"
+            f"  1. {repo_env}\n"
+            f"  2. {parent_env}\n"
+            "  3. your shell environment\n"
+            "Fix: copy .env.example to .env in one of those folders and fill in PORTKEY_API_KEY."
+        )
 
     def public_status(self, repo_dir: Path = REPO_DIR) -> dict:
         """Safe-to-show status for the UI. Says where keys came from, never the key itself."""

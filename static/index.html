@@ -10,11 +10,16 @@
   <header class="topbar">
     <div class="brand">Closer</div>
     <div class="tagline">Stay close between calls.</div>
+    <label class="user-switch">
+      <span>Viewing as</span>
+      <select id="user-select" aria-label="Switch partner"></select>
+    </label>
   </header>
 
   <main class="container">
     <section class="card">
-      <h1>Welcome</h1>
+      <h1 id="greeting">Welcome</h1>
+      <p id="couple-line" class="muted"></p>
       <p>The Moment Jar, Connection Pulse, and Ritual Builder are on their way.</p>
       <div id="status" class="status status--loading">Checking setup…</div>
     </section>

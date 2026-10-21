@@ -65,3 +65,24 @@ body {
 .status--loading { background: #f0edf3; color: var(--muted); }
 .status--ok { background: var(--ok-soft); color: var(--ok); }
 .status--warn { background: var(--warn-soft); color: var(--warn); }
+
+.muted { color: var(--muted); }
+
+.user-switch {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+
+.user-switch select {
+  font: inherit;
+  color: var(--ink);
+  padding: 6px 10px;
+  border: 1px solid #e3dce8;
+  border-radius: 8px;
+  background: var(--accent-soft);
+  cursor: pointer;
+}

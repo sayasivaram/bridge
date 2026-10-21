@@ -48,8 +48,17 @@ You need **Python 3.11 or newer** (`python3 --version` to check).
    ```bash
    python run.py
    ```
-   Open <http://127.0.0.1:8000>. The status box on the home page says whether a key was
-   found and which `.env` it came from.
+   Open <http://127.0.0.1:8000>. On first start the app creates `data/closer.db` and loads a
+   demo couple (Priya in New Haven and Leo in London) with three weeks of moments, weekly
+   pulses, and rituals. Use the **Viewing as** dropdown (top right) to switch partners.
+   The status box says whether a key was found and where it came from. If no key is found,
+   `run.py` stops and lists the exact places it looked.
+
+## Reset the demo data
+
+```bash
+python -m app.seed --reset
+```
 
 ## Run the tests
 
@@ -60,8 +69,19 @@ pytest
 ## Project layout
 
 ```
-app/        FastAPI backend (config.py loads .env; main.py defines the API)
-static/     single-page frontend (HTML, CSS, vanilla JS)
-tests/      pytest tests
-run.py      starts the server
+app/
+  config.py    finds the API key (.env in repo, then one folder up), limits
+  llm.py       the one model wrapper: gpt-6-luna via Portkey, token counts, cost,
+               logging, per-user daily token budget, per-request step limit
+  schema.sql   database tables
+  db.py        SQLite helpers
+  seed.py      loads the demo couple
+  main.py      FastAPI routes
+data/
+  seed_couple.json   demo couple (edit freely)
+  prices.json        gpt-6-luna prices per 1M tokens
+  closer.db          created on first run (not committed)
+static/      single-page frontend (HTML, CSS, vanilla JS)
+tests/       pytest tests (use a fake model client, so no tokens are spent)
+run.py       starts the server
 ```

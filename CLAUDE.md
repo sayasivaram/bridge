@@ -113,6 +113,8 @@ Tier 3 needs a real user trying it and measured improvement versus how couples d
 - Responses report the served model as `gpt-6-luna`, `gpt-6-luna-global`, or a dated snapshot
   (`gpt-6-luna-2026-09-22`). Accept only those; fail loudly on anything else.
 - If both keys are present, Portkey wins (already built in `app/config.py`).
+- SDK: plain `openai` SDK (no pydantic-ai). Every agent calls `app/llm.py`; nothing else
+  talks to the model.
 
 ## Prices and cost accounting
 Prices live in `data/prices.json` (gpt-6-luna, per 1M tokens, from MGT 409 Lecture 11):
@@ -141,6 +143,5 @@ Prices live in `data/prices.json` (gpt-6-luna, per 1M tokens, from MGT 409 Lectu
   as short as possible; avoid extra model calls that resend the whole prefix.
 
 ## Open questions (resolve as we go)
-- SDK: plain `openai` SDK (fewer dependencies) vs. pydantic-ai as in HW5/6. Leaning plain `openai`.
 - Agent architecture (proposed: a guard step for input safety, the three feature agents, and a
   shared output checker for grounding/privacy/coach boundary).
