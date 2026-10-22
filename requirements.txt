@@ -2,6 +2,7 @@ fastapi==0.159.0
 uvicorn==0.54.0
 python-dotenv==1.2.4
 openai==3.29.0
+tzdata==2026.5  # time-zone database for Windows (macOS/Linux have one built in)
 
 # For running the tests
 pytest==9.1.1

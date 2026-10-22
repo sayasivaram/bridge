@@ -63,10 +63,12 @@ def seed(db_path: Path | str = DB_PATH, today: date | None = None, reset: bool =
             day = week_start(item["week"], today) + timedelta(days=item["day"])
             return f"{day.isoformat()} {item.get('time', '12:00')}:00"
 
-        this_monday = datetime.combine(today - timedelta(days=today.weekday()), time(0, 5))
+        # Monday 12:00 UTC is Monday for both partners (8am New Haven, 1pm London).
+        this_monday = datetime.combine(today - timedelta(days=today.weekday()), time(12))
         for i, m in enumerate(data["moments"] + data["recent_moments"]):
-            if "hours_ago" in m:  # this week's moments: relative to now, but never before Monday
+            if "hours_ago" in m:  # this week's moments: relative to now, but not before Monday (local)
                 stamp = max(now - timedelta(hours=m["hours_ago"]), this_monday + timedelta(minutes=i))
+                stamp = min(stamp, now - timedelta(minutes=len(data["recent_moments"]) - i))  # never future
                 created = stamp.strftime("%Y-%m-%d %H:%M:%S")
             else:
                 created = when(m)

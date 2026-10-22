@@ -20,7 +20,7 @@ import re
 from datetime import date, timedelta
 from typing import Any
 
-from app import moments
+from app import moments, timeutil
 from app.db import session
 from app.llm import LLM, RunContext
 from app.prompting import UNTRUSTED_DATA_RULES, escape, moments_block, wrap
@@ -163,8 +163,9 @@ def build_prompt(conn, requester_id: int, today: date) -> dict[str, Any]:
     requester = conn.execute("SELECT * FROM users WHERE id = ?", (requester_id,)).fetchone()
     partner = conn.execute("SELECT * FROM users WHERE couple_id = ? AND id != ?",
                            (requester["couple_id"], requester_id)).fetchone()
-    since = today - timedelta(days=WINDOW_DAYS - 1)
-    selected = moments.for_prompt(conn, requester["couple_id"], moments.BOTH, since, today)
+    since = today - timedelta(days=WINDOW_DAYS - 1)  # local days in the requester's time zone
+    tz = requester["timezone"]
+    selected = moments.for_prompt(conn, requester["couple_id"], moments.BOTH, since, today, tz_name=tz)
 
     instructions = f"{SYSTEM_PROMPT}\n## This couple\n{couple_profile_block(conn, requester['couple_id'])}\n"
     request = wrap("request", f"Prepare {requester['name']} for their next call with {partner['name']}. "
@@ -172,7 +173,7 @@ def build_prompt(conn, requester_id: int, today: date) -> dict[str, Any]:
                               f"shared from {_day(since)} to {_day(today)}.")
     return {
         "instructions": instructions,
-        "user_input": f"{request}\n{moments_block(selected, reader_id=requester_id)}",
+        "user_input": f"{request}\n{moments_block(selected, reader_id=requester_id, tz_name=tz)}",
         "moments": selected,
         "requester": dict(requester),
         "partner": dict(partner),
@@ -279,11 +280,11 @@ def _public_moment(m: dict) -> dict:
 
 
 def run(llm: LLM, requester_id: int, today: date | None = None) -> dict[str, Any]:
-    today = today or date.today()
     ctx = RunContext(user_id=requester_id)
     trace: list[str] = []
 
     with session(llm.db_path) as conn:
+        today = today or timeutil.local_today(moments.viewer_timezone(conn, requester_id))
         p = build_prompt(conn, requester_id, today)
         allowed = {m["id"] for m in p["moments"]}
         fingerprints = private_fingerprints(conn, p["requester"]["couple_id"], [m["text"] for m in p["moments"]])

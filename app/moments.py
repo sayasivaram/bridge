@@ -17,11 +17,11 @@ import base64
 import binascii
 import sqlite3
 import uuid
-from datetime import date, datetime, timedelta, timezone
+from datetime import date, timedelta
 from pathlib import Path
 from typing import Literal
 
-from app import db
+from app import db, timeutil
 
 MOODS = ("funny", "sweet", "stressful", "proud", "random")
 BOTH = "both"  # output_for value: the output will be shown to both partners
@@ -60,13 +60,19 @@ def _public(row: sqlite3.Row, viewer_id: int) -> dict:
     return m
 
 
+def viewer_timezone(conn: sqlite3.Connection, user_id: int) -> str | None:
+    row = conn.execute("SELECT timezone FROM users WHERE id = ?", (user_id,)).fetchone()
+    return row[0] if row else None
+
+
 def list_for_viewer(conn: sqlite3.Connection, viewer_id: int, week_of: date) -> list[dict]:
-    """The viewer's jar for one Monday-to-Sunday week, newest first."""
+    """The viewer's jar for one Monday-to-Sunday week in THEIR time zone, newest first."""
     start = monday_of(week_of)
+    utc_start, utc_end = timeutil.utc_bounds(start, start + timedelta(days=6), viewer_timezone(conn, viewer_id))
     rows = conn.execute(
-        _SELECT + f"WHERE {_VISIBLE_TO_VIEWER} AND date(m.created_at) BETWEEN :start AND :end "
+        _SELECT + f"WHERE {_VISIBLE_TO_VIEWER} AND m.created_at >= :start AND m.created_at < :end "
         "ORDER BY m.created_at DESC, m.id DESC",
-        {"viewer": viewer_id, "start": start.isoformat(), "end": (start + timedelta(days=6)).isoformat()},
+        {"viewer": viewer_id, "start": utc_start, "end": utc_end},
     ).fetchall()
     return [_public(r, viewer_id) for r in rows]
 
@@ -95,9 +101,14 @@ def for_prompt(
     output_for: int | Literal["both"],
     since: date,
     until: date,
+    tz_name: str | None = None,
 ) -> list[dict]:
-    """Moments an agent may put in a prompt whose output goes to `output_for`. Oldest first."""
-    params: dict = {"couple": couple_id, "since": since.isoformat(), "until": until.isoformat()}
+    """Moments an agent may put in a prompt whose output goes to `output_for`. Oldest first.
+
+    since/until are local calendar days in tz_name (the reader's time zone; UTC if omitted).
+    """
+    utc_since, utc_until = timeutil.utc_bounds(since, until, tz_name)
+    params: dict = {"couple": couple_id, "since": utc_since, "until": utc_until}
     if output_for == BOTH:
         rule = "m.visibility = 'shared'"
     else:
@@ -105,7 +116,7 @@ def for_prompt(
         params["reader"] = int(output_for)
     rows = conn.execute(
         _SELECT + f"WHERE m.couple_id = :couple AND {rule} "
-        "AND date(m.created_at) BETWEEN :since AND :until ORDER BY m.created_at, m.id",
+        "AND m.created_at >= :since AND m.created_at < :until ORDER BY m.created_at, m.id",
         params,
     ).fetchall()
     return [dict(r) for r in rows]
@@ -136,7 +147,7 @@ def add(
 
     image_file = _save_image(image_data_url) if image_data_url else None
     couple_id = conn.execute("SELECT couple_id FROM users WHERE id = ?", (author_id,)).fetchone()[0]
-    now = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M:%S")
+    now = timeutil.to_stored(timeutil.now_utc())
     moment_id = conn.execute(
         "INSERT INTO moments (couple_id, author_id, mood, text, song, image_file, visibility, created_at) "
         "VALUES (?, ?, ?, ?, ?, ?, ?, ?)",

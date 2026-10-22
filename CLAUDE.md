@@ -116,6 +116,10 @@ Tier 3 needs a real user trying it and measured improvement versus how couples d
 - **User text goes into prompts only via `app/prompting.py`** (`wrap` / `moments_block`): it is
   HTML-escaped and tagged. `UNTRUSTED_DATA_RULES` goes in every agent's stable system prompt.
 - The frontend renders user text with `textContent`, never `innerHTML`.
+- **Time zones:** timestamps are stored in UTC; "today" / "this week" / agent windows are in the
+  viewing or requesting partner's `users.timezone`. Use `app/timeutil.py` (`local_today`,
+  `utc_bounds`), never `date.today()` or `date(created_at)` in SQL. Only the token budget day is
+  UTC on purpose (its message says so). `tzdata` is in requirements for Windows.
 
 ## Calling gpt-6-luna through Portkey (same setup as Homework 5 and 6)
 - OpenAI SDK pointed at Portkey: `base_url="https://api.portkey.ai/v1"`, `api_key=<key>`, and

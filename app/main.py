@@ -15,7 +15,7 @@ from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, Field
 
-from app import db, moments
+from app import db, moments, timeutil
 from app.agents import call_topics
 from app.config import REPO_DIR, MissingAPIKeyError, load_settings
 from app.llm import LLM, BudgetExceededError, StepLimitError
@@ -47,7 +47,8 @@ app = FastAPI(title="Closer", version="0.1.0", lifespan=lifespan)
 def current_user(conn, user_id: int | None) -> dict:
     if user_id is None:
         raise HTTPException(400, "Pick a partner first (X-User-Id header missing).")
-    row = conn.execute("SELECT id, couple_id, role, name, city FROM users WHERE id = ?", (user_id,)).fetchone()
+    row = conn.execute("SELECT id, couple_id, role, name, city, timezone FROM users WHERE id = ?",
+                       (user_id,)).fetchone()
     if row is None:
         raise HTTPException(404, "Unknown user.")
     return dict(row)
@@ -88,14 +89,15 @@ class MomentIn(BaseModel):
 
 @app.get("/api/moments")
 def list_moments(week_of: date | None = None, x_user_id: int | None = Header(default=None)) -> dict:
-    """The current user's jar for one week: shared moments plus their own private ones."""
-    week_of = week_of or date.today()
+    """The current user's jar for one week (in their time zone): shared moments plus their own private ones."""
     with db.session() as conn:
         user = current_user(conn, x_user_id)
+        today = timeutil.local_today(user["timezone"])
+        week_of = week_of or today
         items = moments.list_for_viewer(conn, user["id"], week_of)
     start = moments.monday_of(week_of)
-    return {"week_start": start.isoformat(), "is_current_week": start == moments.monday_of(date.today()),
-            "moments": items}
+    return {"week_start": start.isoformat(), "is_current_week": start == moments.monday_of(today),
+            "timezone": user["timezone"], "moments": items}
 
 
 @app.post("/api/moments", status_code=201)

@@ -233,7 +233,7 @@ async function loadMoments() {
   const theirs = data.moments.length - mine;
   $("week-sub").textContent =
     `${fmt(start)} – ${fmt(end)} · ${data.moments.length} moments ` +
-    `(you ${mine}, ${state.me.partner?.name || "partner"} ${theirs})`;
+    `(you ${mine}, ${state.me.partner?.name || "partner"} ${theirs}) · ${state.me.user.city} time`;
   $("week-next").disabled = data.is_current_week;
 
   renderMoments(data.moments);
@@ -393,9 +393,15 @@ function el(tag, className, text) {
   return node;
 }
 
+// Times are stored in UTC and shown in the viewing partner's own time zone (not the browser's).
 function formatTime(utc) {
   const d = new Date(utc.replace(" ", "T") + "Z");
-  return d.toLocaleString(undefined, { weekday: "short", hour: "numeric", minute: "2-digit" });
+  const options = { weekday: "short", hour: "numeric", minute: "2-digit" };
+  try {
+    return d.toLocaleString(undefined, { ...options, timeZone: state.me?.user?.timezone || undefined });
+  } catch {
+    return d.toLocaleString(undefined, options); // unknown zone name: fall back to the browser's
+  }
 }
 
 function isoDate(d) {
