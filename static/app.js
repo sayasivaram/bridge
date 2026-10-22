@@ -961,14 +961,15 @@ async function loadUsage() {
     (u) => [u.user, u.calls, fmtN(u.input_tokens + u.output_tokens), share(u.cost_usd)]);
   table("usage-recent", ["When", "Feature", "Who", "Tokens in / out", "Cost"], d.recent,
     (r) => [formatTime(r.created_at.replace("T", " ").replace(/\.\d+Z$/, "")), r.feature, r.user_name,
-      `${fmtN(r.input_tokens)} / ${fmtN(r.output_tokens)}`, r.gateway_cache === "HIT" ? "$0 (cache hit)" : fmtUsd(r.cost_usd)]);
+      `${fmtN(r.input_tokens)} / ${fmtN(r.output_tokens)}`, r.gateway_cache === "HIT" ? "$0 (cache hit)" : fmtUsd(r.cost_usd)],
+    [0, 1, 2]);
 }
 
-function table(id, headers, rows, cells) {
+function table(id, headers, rows, cells, textCols = [0]) { // textCols: left-aligned columns
   const tbl = $(id);
   tbl.innerHTML = "";
   const head = document.createElement("tr");
-  headers.forEach((h, i) => head.appendChild(el("th", i ? "num" : "", h)));
+  headers.forEach((h, i) => head.appendChild(el("th", textCols.includes(i) ? "" : "num", h)));
   tbl.appendChild(head);
   if (!rows.length) {
     const tr = document.createElement("tr");
@@ -980,7 +981,7 @@ function table(id, headers, rows, cells) {
   for (const r of rows) {
     const tr = document.createElement("tr");
     cells(r).forEach((c, i) => {
-      const td = el("td", i ? "num" : "");
+      const td = el("td", textCols.includes(i) ? "" : "num");
       td.append(c instanceof Node ? c : String(c));
       tr.appendChild(td);
     });

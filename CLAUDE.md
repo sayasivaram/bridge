@@ -200,6 +200,10 @@ Prices live in `data/prices.json` (gpt-6-luna, per 1M tokens, from MGT 409 Lectu
   check once rejected "10 minutes" and forced a retry ($0.00075); it now checks ratings only.
 - **Router classifier** (live): ~394 tokens in, ~37 out, $0.00006 per ambiguous message; clear
   messages are routed by keyword rules for $0.
+- **Usage + cost:** `app/usage.py` summarizes `llm_calls` for the Usage tab (`/usage`) and
+  `scripts/cost_report.py` (assumptions at its top; `--measure N` refreshes
+  `docs/usage/measured_calls.csv`). Measured: $0.0054 per user per month at the default
+  assumptions; hard ceiling $0.75 per user per month from the daily budget.
 - After any prompt change: `python scripts/eval_call_topics.py --label <name>`, then
   `--compare baseline v3 <name>` (about $0.002-0.005 per 5-run eval).
 
