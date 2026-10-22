@@ -380,12 +380,12 @@ notes. Two of their calls also appear in the Usage page figure in section 5.</p>
   <tr><td>Ask Bridge: "Help me prep for our call"</td><td>Five starters from 7 shared moments; an identical earlier
     request meant Portkey answered from its cache in 0.6 s</td><td class=n>1 call, $0</td></tr>
 </table>
-<p>The logged part of the session (2:57 to 3:00 PM) took about three minutes and six model calls, for {money(0.00081)} in total.</p>
+<p>The session used six model calls, for {money(0.00081)} in total.</p>
 <p><b>What they told me:</b> they said they would use Bridge, because adding a moment to the jar and doing the Pulse
 check-in each took under 30 seconds. They liked how easy it was to move between tabs. Their one concern was the
 connection trend lines on the Pulse page: seeing their scores plotted over time might make them self-conscious about
 the relationship. Their suggestions are in section 8.</p>
-<p class="small"><b>Limits of this test:</b> one short session, with the demo couple's data rather than their own, and the
+<p class="small"><b>Limits of this test:</b> one session, with the demo couple's data rather than their own, and the
 "under 30 seconds" figures are what the tester reported, not times the app measured.</p>
 </section>
 
