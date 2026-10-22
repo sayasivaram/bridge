@@ -17,7 +17,7 @@ from pydantic import BaseModel, Field
 
 from datetime import timedelta
 
-from app import db, moments, orchestrator, pulses, rituals, safety, timeutil
+from app import db, moments, orchestrator, pulses, rituals, safety, timeutil, usage
 from app.agents import call_topics, drift, ritual_builder
 from app.config import REPO_DIR, MissingAPIKeyError, load_settings
 from app.llm import LLM, BudgetExceededError, StepLimitError
@@ -310,6 +310,29 @@ def recent_runs(limit: int = 10, x_user_id: int | None = Header(default=None)) -
     with db.session() as conn:
         user = current_user(conn, x_user_id)
         return orchestrator.runs_for_viewer(conn, user["id"], min(max(limit, 1), 50))
+
+
+@app.get("/api/usage")
+def usage_summary(x_user_id: int | None = Header(default=None)) -> dict:
+    """Token usage and cost for this couple from llm_calls: per agent, per feature, per user."""
+    from app.llm import load_prices
+
+    with db.session() as conn:
+        user = current_user(conn, x_user_id)
+        rows = usage.load_rows(conn, user["couple_id"])
+        budgets = usage.budget_status(conn, user["couple_id"])
+    recent = [{k: r.get(k) for k in ("created_at", "agent_name", "user_name", "input_tokens", "cached_tokens",
+                                     "output_tokens", "cost_usd", "gateway_cache", "status")} | {
+        "agent_label": usage.AGENT_LABEL.get(r["agent_name"], r["agent_name"]), "feature": usage.feature_of(r)}
+        for r in reversed(rows[-15:])]
+    prices = load_prices()
+    return usage.summarize(rows) | {"budgets": budgets, "recent": recent, "prices": prices,
+                                    "ceiling_per_user_month": usage.monthly_ceiling_per_user(prices)}
+
+
+@app.get("/usage", include_in_schema=False)
+def usage_page() -> FileResponse:
+    return FileResponse(STATIC_DIR / "index.html")  # the single page opens its Usage tab
 
 
 app.mount("/static", StaticFiles(directory=STATIC_DIR), name="static")
