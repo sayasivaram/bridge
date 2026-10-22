@@ -1,65 +1,99 @@
 # Closer
 
-A multi-agent app that helps long-distance couples stay connected between calls:
-a **Moment Jar** that turns small moments from the week into call topics, a weekly
-**Connection Pulse** that notices drift, and a **Ritual Builder** that suggests shared
-activities. Three AI agents (gpt-6-luna through Portkey) sit on a privacy layer that keeps each
-partner's private moments and notes away from the other partner, and away from any prompt
-whose output the other partner sees.
+A multi-agent app that helps long-distance couples stay close between calls:
 
-## Run it locally (about 2 minutes)
+- a **Moment Jar** where each partner drops small moments from their week, which a Call-Topic
+  Agent turns into conversation starters,
+- a 30-second weekly **Connection Pulse**, where simple rules spot drift and a Drift Agent
+  suggests one gentle fix,
+- a **Ritual Builder** that picks shared activities for tonight and learns from your ratings,
+- an **Ask Closer** chat box that routes a question to the right agent.
 
-You need **Python 3.11 or newer** (`python3 --version` to check; developed on 3.14). Nothing else:
-no database server, no Node, no Docker. SQLite comes with Python.
+The agents use gpt-6-luna through Portkey. They sit on a privacy layer that keeps each partner's
+private moments and notes away from the other partner, and away from any prompt whose output the
+other partner sees. Architecture: [docs/architecture.md](docs/architecture.md).
 
-1. **Clone and enter the repo**
-   ```bash
-   git clone <this-repo-url> closer
-   cd closer
-   ```
+## Setup (about 2 minutes)
 
-2. **Create a virtual environment and install dependencies**
+You need **Python 3.11 or newer** (`python3 --version` to check; developed on 3.14) and git.
+Nothing else: no database server, no Node, no Docker. SQLite comes with Python.
 
-   macOS / Linux:
-   ```bash
-   python3 -m venv .venv
-   source .venv/bin/activate
-   pip install -r requirements.txt
-   ```
+### 1. Clone the repo
 
-   Windows (PowerShell):
-   ```powershell
-   py -m venv .venv
-   .venv\Scripts\Activate.ps1
-   pip install -r requirements.txt
-   ```
-   If PowerShell says running scripts is disabled, run
-   `Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass` first (this window only).
-   On Ubuntu/Debian, if `venv` is missing: `sudo apt install python3-venv`.
+```bash
+git clone <this-repo-url> closer
+cd closer
+```
 
-3. **Add an API key.** The app looks for a `.env` file in two places, in this order:
-   1. this repo's folder (`closer/.env`)
-   2. the folder one level above the repo (`../.env`)
+### 2. Create a virtual environment
 
-   If your `.env` is already in the folder above, skip this step. Otherwise copy the example
-   and fill in a key:
-   ```bash
-   cp .env.example .env
-   ```
-   Supported keys: `PORTKEY_API_KEY` (course key, preferred) or `OPENAI_API_KEY`.
-   The model is always `gpt-6-luna`. A key exported in your shell (e.g. in `~/.zshrc`)
-   overrides both `.env` files.
+macOS / Linux:
+```bash
+python3 -m venv .venv
+source .venv/bin/activate
+```
 
-4. **Start the app**
-   ```bash
-   python run.py
-   ```
-   Open the address it prints, normally <http://127.0.0.1:8000>. If port 8000 is busy (another
-   app is running), it picks the next free port and tells you; `python run.py --port 9000`
-   chooses one. On first start it creates `data/closer.db` and loads a demo couple (Priya in New
-   Haven and Leo in London) with three weeks of moments, weekly check-ins, and rituals.
-   The line at the bottom of the page says which key was found and where it came from. If no
-   key is found, `run.py` stops and lists the exact places it looked.
+Windows (PowerShell):
+```powershell
+py -m venv .venv
+.venv\Scripts\Activate.ps1
+```
+If PowerShell says running scripts is disabled, run
+`Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass` first (this window only).
+On Ubuntu/Debian, if `venv` is missing: `sudo apt install python3-venv`.
+
+### 3. Install the dependencies
+
+```bash
+pip install -r requirements.txt
+```
+
+### 4. Put your `.env` one folder up
+
+Closer looks for a `.env` file in two places, in this order:
+
+1. this repo's folder (`closer/.env`)
+2. the folder **one level above** the repo (`../.env`)
+
+The usual setup is a `.env` in the folder that contains `closer/`:
+
+```
+your-folder/
+├── .env          <- PORTKEY_API_KEY=... (and/or OPENAI_API_KEY=...)
+└── closer/       <- this repo
+```
+
+If you don't have one yet, copy the example and fill in a key (`.env.example` lists the two
+supported names):
+
+```bash
+cp .env.example ../.env
+```
+
+Supported keys, spelled exactly: `PORTKEY_API_KEY` (course key, preferred) or `OPENAI_API_KEY`.
+The model is always `gpt-6-luna`. A key exported in your shell (e.g. in `~/.zshrc`) overrides
+both `.env` files. Never commit a real `.env` (it is in `.gitignore`).
+
+### 5. Load the demo data
+
+```bash
+python -m app.seed
+```
+
+This creates `data/closer.db` with a demo couple: Priya in New Haven and Leo in London, with three
+weeks of moments, weekly check-ins, and rituals. (Step 6 also does this automatically if you skip
+it.) To start over later: `python -m app.seed --reset`.
+
+### 6. Run it
+
+```bash
+python run.py
+```
+
+Open the address it prints, normally <http://127.0.0.1:8000>. It says which key it found and
+where. If port 8000 is busy, it picks the next free port and tells you
+(`python run.py --port 9000` to choose one). If no key is found, it stops and lists the exact
+places it looked.
 
 ## Try this first (2 minutes)
 
@@ -73,37 +107,24 @@ no database server, no Node, no Docker. SQLite comes with Python.
    4 → 3 → 2).
 5. **Rituals** tab: pick a time and energy level, press **Suggest 3 rituals**, plan one, mark it
    done, and rate it.
+6. **Usage** tab (or <http://127.0.0.1:8000/usage>): tokens and cost per agent, per feature, and
+   per partner, from every logged model call.
 
-## What you can do
+## Costs
 
-- **Moment Jar:** add small moments (text, a mood, an optional photo or song), shared with your
-  partner or private. Switch partners with **Viewing as** to see the other side.
-- **Prep for our call:** the Call-Topic Agent turns the last 7 days of *shared* moments into 5
-  conversation starters (each showing the moment it came from) plus one deeper question. The
-  badge shows that run's tokens and cost; "How this was made" shows each step.
-- **Pulse:** a 30-second weekly check-in (connection 1-5, amount of contact, an optional note you
-  can share or keep private). You see your partner's score once you've both checked in. The
-  Drift Detector runs simple rules first and calls the AI only when they flag drift, then shows
-  one gentle suggestion as "this week's nudge". Notes that suggest abuse, self-harm, or serious
-  distress skip coaching and show the author support lines instead.
-- **Rituals:** say how much time and energy you have tonight and the Ritual Builder picks 3
-  rituals from a catalog of 25 (`data/ritual_catalog.json`), explaining why each fits you two
-  based on how you rated past rituals. Plan one, mark it done, and both rate it 1-5; your
-  favorites and least favorites shape the next suggestions.
-
-- **Ask Closer:** the chat box on the home page sends your message through a guard, a router
-  (keyword rules first, an LLM classifier only when unclear), the right agent, and an output
-  guard. Each answer shows which agent handled it, its token cost, and the full trace.
-
-See [docs/architecture.md](docs/architecture.md) for the architecture diagrams.
-
-## Reset the demo data
+The Usage tab shows what this install has spent. To project costs:
 
 ```bash
-python -m app.seed --reset
+python scripts/cost_report.py
 ```
 
-## Run the tests
+It prints average tokens and cost per run for each agent (from `data/closer.db`, or the measured
+sample in `docs/usage/measured_calls.csv` on a fresh install) and monthly cost for 1, 100, and
+10,000 users. The runs-per-user-per-week assumptions are at the top of the script, or override
+them: `python scripts/cost_report.py --per-week call_topics=3 ritual_builder=1`.
+`--measure 3` re-measures every agent live (about $0.006).
+
+## Tests and safety demo
 
 ```bash
 pytest
@@ -117,8 +138,6 @@ CLOSER_LIVE=1 pytest -k live -s
 ```
 
 (PowerShell: `$env:CLOSER_LIVE=1; pytest -k live -s`)
-
-## Safety demo
 
 Seven attacks and malfunctions, run against the real app code with readable results:
 
@@ -136,31 +155,31 @@ break up". The same scenarios are tests in `tests/test_safety.py`.
 
 ```
 app/
-  config.py    finds the API key (.env in repo, then one folder up), limits
-  llm.py       the one model wrapper: gpt-6-luna via Portkey, token counts, cost,
-               logging, per-user daily token budget, per-request step limit
-  agents/      AI agents (call_topics.py: Call-Topic Agent; drift.py: Drift Detector;
-               ritual_builder.py: Ritual Builder)
+  config.py        finds the API key (.env in repo, then one folder up), limits
+  llm.py           the one model wrapper: gpt-6-luna via Portkey, token counts, cost, logging,
+                   per-user daily token budget, per-request step limit
+  agents/          call_topics.py (Call-Topic Agent), drift.py (Drift Detector),
+                   ritual_builder.py (Ritual Builder)
   orchestrator.py  chat requests: guard -> router -> agent -> guard, logged to agent_runs
-  router.py    keyword routing, LLM classifier only when ambiguous
-  guard.py     input checks (length, injection, crisis) and output checks (schema, coach boundary)
-  moments.py   Moment Jar data access; the partner-privacy rule lives in its SQL
-  pulses.py    Pulse data access; the "see scores once both checked in" rule lives in its SQL
-  rituals.py   ritual catalog, the couple's rituals and ratings (the feedback loop)
-  safety.py    crisis pre-check (keyword patterns) and support messages
-  timeutil.py  each partner's local "today" / "this week" (timestamps are stored in UTC)
-  prompting.py wraps user text in escaped tags before it goes into any prompt
-  schema.sql   database tables
-  db.py        SQLite helpers
-  seed.py      loads the demo couple
-  main.py      FastAPI routes
+  router.py        keyword routing, LLM classifier only when ambiguous
+  guard.py         input checks (length, injection, crisis, relationship decisions) and output
+                   checks (schema, coach boundary)
+  moments.py       Moment Jar data; the partner-privacy rule lives in its SQL
+  pulses.py        Pulse data; the "see scores once both checked in" rule lives in its SQL
+  rituals.py       ritual catalog, the couple's rituals and ratings (the feedback loop)
+  usage.py         token and cost summaries from llm_calls (Usage tab, cost report)
+  safety.py        crisis pre-check and support messages
+  timeutil.py      each partner's local "today" / "this week" (timestamps are stored in UTC)
+  prompting.py     wraps user text in escaped tags before it goes into any prompt
+  schema.sql       database tables;  db.py: SQLite helpers;  seed.py: demo couple;  main.py: routes
 data/
-  seed_couple.json   demo couple (edit freely)
+  seed_couple.json     demo couple (edit freely)
   ritual_catalog.json  the 25 starter rituals the Ritual Builder picks from
-  prices.json        gpt-6-luna prices per 1M tokens
-  closer.db          created on first run (not committed)
-  uploads/           moment photos (not committed)
-static/      single-page frontend (HTML, CSS, vanilla JS)
-tests/       pytest tests (use a fake model client, so no tokens are spent)
-run.py       starts the server
+  prices.json          gpt-6-luna prices per 1M tokens
+  closer.db            created by step 5 (not committed);  uploads/: moment photos (not committed)
+docs/              architecture diagrams, eval results, measured usage, screenshots
+scripts/           cost_report.py, run_safety_demo.py, eval_call_topics.py
+static/            single-page frontend (HTML, CSS, vanilla JS)
+tests/             pytest tests (fake model client, no tokens spent)
+run.py             starts the server
 ```
