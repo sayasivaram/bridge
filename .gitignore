@@ -12,6 +12,9 @@ venv/
 
 # Local databases (rebuilt from seed) and uploaded photos
 *.db
+*.db-journal
+*.db-wal
+*.db-shm
 *.sqlite3
 data/uploads/
 
