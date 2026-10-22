@@ -11,6 +11,8 @@
   --ok-soft: #e3f3eb;
   --warn: #b7791f;
   --warn-soft: #fbf0dc;
+  --calm: #eef4f8;         /* support / referral cards: soft, not alarming */
+  --calm-ink: #2f5d78;
   --radius: 16px;
   --shadow: 0 2px 14px rgba(43, 36, 51, 0.07);
 
@@ -342,7 +344,8 @@ textarea:focus, input[type="text"]:focus { outline: 2px solid var(--accent-soft)
 .source-label { font-size: 0.8rem; color: var(--muted); }
 .steady { display: flex; gap: 12px; align-items: flex-start; }
 .steady .icon { font-size: 1.4rem; }
-.support { background: #eef4f8; border-radius: 14px; padding: 16px 18px; }
+.support { background: var(--calm); border-radius: 14px; padding: 16px 18px; }
+.support h3 { color: var(--calm-ink); }
 .support h3 { margin: 0 0 6px; font-size: 1.05rem; }
 .support ul { margin: 8px 0; padding-left: 20px; }
 .support .footnote { font-size: 0.8rem; color: var(--muted); margin: 8px 0 0; }
@@ -445,3 +448,51 @@ textarea:focus, input[type="text"]:focus { outline: 2px solid var(--accent-soft)
 .stage.agent { background: var(--sweet-soft); color: #a83c5e; }
 .stage.done { background: var(--funny-soft); color: #8a6100; }
 .clarify { display: flex; flex-wrap: wrap; gap: 8px; }
+
+/* ---------- usage ---------- */
+.tiles { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 12px; margin-top: 14px; }
+.tile { border: 1px solid var(--line); border-radius: 14px; padding: 14px 16px; background: #fffaf6; }
+.tile .num { font-size: 1.6rem; font-weight: 700; color: var(--ink); line-height: 1.2; }
+.tile .lbl { font-size: 0.8rem; color: var(--muted); }
+.usage-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin: 24px 0; }
+.usage-block { margin: 24px 0; }
+@media (max-width: 860px) { .usage-grid { grid-template-columns: 1fr; } }
+.table-wrap { overflow-x: auto; margin-top: 10px; }
+.usage-table { width: 100%; border-collapse: collapse; font-size: 0.86rem; }
+.usage-table th { text-align: left; font-weight: 600; color: var(--muted); font-size: 0.75rem; text-transform: uppercase;
+  letter-spacing: .03em; padding: 6px 8px; border-bottom: 1px solid var(--line); white-space: nowrap; }
+.usage-table td { padding: 7px 8px; border-bottom: 1px solid #f5eff2; white-space: nowrap; }
+.usage-table td.num, .usage-table th.num { text-align: right; font-variant-numeric: tabular-nums; }
+.share { display: flex; align-items: center; gap: 8px; min-width: 120px; }
+.share .bar { height: 8px; border-radius: 4px; background: var(--accent); }
+.share .track { flex: 1; background: #f3eded; border-radius: 4px; }
+.budgets { display: flex; flex-direction: column; gap: 12px; margin: 12px 0; }
+.budget .row { display: flex; justify-content: space-between; font-size: 0.88rem; }
+.budget .track { height: 10px; border-radius: 5px; background: #f3eded; margin-top: 4px; overflow: hidden; }
+.budget .fill { height: 100%; border-radius: 5px; background: var(--accent); }
+.budget .fill.warn { background: var(--warn); }
+
+/* ---------- welcome + polish ---------- */
+.welcome { display: flex; gap: 20px; align-items: flex-start; justify-content: space-between; margin-bottom: 24px;
+  background: linear-gradient(135deg, #fff, var(--accent-soft)); }
+.welcome p { margin: 6px 0 0; max-width: 760px; }
+.welcome .primary { white-space: nowrap; padding: 10px 22px; }
+button:focus-visible, select:focus-visible, input:focus-visible, textarea:focus-visible, summary:focus-visible {
+  outline: 2px solid var(--accent); outline-offset: 2px; }
+button:disabled { cursor: wait; }
+
+/* Phone layout. Kept last so it overrides the desktop rules above. */
+@media (max-width: 860px) {
+  .container { margin: 16px auto; padding: 0 12px; }
+  .card { padding: 18px 16px; }
+  .add-card { position: static; }
+  .list-card { max-height: none; min-height: 0; }
+  .moment-list { overflow: visible; }
+  .welcome { flex-direction: column; }
+  .welcome .primary { align-self: stretch; }
+  .chat-form .primary, .prep-head .primary { padding: 10px 16px; }
+  .bubble-user { max-width: 90%; }
+  .trace-stages li { grid-template-columns: 74px 1fr; }
+  .tabs { width: 100%; justify-content: space-between; }
+  .user-switch { margin-left: 0; }
+}

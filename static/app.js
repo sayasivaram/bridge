@@ -26,12 +26,19 @@ async function api(path, options = {}) {
     headers["Content-Type"] = "application/json";
     options = { ...options, body: JSON.stringify(options.body) };
   }
-  const res = await fetch(path, { ...options, headers });
+  let res;
+  try {
+    res = await fetch(path, { ...options, headers });
+  } catch {
+    throw new Error("Can't reach Closer right now. Check that the app is still running (python run.py), then try again.");
+  }
   if (!res.ok) {
-    let detail = res.statusText;
+    // Our API sends readable messages in `detail`; anything else gets a plain-language fallback.
+    let detail = res.status >= 500 ? "Something went wrong on our side. Please try again in a moment."
+      : "That didn't work. Please check what you entered and try again.";
     try {
       const data = await res.json();
-      detail = typeof data.detail === "string" ? data.detail : "Please check the form and try again.";
+      if (typeof data.detail === "string") detail = data.detail;
     } catch {}
     throw new Error(detail);
   }
@@ -98,6 +105,7 @@ async function loadMe() {
   state.me = await api("/api/me");
   if (state.page === "pulse") loadPulse();
   if (state.page === "rituals") { $("suggest-result").hidden = true; loadRituals(); }
+  if (state.page === "usage") loadUsage();
   const partner = state.me.partner?.name || "partner";
   document.querySelectorAll(".partner-name").forEach((el) => (el.textContent = partner));
   $("add-hint").textContent =
@@ -401,6 +409,9 @@ function showPage(page) {
   document.querySelectorAll("main [data-page]").forEach((s) => (s.hidden = s.dataset.page !== page));
   if (page === "pulse") loadPulse();
   if (page === "rituals") loadRituals();
+  if (page === "usage" && state.me) loadUsage(); // on a direct /usage visit, loadMe() loads it once the user is known
+  const url = page === "usage" ? "/usage" : "/";
+  if (location.pathname !== url) history.replaceState(null, "", url);
 }
 
 // ---------- Connection Pulse ----------
@@ -523,7 +534,10 @@ function renderChart(data) {
   const weeks = data.history.map((w) => new Date(w.week_start + "T12:00:00"));
   const fmt = (d) => d.toLocaleDateString(undefined, { month: "short", day: "numeric" });
 
-  const W = 640, H = 240, L = 36, R = 64, T = 16, B = 34;
+  // Size the drawing to the card, so labels stay readable on a phone instead of shrinking.
+  const W = Math.max(320, Math.min(720, $("chart-wrap").clientWidth || 640)), H = W < 480 ? 220 : 240;
+  const L = 36, R = 64, T = 16, B = 34;
+  $("pulse-chart").setAttribute("viewBox", `0 0 ${W} ${H}`);
   const x = (i) => L + (i * (W - L - R)) / (weeks.length - 1);
   const y = (v) => T + ((5 - v) * (H - T - B)) / 4;
   const svg = $("pulse-chart");
@@ -540,7 +554,7 @@ function renderChart(data) {
       node("text", { class: "axis-label", x: L - 12, y: y(v) + 4, "text-anchor": "end" }, v));
   }
   weeks.forEach((d, i) => svg.append(node("text", { class: "axis-label", x: x(i), y: H - 10, "text-anchor": "middle" },
-    i === weeks.length - 1 ? "This week" : fmt(d))));
+    i === weeks.length - 1 ? (W < 480 ? "Now" : "This week") : fmt(d))));
 
   for (const s of series) {
     let path = "", pen = false;
@@ -773,6 +787,15 @@ const ROUTE_LABEL = { rules: "routed by keyword rules ($0)", llm: "routed by the
   guard: "stopped by the guard" };
 const STAGE_LABEL = { guard_in: "guard in", router: "router", agent: "agent", guard_out: "guard out", done: "done" };
 
+function setupWelcome() {
+  const card = $("welcome");
+  card.hidden = localStorage.getItem("closer.welcomed") === "1";
+  $("welcome-ok").addEventListener("click", () => {
+    localStorage.setItem("closer.welcomed", "1");
+    card.hidden = true;
+  });
+}
+
 function setupChat() {
   $("chat-form").addEventListener("submit", (e) => {
     e.preventDefault();
@@ -877,6 +900,94 @@ function supportCard(s) {
   return box;
 }
 
+// ---------- Usage ----------
+
+const fmtUsd = (x) => (x >= 0.1 ? `$${x.toFixed(2)}` : x >= 0.01 ? `$${x.toFixed(4)}` : `$${x.toFixed(5)}`);
+const fmtN = (x) => Math.round(x).toLocaleString();
+
+async function loadUsage() {
+  const d = await api("/api/usage");
+  const t = d.total;
+  const p = d.prices;
+  $("usage-prices").textContent = `input $${p.input_per_1m}, cached $${p.cached_input_per_1m}, ` +
+    `cache write $${p.cache_write_per_1m}, output $${p.output_per_1m}`;
+  $("usage-empty").hidden = t.calls > 0;
+  const tiles = $("usage-tiles");
+  tiles.innerHTML = "";
+  for (const [num, lbl] of [
+    [fmtUsd(t.cost_usd), "total spent"],
+    [`${t.calls}`, `model calls in ${t.runs} requests`],
+    [t.runs ? fmtUsd(t.cost_usd / t.runs) : "$0", "average per request"],
+    [`${Math.round(t.cached_share * 100)}%`, "input read from the prompt cache"],
+    [`${t.gateway_hits}`, "answered free from Portkey's cache"],
+  ]) {
+    const tile = el("div", "tile");
+    tile.append(el("div", "num", num), el("div", "lbl", lbl));
+    tiles.appendChild(tile);
+  }
+
+  const budgets = $("usage-budgets");
+  budgets.innerHTML = "";
+  for (const b of d.budgets) {
+    const pct = Math.min(100, (100 * b.used_today) / b.daily_budget);
+    const box = el("div", "budget");
+    const row = el("div", "row");
+    row.append(el("b", "", b.user), el("span", "muted", `${fmtN(b.used_today)} of ${fmtN(b.daily_budget)} tokens`));
+    const track = el("div", "track");
+    const fill = el("div", `fill${pct > 80 ? " warn" : ""}`);
+    fill.style.width = `${pct}%`;
+    track.appendChild(fill);
+    box.append(row, track);
+    budgets.appendChild(box);
+  }
+  $("usage-ceiling").textContent = `So no partner can ever cost more than ${fmtUsd(d.ceiling_per_user_month)} a month ` +
+    "(the budget every day, at the highest token price). Resets at midnight UTC.";
+
+  const share = (x) => {
+    const wrap = el("div", "share");
+    const track = el("div", "track");
+    const bar = el("div", "bar");
+    bar.style.width = `${t.cost_usd ? (100 * x) / t.cost_usd : 0}%`;
+    track.appendChild(bar);
+    wrap.append(track, el("span", "", fmtUsd(x)));
+    return wrap;
+  };
+  table("usage-features", ["Feature", "Requests", "Calls", "Cost"], d.by_feature,
+    (f) => [f.feature, f.runs, f.calls, share(f.cost_usd)]);
+  table("usage-agents", ["Agent", "Runs", "Calls / run", "Input / run", "Cached / run", "Output / run", "Cost / run", "Total"],
+    d.by_agent, (a) => [a.label, a.runs, a.avg_per_run.calls.toFixed(2), fmtN(a.avg_per_run.input_tokens),
+      fmtN(a.avg_per_run.cached_tokens), fmtN(a.avg_per_run.output_tokens), fmtUsd(a.avg_per_run.cost_usd), share(a.cost_usd)]);
+  table("usage-users", ["Partner", "Calls", "Tokens", "Cost"], d.by_user,
+    (u) => [u.user, u.calls, fmtN(u.input_tokens + u.output_tokens), share(u.cost_usd)]);
+  table("usage-recent", ["When", "Feature", "Who", "Tokens in / out", "Cost"], d.recent,
+    (r) => [formatTime(r.created_at.replace("T", " ").replace(/\.\d+Z$/, "")), r.feature, r.user_name,
+      `${fmtN(r.input_tokens)} / ${fmtN(r.output_tokens)}`, r.gateway_cache === "HIT" ? "$0 (cache hit)" : fmtUsd(r.cost_usd)]);
+}
+
+function table(id, headers, rows, cells) {
+  const tbl = $(id);
+  tbl.innerHTML = "";
+  const head = document.createElement("tr");
+  headers.forEach((h, i) => head.appendChild(el("th", i ? "num" : "", h)));
+  tbl.appendChild(head);
+  if (!rows.length) {
+    const tr = document.createElement("tr");
+    const td = el("td", "muted", "Nothing yet.");
+    td.colSpan = headers.length;
+    tr.appendChild(td);
+    tbl.appendChild(tr);
+  }
+  for (const r of rows) {
+    const tr = document.createElement("tr");
+    cells(r).forEach((c, i) => {
+      const td = el("td", i ? "num" : "");
+      td.append(c instanceof Node ? c : String(c));
+      tr.appendChild(td);
+    });
+    tbl.appendChild(tr);
+  }
+}
+
 // ---------- helpers ----------
 
 function el(tag, className, text) {
@@ -908,5 +1019,12 @@ setupTabs();
 setupPulseForm();
 setupRituals();
 setupChat();
+setupWelcome();
+let resizeTimer;
+window.addEventListener("resize", () => {
+  clearTimeout(resizeTimer);
+  resizeTimer = setTimeout(() => state.page === "pulse" && loadPulse(false), 200);
+});
+if (location.pathname === "/usage") showPage("usage"); // /usage opens straight onto the Usage tab
 showSetupStatus();
 setupUserSwitch();
