@@ -357,7 +357,7 @@ there are {125} test functions ({166} cases), and none of them spends tokens.</p
 </ul>
 <h3>A real user test</h3>
 <p>The tester is a classmate in my Gold Cohort who is in a long-distance relationship; their partner is also in graduate
-school, in Philadelphia. They tried Bridge on my laptop on October 22, viewing as Priya with the demo couple's data. Every row below
+school, in Philadelphia. They tried Bridge on my laptop, viewing as Priya with the demo couple's data. Every row below
 comes from the app's own logs (<code>llm_calls</code>, <code>agent_runs</code>, and the pulse and ritual tables), except
 the first: their jar entry was erased when I reset the demo database to retake screenshots, so it is recorded from my
 notes. Two of their calls also appear in the Usage page figure in section 5.</p>
@@ -368,7 +368,7 @@ notes. Two of their calls also appear in the Usage page figure in section 5.</p>
   <tr><td>Pulse check-in: 3 of 5, contact "too little", with a private note: <i>"It's hard to find time to
     call when our time zones do not line up!"</i></td><td>Saved it; the note stayed private to Priya</td><td>none</td></tr>
   <tr><td>(automatic, right after saving)</td><td>Rules found drift; the Drift Agent wrote one suggestion</td><td class=n>1 call, $0.00012</td></tr>
-  <tr><td>Rituals: "Suggest 3 rituals"</td><td>Ritual Builder picked 3 catalog rituals in 4.6 s</td><td class=n>1 call, $0.00031</td></tr>
+  <tr><td>Rituals: "Suggest 3 rituals"</td><td>Ritual Builder picked 3 catalog rituals</td><td class=n>1 call, $0.00031</td></tr>
   <tr><td>Planned "Twenty questions, couple edition" (the agent's twist used the couple's "Honeycrisp tax" inside
     joke), marked it done, and rated it 5 of 5</td><td>Stored the rating</td><td>none</td></tr>
   <tr><td>Back to Pulse</td><td>A new nudge, because the week's signals had changed: <i>"You two could make your next Sunday
@@ -378,15 +378,14 @@ notes. Two of their calls also appear in the Usage page figure in section 5.</p>
   <tr><td>Ask Bridge: "What should we do tonight?"</td><td>Routed by rules ($0) to the Ritual Builder, whose history now
     had their new 5 of 5 rating at the top: the feedback loop working in real use</td><td class=n>1 call, $0.00020</td></tr>
   <tr><td>Ask Bridge: "Help me prep for our call"</td><td>Five starters from 7 shared moments; an identical earlier
-    request meant Portkey answered from its cache in 0.6 s</td><td class=n>1 call, $0</td></tr>
+    request meant Portkey answered from its cache</td><td class=n>1 call, $0</td></tr>
 </table>
 <p>The session used six model calls, for {money(0.00081)} in total.</p>
 <p><b>What they told me:</b> they said they would use Bridge, because adding a moment to the jar and doing the Pulse
-check-in each took under 30 seconds. They liked how easy it was to move between tabs. Their one concern was the
+check-in each took very little effort. They liked how easy it was to move between tabs. Their one concern was the
 connection trend lines on the Pulse page: seeing their scores plotted over time might make them self-conscious about
 the relationship. Their suggestions are in section 8.</p>
-<p class="small"><b>Limits of this test:</b> one session, with the demo couple's data rather than their own, and the
-"under 30 seconds" figures are what the tester reported, not times the app measured.</p>
+<p class="small"><b>Limits of this test:</b> one session, with the demo couple's data rather than their own.</p>
 </section>
 
 <section>
