@@ -401,12 +401,16 @@ function sourceList(moments) {
 function setupTabs() {
   document.querySelectorAll(".tab[data-page]").forEach((tab) =>
     tab.addEventListener("click", () => showPage(tab.dataset.page)));
+  document.querySelectorAll(".bubble[data-goto]").forEach((b) =>
+    b.addEventListener("click", () => { showPage(b.dataset.goto); window.scrollTo(0, 0); }));
 }
 
 function showPage(page) {
   state.page = page;
   document.querySelectorAll(".tab[data-page]").forEach((t) => t.classList.toggle("tab--active", t.dataset.page === page));
-  document.querySelectorAll("main [data-page]").forEach((s) => (s.hidden = s.dataset.page !== page));
+  const welcomed = localStorage.getItem("bridge.welcomed") === "1";
+  document.querySelectorAll("main [data-page]").forEach((s) =>
+    (s.hidden = s.dataset.page !== page || (s.id === "welcome" && welcomed)));
   if (page === "pulse") loadPulse();
   if (page === "rituals") loadRituals();
   if (page === "usage" && state.me) loadUsage(); // on a direct /usage visit, loadMe() loads it once the user is known
@@ -1026,6 +1030,6 @@ window.addEventListener("resize", () => {
   clearTimeout(resizeTimer);
   resizeTimer = setTimeout(() => state.page === "pulse" && loadPulse(false), 200);
 });
-if (location.pathname === "/usage") showPage("usage"); // /usage opens straight onto the Usage tab
+showPage(location.pathname === "/usage" ? "usage" : "home"); // /usage opens straight onto the Usage tab
 showSetupStatus();
 setupUserSwitch();

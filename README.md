@@ -99,12 +99,13 @@ places it looked.
 
 ## Try this first (2 minutes)
 
-1. **Moment Jar** (home page): read this week's moments as Priya, then switch **Viewing as** to
-   Leo (top right). His private moment ("Still behind at work…") shows only in his jar.
-2. Press **Prep for our call**: 5 conversation starters, each with the moment it came from,
+1. **Home**: in **Ask Bridge**, try "What should we do tonight?" and open **How this was handled**
+   to see the guard, router, and agent steps. Below it, **What do you want to do today?** opens
+   each page.
+2. **Moment Jar**: read this week's moments as Priya, then switch **Viewing as** to Leo (top
+   right). His private moment ("Still behind at work…") shows only in his jar.
+3. Press **Prep for our call**: 5 conversation starters, each with the moment it came from,
    plus a token and cost badge.
-3. In **Ask Bridge**, try "What should we do tonight?" and open **How this was handled** to see
-   the guard, router, and agent steps.
 4. **Pulse** tab: the trend chart and this week's nudge (the rules found drift: Leo's score fell
    4 → 3 → 2).
 5. **Rituals** tab: pick a time and energy level, press **Suggest 3 rituals**, plan one, mark it

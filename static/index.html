@@ -11,8 +11,9 @@
   <header class="topbar">
     <a class="brand" href="/" aria-label="Bridge home"><img src="/static/mark.svg" alt="">Bridge</a>
     <nav class="tabs" aria-label="Sections">
-      <button class="tab tab--active" data-page="jar"><img src="/static/icons/jar.svg" alt=""><span>Moment Jar</span></button>
-      <button class="tab" data-page="pulse"><img src="/static/icons/pulse.svg" alt=""><span>Pulse Check</span></button>
+      <button class="tab tab--active" data-page="home"><img src="/static/mark.svg" alt=""><span>Home</span></button>
+      <button class="tab" data-page="jar"><img src="/static/icons/jar.svg" alt=""><span class="long">Moment Jar</span><span class="short">Jar</span></button>
+      <button class="tab" data-page="pulse"><img src="/static/icons/pulse.svg" alt=""><span class="long">Pulse Check</span><span class="short">Pulse</span></button>
       <button class="tab" data-page="rituals"><img src="/static/icons/rituals.svg" alt=""><span class="long">Ritual Builder</span><span class="short">Rituals</span></button>
       <button class="tab" data-page="usage"><img src="/static/icons/usage.svg" alt=""><span>Usage</span></button>
     </nav>
@@ -24,18 +25,13 @@
 
   <main class="container">
     <!-- First visit: what this is -->
-    <section id="welcome" class="card welcome" data-page="jar" hidden>
+    <section id="welcome" class="card welcome" data-page="home" hidden>
       <img class="welcome-logo" src="/static/mark.svg" alt="">
       <div>
         <h2><i class="e">👋</i>Welcome to Bridge</h2>
         <p>A small, private space for a long-distance couple to stay close between calls. Drop little
           <b>moments</b> from your day in the jar, <b>prep for your next call</b> with starters made from them,
           do a 30-second weekly <b>Pulse</b> check-in, and pick a <b>ritual</b> to do together tonight.</p>
-        <div class="welcome-features">
-          <span><img src="/static/icons/jar.svg" alt="">Moment Jar</span>
-          <span><img src="/static/icons/pulse.svg" alt="">Pulse Check</span>
-          <span><img src="/static/icons/rituals.svg" alt="">Ritual Builder</span>
-        </div>
         <p class="muted small">This is a demo couple, Priya (New Haven) and Leo (London). Use <b>Viewing as</b>
           at the top right to switch partners and see each side. Private moments and notes stay with their author.</p>
       </div>
@@ -43,7 +39,7 @@
     </section>
 
     <!-- Chat: guard -> router -> agent -> guard -->
-    <section id="chat" class="card chat-card" data-page="jar">
+    <section id="chat" class="card chat-card" data-page="home">
       <div class="chat-head">
         <span class="chat-mark"><img src="/static/mark.svg" alt=""></span>
         <div>
@@ -63,8 +59,35 @@
       <div id="chat-log" class="chat-log"></div>
     </section>
 
+    <!-- Home: one big bubble per page -->
+    <section id="home-menu" class="home-menu" data-page="home" aria-labelledby="home-menu-title">
+      <h2 id="home-menu-title">What do you want to do today?</h2>
+      <div class="bubbles">
+        <button type="button" class="bubble" data-goto="jar">
+          <span class="bubble-icon"><img src="/static/icons/jar.svg" alt=""></span>
+          <span class="bubble-title">Moment Jar</span>
+          <span class="bubble-text">Drop a moment from your day and prep for your next call.</span>
+        </button>
+        <button type="button" class="bubble" data-goto="pulse">
+          <span class="bubble-icon"><img src="/static/icons/pulse.svg" alt=""></span>
+          <span class="bubble-title">Pulse Check</span>
+          <span class="bubble-text">Your 30-second weekly check-in, and this week's nudge.</span>
+        </button>
+        <button type="button" class="bubble" data-goto="rituals">
+          <span class="bubble-icon"><img src="/static/icons/rituals.svg" alt=""></span>
+          <span class="bubble-title">Ritual Builder</span>
+          <span class="bubble-text">Pick something to do together tonight.</span>
+        </button>
+        <button type="button" class="bubble" data-goto="usage">
+          <span class="bubble-icon"><img src="/static/icons/usage.svg" alt=""></span>
+          <span class="bubble-title">Usage</span>
+          <span class="bubble-text">See what each AI helper has cost so far.</span>
+        </button>
+      </div>
+    </section>
+
     <!-- Call-Topic Agent -->
-    <section id="call-prep" class="card prep-card" data-page="jar">
+    <section id="call-prep" class="card prep-card" data-page="jar" hidden>
       <div class="prep-head">
         <div>
           <h2><i class="e">📞</i>Prep for your next call with <span class="partner-name">partner</span></h2>
@@ -88,7 +111,7 @@
       </div>
     </section>
 
-    <section id="page-jar" class="jar" data-page="jar">
+    <section id="page-jar" class="jar" data-page="jar" hidden>
       <!-- Quick add -->
       <form id="add-form" class="card add-card" autocomplete="off">
         <h2 class="with-icon"><img src="/static/icons/jar.svg" alt="">Drop a moment in the jar</h2>

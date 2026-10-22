@@ -532,9 +532,6 @@ textarea:focus, input[type="text"]:focus { outline-color: var(--blue-soft); bord
 .tab .short { display: none; }
 h2.with-icon { display: flex; align-items: center; gap: 12px; }
 h2.with-icon img { width: 48px; height: 48px; flex: none; margin: -6px 0; }
-.welcome-features { display: flex; flex-wrap: wrap; gap: 8px 18px; margin: 10px 0 2px; font-size: 0.88rem; font-weight: 600; color: var(--primary); }
-.welcome-features span { display: inline-flex; align-items: center; gap: 6px; }
-.welcome-features img { width: 34px; height: 34px; }
 @media (max-width: 860px) {
   .tabs { gap: 2px; }
   .tab { flex-direction: column; gap: 2px; padding: 6px 4px; font-size: 0.78rem; flex: 1; border-radius: 12px; }
@@ -575,3 +572,33 @@ h2.with-icon img { width: 48px; height: 48px; flex: none; margin: -6px 0; }
 .chat-card .reply { background: #fff; border: 0; color: var(--ink); box-shadow: 0 4px 14px rgba(0, 0, 0, 0.12); }
 .chat-card .reply.muted { color: var(--muted); }
 .chat-card .chat-log:empty { display: none; }
+
+/* ---------- Home: "What do you want to do today?" ---------- */
+.home-menu { margin: 8px 0 24px; }
+.home-menu h2 { font-size: 1.3rem; margin: 0 0 14px; }
+.bubbles { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
+.bubble {
+  display: flex; flex-direction: column; align-items: center; gap: 6px; text-align: center;
+  padding: 22px 16px 20px; border: 1px solid var(--line); border-radius: 22px; background: var(--card);
+  font: inherit; color: var(--ink); cursor: pointer; box-shadow: 0 2px 10px rgba(43, 76, 126, 0.06);
+  transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease;
+}
+.bubble:hover { transform: translateY(-3px); border-color: var(--accent); box-shadow: 0 10px 24px rgba(43, 76, 126, 0.14); }
+.bubble:focus-visible { outline: 3px solid var(--blue); outline-offset: 3px; }
+.bubble-icon {
+  width: 112px; height: 112px; border-radius: 50%; display: grid; place-items: center; margin-bottom: 6px;
+  background: radial-gradient(circle at 50% 40%, #fff 55%, var(--bg-2));
+  box-shadow: 0 8px 22px rgba(43, 76, 126, 0.12);
+}
+.bubble-icon img { width: 104px; height: 104px; }
+.bubble-title { font-weight: 700; font-size: 1.05rem; color: var(--primary); }
+.bubble-text { font-size: 0.88rem; color: var(--muted); line-height: 1.4; }
+.tab img[src$="mark.svg"] { padding: 3px; }  /* the logo mark has no white plate; size it like the icons */
+@media (max-width: 860px) {
+  .bubbles { grid-template-columns: 1fr 1fr; gap: 12px; }
+  .bubble { padding: 16px 10px; border-radius: 18px; }
+  .bubble-icon { width: 84px; height: 84px; }
+  .bubble-icon img { width: 78px; height: 78px; }
+  .bubble-text { font-size: 0.8rem; }
+}
+@media (prefers-reduced-motion: reduce) { .bubble { transition: none; } .bubble:hover { transform: none; } }
