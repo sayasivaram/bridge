@@ -2,7 +2,7 @@
 
     python scripts/eval_call_topics.py --label baseline           # 5 runs (default)
     python scripts/eval_call_topics.py --label v2 --runs 5
-    python scripts/eval_call_topics.py --compare baseline v2     # side-by-side metrics (no API calls)
+    python scripts/eval_call_topics.py --compare baseline v2 v3  # side-by-side metrics (no API calls)
 
 Each run uses a freshly seeded throwaway database (your data/closer.db is untouched) and asks
 Portkey to skip its response cache, so every run is a real model call. Runs alternate between
@@ -37,6 +37,13 @@ from app.db import session  # noqa: E402
 from app.llm import LLM, build_client  # noqa: E402
 from app.seed import seed  # noqa: E402
 
+# Example lines from every prompt version's worked example (v1-v3), to catch copied wording.
+EXAMPLE_LINES = [
+    "Okay, I need the full open-mic story. Did your hands stop shaking once you started Dreams?",
+    "Remind me to tell you what my landlord's parrot has started doing at sunrise. It's a whole saga.",
+    "Guess who's been shouting my name at 6am. Hint: feathers.",
+    "If you could play one song just for me next time we're in the same room, what would it be?",
+]
 GENERIC = ["how was your week", "how was your day", "what made you smile", "tell me about your day",
            "how have you been", "what's new", "anything exciting", "how are things", "catch up"]
 CAPITALIZED_OK = {"I", "I'm", "I'd", "I've", "I'll", "You", "Your", "What", "How", "Did", "Do", "Does", "Was",
@@ -201,6 +208,9 @@ def metrics(ev: dict) -> dict:
         repeated_openings += sum(n for n in firsts.values() if n > 1)
     flags = Counter(f.split(":")[0] for _, s in starters for f in s["flags"])
     deeper = [r["result"]["deeper_question"] for r in runs if r["result"]["deeper_question"]]
+    example_copies = sum(any(_longest_copied_run(s["opener"], ex) >= 4 for ex in EXAMPLE_LINES) for _, s in starters)
+    empty = sum((c["output_tokens"] or 0) - (c["reasoning_tokens"] or 0) <= 0 for r in runs for c in r["calls"])
+    top_open, top_n = Counter(" ".join(s["opener"].lower().split()[:3]) for _, s in starters).most_common(1)[0]
     priya_runs = [r for r in runs if r["requester"] == "Priya"]
     return {
         "Runs": len(runs),
@@ -212,10 +222,13 @@ def metrics(ev: dict) -> dict:
                                           f"({mean([u['reasoning_tokens'] for u in usage]):,.0f})",
         "Mean latency": f"{mean([sum(c['latency_ms'] or 0 for c in r['calls']) for r in runs]) / 1000:.1f}s",
         "Retries": sum(u["calls"] - 1 for u in usage),
+        "Empty answers (whole cap spent on reasoning)": empty,
         "Starters returned": f"{len(starters)}/{5 * len(runs)}",
         "Starters that retell (6+ words copied)": f"{flags['retells']}/{len(starters)}",
         "Mean longest copied run (words)": f"{mean(copied):.1f}",
         "Openers sharing first 3 words within a run": repeated_openings,
+        "Most common opening across runs": f'"{top_open}" x{top_n}',
+        "Openers copying 4+ words from a prompt example": f"{example_copies}/{len(starters)}",
         "Starters about the partner's moments": f"{sum(any(m['author_name'] != r['requester'] for m in s['moments']) for r, s in starters)}/{len(starters)}",
         "Starters about Leo in Priya's runs": f"{sum(any(m['author_name'] == 'Leo' for m in s['moments']) for r in priya_runs for s in r['result']['starters'])}/{sum(len(r['result']['starters']) for r in priya_runs)}",
         "Flags: generic / unsupported / same_source": f"{flags['generic']} / {flags['unsupported']} / {flags['same_source']}",
@@ -223,14 +236,14 @@ def metrics(ev: dict) -> dict:
     }
 
 
-def compare(a: str, b: str) -> str:
+def compare(*labels: str) -> str:
     out_dir = REPO / "docs" / "evals"
-    ea, eb = (json.loads((out_dir / f"call_topics_{x}.json").read_text()) for x in (a, b))
-    ma, mb = metrics(ea), metrics(eb)
-    lines = [f"# Call-Topic Agent: {a} vs {b}", "", f"| Metric | {a} | {b} |", "|---|---|---|"]
-    lines += [f"| {k} | {ma[k]} | {mb[k]} |" for k in ma]
+    ms = [metrics(json.loads((out_dir / f"call_topics_{x}.json").read_text())) for x in labels]
+    lines = [f"# Call-Topic Agent: {' vs '.join(labels)}", "",
+             "| Metric | " + " | ".join(labels) + " |", "|---" * (len(labels) + 1) + "|"]
+    lines += [f"| {k} | " + " | ".join(str(m[k]) for m in ms) + " |" for k in ms[0]]
     md = "\n".join(lines) + "\n"
-    (out_dir / f"call_topics_compare_{a}_{b}.md").write_text(md)
+    (out_dir / f"call_topics_compare_{'_'.join(labels)}.md").write_text(md)
     return md
 
 
@@ -239,7 +252,7 @@ def main() -> None:
     ap.add_argument("--label", default="baseline")
     ap.add_argument("--runs", type=int, default=5)
     ap.add_argument("--report-only", action="store_true", help="rebuild the .md from the saved .json (no API calls)")
-    ap.add_argument("--compare", nargs=2, metavar=("A", "B"), help="compare two saved evals (no API calls)")
+    ap.add_argument("--compare", nargs="+", metavar="LABEL", help="compare saved evals (no API calls)")
     args = ap.parse_args()
     if args.compare:
         print(compare(*args.compare))

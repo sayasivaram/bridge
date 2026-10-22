@@ -222,10 +222,12 @@ class LLM:
         max_output_tokens: int = config.MAX_OUTPUT_TOKENS,
         cache_key: str | None = None,
         json_schema: tuple[str, dict] | None = None,
+        reasoning_effort: str | None = None,
     ) -> LLMResult:
         """One model call. `instructions` = stable prefix, `user_input` = variable tail.
 
         json_schema=(name, schema) asks for strict structured JSON output (Responses API).
+        reasoning_effort: gpt-6-luna accepts none, low, medium (default), high, xhigh, max.
         """
         run.step(f"model call by {agent_name}")
         with session(self.db_path) as conn:
@@ -234,6 +236,8 @@ class LLM:
         started = time.perf_counter()
         try:
             extra: dict[str, Any] = {"prompt_cache_key": cache_key} if cache_key else {}  # e.g. "couple-1-topics"
+            if reasoning_effort:
+                extra["reasoning"] = {"effort": reasoning_effort}
             if json_schema:
                 name, schema = json_schema
                 extra["text"] = {"format": {"type": "json_schema", "name": name, "schema": schema, "strict": True}}

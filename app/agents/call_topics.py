@@ -26,7 +26,10 @@ from app.llm import LLM, RunContext
 from app.prompting import UNTRUSTED_DATA_RULES, escape, moments_block, wrap
 
 AGENT_NAME = "call_topics"
-PROMPT_VERSION = "v2"  # v1: baseline; v2: hook-don't-retell + whose="yours"/"partner's" (see docs/evals)
+PROMPT_VERSION = "v3"  # v1 baseline; v2 hook-don't-retell + whose labels; v3 low reasoning + no-copy example
+# Model default is medium. low (v3) vs medium (v2), 5 runs each: mean cost $0.00042 vs $0.00107,
+# 8s vs 16s, reasoning 320 vs 1,576 tokens, no empty answers; quality held (docs/evals).
+REASONING_EFFORT = "low"
 WINDOW_DAYS = 7
 N_STARTERS = 5
 MAX_OUTPUT_TOKENS = 2_500  # room for reasoning tokens plus ~600 tokens of JSON
@@ -118,14 +121,16 @@ Return JSON that matches the schema:
   moment_ids.
 
 ## Example (a different couple, preparing Ana; their ids are made up and must never be cited)
+The example shows the idea, not wording to reuse. Never copy its phrases or sentence patterns;
+write every opener fresh, in words that fit this couple.
 Moments: [e1] Ana, whose="yours" (funny): "My landlord's parrot learned to say my name and now
 yells it at 6am." [e2] Sam, whose="partner's" (proud, song "Dreams - Fleetwood Mac"): "Played my
 first open mic. Hands were shaking." [e3] Ana, whose="yours" (stressful): "Thesis draft due Friday
 and my advisor hasn't replied in a week."
 Good, about Sam's moment: topic "Sam's first open mic", opener "Okay, I need the full open-mic
 story. Did your hands stop shaking once you started Dreams?", moment_ids [e2].
-Good, about Ana's own moment: topic "The 6am parrot", opener "Remind me to tell you what my
-landlord's parrot has started doing at sunrise. It's a whole saga.", moment_ids [e1]. A teaser.
+Good, about Ana's own moment: topic "The 6am parrot", opener "Guess who's been shouting my name
+at 6am. Hint: feathers.", moment_ids [e1]. A teaser: it hints at the story without telling it.
 Bad: "My landlord's parrot learned to say my name and now yells it at 6am." Reads the moment aloud.
 Bad: "How did the open mic go? I heard everyone loved it!" Nobody said anyone loved it.
 Bad: "How's your week been?" Generic, cites nothing.
@@ -302,7 +307,7 @@ def run(llm: LLM, requester_id: int, today: date | None = None) -> dict[str, Any
     deeper = None
     for attempt in range(1 + MAX_RETRIES):
         r = llm.call(ctx, AGENT_NAME, p["instructions"], user_input, max_output_tokens=MAX_OUTPUT_TOKENS,
-                     cache_key=cache_key, json_schema=("call_topics", SCHEMA))
+                     cache_key=cache_key, json_schema=("call_topics", SCHEMA), reasoning_effort=REASONING_EFFORT)
         answer = _parse(r.text)
         got, got_deeper, problems = validate(answer, allowed, fingerprints) if answer is not None else (
             [], None, ["The answer wasn't valid JSON."])

@@ -170,8 +170,14 @@ Prices live in `data/prices.json` (gpt-6-luna, per 1M tokens, from MGT 409 Lectu
   starters 14/25 -> 0/25, partner-focused starters in Priya's runs 3/15 -> 6/15, perspective
   slips fixed; but mean cost $0.00065 -> $0.00107 because reasoning doubled (734 -> 1,576), and
   one call spent all 2,500 output tokens on reasoning (empty answer, recovered by the retry).
-  v2 also over-copies the example's "Remind me to tell you" (3/25). Run
-  `python scripts/eval_call_topics.py --label <name>` then `--compare` after any prompt change.
+  v2 also over-copies the example's "Remind me to tell you" (3/25).
+- **v3 = v2 + reasoning effort "low" + a non-reusable example teaser** (current): mean cost
+  $0.00042 (-35% vs v1, -61% vs v2), latency 8s, 0 retries, 0/25 retold, 0/25 copied from the
+  example. Slight slips: 1 of 3 Priya runs had only 1 Leo-focused starter; a phrase repeats
+  across runs. gpt-6-luna efforts: none, low, medium (default), high, xhigh, max ("minimal" is
+  rejected). Comparison: `docs/evals/call_topics_compare_baseline_v2_v3.md`.
+- After any prompt change: `python scripts/eval_call_topics.py --label <name>`, then
+  `--compare baseline v3 <name>` (about $0.002-0.005 per 5-run eval).
 
 ## Open questions (resolve as we go)
 - Agent architecture (proposed: a guard step for input safety, the three feature agents, and a
