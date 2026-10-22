@@ -23,7 +23,7 @@ Nothing else: no database server, no Node, no Docker. SQLite comes with Python.
 ### 1. Clone the repo
 
 ```bash
-git clone <this-repo-url> bridge
+git clone https://github.com/sayasivaram/bridge.git bridge
 cd bridge
 ```
 
