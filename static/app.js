@@ -89,11 +89,13 @@ async function switchUser(userId) {
   localStorage.setItem("closer.userId", String(userId));
   resetForm();
   clearCallPrep(); // starters were written for the other partner
+  setPulseMsg("");
   await loadMe();
 }
 
 async function loadMe() {
   state.me = await api("/api/me");
+  if (state.page === "pulse") loadPulse();
   const partner = state.me.partner?.name || "partner";
   document.querySelectorAll(".partner-name").forEach((el) => (el.textContent = partner));
   $("add-hint").textContent =
@@ -384,6 +386,232 @@ function sourceList(moments) {
   return box;
 }
 
+// ---------- tabs ----------
+
+function setupTabs() {
+  document.querySelectorAll(".tab[data-page]").forEach((tab) =>
+    tab.addEventListener("click", () => showPage(tab.dataset.page)));
+}
+
+function showPage(page) {
+  state.page = page;
+  document.querySelectorAll(".tab[data-page]").forEach((t) => t.classList.toggle("tab--active", t.dataset.page === page));
+  document.querySelectorAll("main [data-page]").forEach((s) => (s.hidden = s.dataset.page !== page));
+  if (page === "pulse") loadPulse();
+}
+
+// ---------- Connection Pulse ----------
+
+const SERIES = { A: "var(--series-a)", B: "var(--series-b)" }; // color follows the partner, not the viewer
+const CONTACT_LABEL = { too_little: "too little", right: "about right", too_much: "too much" };
+
+function setupPulseForm() {
+  $("pulse-form").addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const score = document.querySelector("input[name=score]:checked");
+    const contact = document.querySelector("input[name=contact]:checked");
+    if (!score || !contact) return setPulseMsg("Pick a score and how the contact felt.", true);
+    $("pulse-btn").disabled = true;
+    try {
+      const res = await api("/api/pulse", { method: "POST", body: {
+        score: Number(score.value), contact: contact.value,
+        note: $("pulse-note").value.trim() || null, note_shared: $("pulse-share").checked } });
+      setPulseMsg("Saved. You can change it any time this week.");
+      if (res.support) renderNudge({ kind: "support", support: res.support });
+      await loadPulse(!res.support);
+    } catch (err) {
+      setPulseMsg(err.message, true);
+    } finally {
+      $("pulse-btn").disabled = false;
+    }
+  });
+}
+
+function setPulseMsg(text, isError = false) {
+  $("pulse-msg").textContent = text;
+  $("pulse-msg").className = "form-msg " + (text ? (isError ? "form-msg--error" : "form-msg--ok") : "");
+}
+
+async function loadPulse(withNudge = true) {
+  const data = await api("/api/pulse");
+  const start = new Date(data.week_start + "T12:00:00");
+  $("pulse-week").textContent =
+    `Week of ${start.toLocaleDateString(undefined, { month: "short", day: "numeric" })} · takes about 30 seconds.`;
+  const mine = data.this_week.me;
+  document.querySelectorAll("input[name=score]").forEach((i) => (i.checked = mine && Number(i.value) === mine.score));
+  document.querySelectorAll("input[name=contact]").forEach((i) => (i.checked = mine && i.value === mine.contact));
+  $("pulse-note").value = mine?.note || "";
+  $("pulse-share").checked = !!mine?.note_shared;
+  $("pulse-btn").textContent = mine ? "Update check-in" : "Save check-in";
+  renderChart(data);
+  if (withNudge) loadNudge();
+}
+
+async function loadNudge() {
+  $("nudge-body").textContent = "Checking this week's signals…";
+  try {
+    renderNudge(await api("/api/pulse/nudge"));
+  } catch (err) {
+    $("nudge-body").textContent = err.message;
+  }
+}
+
+function renderNudge(n) {
+  const box = $("nudge-body");
+  box.innerHTML = "";
+  box.className = "";
+  if (n.kind === "support") {
+    const s = n.support;
+    const card = el("div", "support");
+    card.append(el("h3", "", s.title), el("p", "", s.body));
+    const ul = document.createElement("ul");
+    for (const r of s.resources) {
+      const li = document.createElement("li");
+      li.append(el("b", "", r.name), `: ${r.contact}`);
+      ul.appendChild(li);
+    }
+    card.append(ul, el("p", "", s.emergency), el("p", "footnote", s.footnote));
+    box.appendChild(card);
+    return;
+  }
+  if (n.kind === "steady") {
+    const row = el("div", "steady");
+    const text = el("div");
+    text.append(el("b", "", n.title), el("p", "muted small", n.body));
+    row.append(el("span", "icon", "🌿"), text);
+    box.append(row, traceList(n.trace));
+    return;
+  }
+  box.append(el("p", "nudge-suggestion", n.suggestion), el("p", "nudge-why", n.explanation));
+  const chips = el("div", "flag-chips");
+  for (const f of n.flags) chips.appendChild(el("span", "flag-chip", f.detail));
+  const meta = el("div", "nudge-meta");
+  const label = n.source === "fallback" ? "From the rules (no AI needed)" : n.cached ? "Saved from earlier this week" : "Written by the Drift Agent";
+  meta.append(el("span", "source-label", label), usageBadge(n.usage, n.cached ? n.first_cost_usd : null));
+  box.append(chips, meta, traceList(n.trace));
+}
+
+function usageBadge(u, firstCost) {
+  const badge = el("span", "token-badge");
+  badge.textContent = u.calls
+    ? `${u.calls} call${u.calls === 1 ? "" : "s"} · ${u.input_tokens.toLocaleString()} in (${u.cached_tokens.toLocaleString()} cached) · ${u.output_tokens.toLocaleString()} out · $${u.cost_usd.toFixed(5)}` +
+      (u.gateway_cache_hits ? " · ⚡ Portkey cache hit" : "")
+    : firstCost ? `0 calls now · $0 (first made for $${firstCost.toFixed(5)})` : "0 calls · $0";
+  return badge;
+}
+
+function traceList(lines) {
+  const d = document.createElement("details");
+  d.className = "trace";
+  d.append(el("summary", "", "How this was decided"));
+  const ol = document.createElement("ol");
+  for (const line of lines || []) ol.appendChild(el("li", "", line));
+  d.appendChild(ol);
+  return d;
+}
+
+function renderChart(data) {
+  const me = state.me.user, partner = state.me.partner;
+  const partnerRole = me.role === "A" ? "B" : "A";
+  const series = [
+    { name: me.name, role: me.role, values: data.history.map((w) => w.me?.score ?? null) },
+    { name: data.partner, role: partnerRole, values: data.history.map((w) => w.partner?.score ?? null) },
+  ].sort((a, b) => a.role.localeCompare(b.role)); // fixed order: Partner A, then B
+  const weeks = data.history.map((w) => new Date(w.week_start + "T12:00:00"));
+  const fmt = (d) => d.toLocaleDateString(undefined, { month: "short", day: "numeric" });
+
+  const W = 640, H = 240, L = 36, R = 64, T = 16, B = 34;
+  const x = (i) => L + (i * (W - L - R)) / (weeks.length - 1);
+  const y = (v) => T + ((5 - v) * (H - T - B)) / 4;
+  const svg = $("pulse-chart");
+  const NS = "http://www.w3.org/2000/svg";
+  const node = (tag, attrs, text) => {
+    const n = document.createElementNS(NS, tag);
+    for (const [k, v] of Object.entries(attrs)) n.setAttribute(k, v);
+    if (text !== undefined) n.textContent = text;
+    return n;
+  };
+  svg.innerHTML = "";
+  for (let v = 1; v <= 5; v++) {
+    svg.append(node("line", { class: "grid", x1: L, x2: W - R, y1: y(v), y2: y(v) }),
+      node("text", { class: "axis-label", x: L - 12, y: y(v) + 4, "text-anchor": "end" }, v));
+  }
+  weeks.forEach((d, i) => svg.append(node("text", { class: "axis-label", x: x(i), y: H - 10, "text-anchor": "middle" },
+    i === weeks.length - 1 ? "This week" : fmt(d))));
+
+  for (const s of series) {
+    let path = "", pen = false;
+    s.values.forEach((v, i) => {
+      if (v == null) { pen = false; return; }
+      path += `${pen ? "L" : "M"}${x(i)},${y(v)} `;
+      pen = true;
+    });
+    if (path) svg.append(node("path", { class: "series-line", d: path, stroke: SERIES[s.role] }));
+    // When both partners gave the same score, shift the two dots apart so neither hides the other.
+    const tie = (i) => series.every((o) => o.values[i] === s.values[i]);
+    const dx = (i) => (tie(i) ? (s.role === "A" ? -4 : 4) : 0);
+    s.values.forEach((v, i) => v != null && svg.append(node("circle", { class: "point", cx: x(i) + dx(i), cy: y(v), r: 5, fill: SERIES[s.role] })));
+    const lastI = s.values.map((v) => v != null).lastIndexOf(true);
+    if (lastI >= 0) svg.append(node("text", { class: "direct-label", x: x(lastI) + 10, y: y(s.values[lastI]) + 4 }, s.name));
+  }
+
+  // hover: crosshair + tooltip per week column
+  const cross = node("line", { class: "crosshair", y1: T, y2: H - B, visibility: "hidden" });
+  svg.appendChild(cross);
+  const tip = $("chart-tip");
+  weeks.forEach((d, i) => {
+    const colW = (W - L - R) / (weeks.length - 1);
+    const hit = node("rect", { x: x(i) - colW / 2, y: 0, width: colW, height: H, fill: "transparent" });
+    hit.addEventListener("mouseenter", () => {
+      cross.setAttribute("x1", x(i)); cross.setAttribute("x2", x(i)); cross.setAttribute("visibility", "visible");
+      tip.innerHTML = "";
+      tip.append(`Week of ${fmt(d)}`);
+      for (const s of series) {
+        const row = document.createElement("div");
+        const dot = document.createElement("i");
+        dot.style.background = SERIES[s.role];
+        const status = data.history[i].partner_status;
+        const hidden = s.name !== me.name && s.values[i] == null && status === "waiting_for_partner";
+        row.append(dot, `${s.name}: ${s.values[i] ?? (hidden ? "not yet" : "—")}`);
+        tip.appendChild(row);
+      }
+      const rect = svg.getBoundingClientRect();
+      tip.style.left = `${(x(i) / W) * rect.width}px`;
+      tip.style.top = `${(T / H) * rect.height + 8}px`;
+      tip.hidden = false;
+    });
+    hit.addEventListener("mouseleave", () => { cross.setAttribute("visibility", "hidden"); tip.hidden = true; });
+    svg.appendChild(hit);
+  });
+
+  $("chart-legend").innerHTML = "";
+  for (const s of series) {
+    const item = el("span");
+    const swatch = document.createElement("i");
+    swatch.style.background = SERIES[s.role];
+    item.append(swatch, s.name);
+    $("chart-legend").appendChild(item);
+  }
+  const status = data.this_week.partner_status;
+  $("chart-desc").textContent = {
+    waiting_for_partner: `${data.partner} hasn't checked in yet this week. You'll see each other's scores once you both have.`,
+    waiting_for_you: `${data.partner} has checked in this week. Check in to see each other's scores.`,
+    none: "Neither of you has checked in this week yet.",
+    shown: "You've both checked in this week.",
+  }[status];
+
+  $("th-a").textContent = series[0].name;
+  $("th-b").textContent = series[1].name;
+  const tbody = $("chart-tbody");
+  tbody.innerHTML = "";
+  data.history.forEach((w, i) => {
+    const tr = document.createElement("tr");
+    tr.append(el("td", "", fmt(weeks[i])), el("td", "", String(series[0].values[i] ?? "—")),
+      el("td", "", String(series[1].values[i] ?? "—")));
+    tbody.appendChild(tr);
+  });
+}
+
 // ---------- helpers ----------
 
 function el(tag, className, text) {
@@ -411,5 +639,7 @@ function isoDate(d) {
 setupAddForm();
 setupWeekNav();
 setupCallPrep();
+setupTabs();
+setupPulseForm();
 showSetupStatus();
 setupUserSwitch();

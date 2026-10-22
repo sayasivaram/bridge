@@ -12,7 +12,7 @@ from app.config import REPO_DIR
 DB_PATH = REPO_DIR / "data" / "closer.db"
 UPLOADS_DIR = REPO_DIR / "data" / "uploads"  # moment images; served only through the privacy check
 SCHEMA_PATH = Path(__file__).with_name("schema.sql")
-SCHEMA_VERSION = 4  # keep in sync with PRAGMA user_version in schema.sql
+SCHEMA_VERSION = 5  # keep in sync with PRAGMA user_version in schema.sql
 
 
 class SchemaOutdatedError(RuntimeError):

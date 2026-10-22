@@ -20,7 +20,7 @@ import re
 from datetime import date, timedelta
 from typing import Any
 
-from app import moments, timeutil
+from app import moments, pulses, timeutil
 from app.db import session
 from app.llm import LLM, RunContext
 from app.prompting import UNTRUSTED_DATA_RULES, escape, moments_block, wrap
@@ -199,9 +199,7 @@ def _shingles(text: str, n: int = 5) -> set[str]:
 def private_fingerprints(conn, couple_id: int, allowed_texts: list[str]) -> set[str]:
     """5-word phrases from private moments and private pulse notes, minus phrases that also
     appear in the shared data we sent (so a coincidental overlap isn't flagged)."""
-    private = moments.private_texts(conn, couple_id)
-    private += [r[0] for r in conn.execute(
-        "SELECT note FROM pulses WHERE couple_id = ? AND note_shared = 0 AND note IS NOT NULL", (couple_id,))]
+    private = moments.private_texts(conn, couple_id) + pulses.private_notes(conn, couple_id)
     allowed = set().union(*(_shingles(t) for t in allowed_texts)) if allowed_texts else set()
     return set().union(*(_shingles(t) for t in private)) - allowed if private else set()
 

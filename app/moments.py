@@ -195,3 +195,19 @@ def private_texts(conn: sqlite3.Connection, couple_id: int) -> list[str]:
         "SELECT m.text FROM moments m WHERE m.couple_id = ? AND m.visibility = 'private'", (couple_id,)
     ).fetchall()
     return [r[0] for r in rows]
+
+
+def weekly_shared_counts(conn: sqlite3.Connection, couple_id: int, weeks: list[date]) -> dict[int, list[int]]:
+    """{author_id: [shared moments in each week]}, each week in the AUTHOR's own time zone.
+    Shared only: counting private moments would tell the other partner they exist."""
+    authors = conn.execute("SELECT id, timezone FROM users WHERE couple_id = ? ORDER BY role", (couple_id,)).fetchall()
+    out: dict[int, list[int]] = {}
+    for a in authors:
+        counts = []
+        for w in weeks:
+            start, end = timeutil.utc_bounds(w, w + timedelta(days=6), a["timezone"])
+            counts.append(conn.execute(
+                "SELECT COUNT(*) FROM moments m WHERE m.couple_id = ? AND m.author_id = ? AND m.visibility = 'shared' "
+                "AND m.created_at >= ? AND m.created_at < ?", (couple_id, a["id"], start, end)).fetchone()[0])
+        out[a["id"]] = counts
+    return out

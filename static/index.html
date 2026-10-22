@@ -11,7 +11,7 @@
     <div class="brand">Closer</div>
     <nav class="tabs" aria-label="Sections">
       <button class="tab tab--active" data-page="jar">Moment Jar</button>
-      <button class="tab" disabled title="Coming soon">Pulse</button>
+      <button class="tab" data-page="pulse">Pulse</button>
       <button class="tab" disabled title="Coming soon">Rituals</button>
     </nav>
     <label class="user-switch">
@@ -22,7 +22,7 @@
 
   <main class="container">
     <!-- Call-Topic Agent -->
-    <section id="call-prep" class="card prep-card">
+    <section id="call-prep" class="card prep-card" data-page="jar">
       <div class="prep-head">
         <div>
           <h2><i class="e">📞</i>Prep for your next call with <span class="partner-name">partner</span></h2>
@@ -46,7 +46,7 @@
       </div>
     </section>
 
-    <section id="page-jar" class="jar">
+    <section id="page-jar" class="jar" data-page="jar">
       <!-- Quick add -->
       <form id="add-form" class="card add-card" autocomplete="off">
         <h2>Drop a moment in the jar</h2>
@@ -102,6 +102,68 @@
         </div>
         <ul id="moment-list" class="moment-list"></ul>
         <p id="empty" class="empty" hidden>The jar is empty this week. Drop in the first moment.</p>
+      </section>
+    </section>
+    <!-- Connection Pulse -->
+    <section id="page-pulse" class="pulse" data-page="pulse" hidden>
+      <div class="pulse-grid">
+        <form id="pulse-form" class="card pulse-form" autocomplete="off">
+          <h2>This week's check-in</h2>
+          <p class="muted small" id="pulse-week">Takes about 30 seconds.</p>
+
+          <fieldset class="scale" aria-label="How connected did you feel this week?">
+            <legend>How connected did you feel this week?</legend>
+            <div class="scale-row">
+              <label><input type="radio" name="score" value="1"><span>1</span></label>
+              <label><input type="radio" name="score" value="2"><span>2</span></label>
+              <label><input type="radio" name="score" value="3"><span>3</span></label>
+              <label><input type="radio" name="score" value="4"><span>4</span></label>
+              <label><input type="radio" name="score" value="5"><span>5</span></label>
+            </div>
+            <div class="scale-ends muted small"><span>Far apart</span><span>Really close</span></div>
+          </fieldset>
+
+          <fieldset class="contact" aria-label="How was the amount of contact?">
+            <legend>How was the amount of contact?</legend>
+            <label><input type="radio" name="contact" value="too_little"><span>Too little</span></label>
+            <label><input type="radio" name="contact" value="right"><span>About right</span></label>
+            <label><input type="radio" name="contact" value="too_much"><span>Too much</span></label>
+          </fieldset>
+
+          <div class="field">
+            <input type="text" id="pulse-note" maxlength="200" placeholder="Anything on your mind? One line, optional">
+          </div>
+          <label class="share-note"><input type="checkbox" id="pulse-share">
+            <span>Share this note with <span class="partner-name">partner</span>
+              <span class="muted">(otherwise only you see it)</span></span></label>
+
+          <button type="submit" class="primary" id="pulse-btn">Save check-in</button>
+          <p id="pulse-msg" class="form-msg" role="status"></p>
+        </form>
+
+        <section class="card nudge-card" id="nudge-card" aria-live="polite">
+          <h2>This week's nudge</h2>
+          <div id="nudge-body" class="muted small">Loading…</div>
+        </section>
+      </div>
+
+      <section class="card chart-card">
+        <div class="chart-head">
+          <div>
+            <h2>Connection over time</h2>
+            <p class="muted small">Weekly scores, 1 to 5. You see each other's score once you've both checked in.</p>
+          </div>
+          <div class="legend" id="chart-legend"></div>
+        </div>
+        <div class="chart-wrap" id="chart-wrap">
+          <svg id="pulse-chart" viewBox="0 0 640 240" role="img" aria-labelledby="chart-desc"></svg>
+          <div class="chart-tip" id="chart-tip" hidden></div>
+        </div>
+        <p id="chart-desc" class="muted small"></p>
+        <details class="chart-table">
+          <summary>Show as a table</summary>
+          <table><thead><tr><th>Week of</th><th id="th-a"></th><th id="th-b"></th></tr></thead><tbody id="chart-tbody"></tbody></table>
+        </details>
       </section>
     </section>
   </main>

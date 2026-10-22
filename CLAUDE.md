@@ -106,9 +106,14 @@ Tier 3 needs a real user trying it and measured improvement versus how couples d
 - **Demo video (optional):** 2–3 min screen recording, a backup if the app won't run for staff.
 
 ## Code conventions for privacy and untrusted text (keep these as features are added)
-- **Only `app/moments.py` reads the `moments` table.** Its SQL applies the privacy rule.
-  A test fails if any other module in `app/` queries `moments` directly. Do the same for pulses
-  (private notes) when that feature is built.
+- **Only `app/moments.py` reads `moments` and only `app/pulses.py` reads `pulses`.** Their SQL
+  applies the privacy rules (private moments; pulse reveal rule: partner's score once both
+  checked in, note only if shared). Tests fail if any other module queries those tables.
+- **Anything shown to both partners uses only data both can see** (shared moments, revealed weeks,
+  shared notes; moment COUNTS are shared-only too, or they'd reveal private moments exist).
+- **Crisis pre-check (`app/safety.py`) runs before any coaching model call**, on private notes too.
+  A match: support resources to the author only; the partner sees the same quiet card as a
+  normal week. Flagged text is never sent to a model.
 - **Agents live in `app/agents/`** (one module each) and call the model only via `app/llm.py`.
   Each has a stable `SYSTEM_PROMPT`, validates model output in code, and retries at most once.
 - **Agents get moments only via `moments.for_prompt(..., output_for=...)`.** Use the id of the
@@ -180,6 +185,9 @@ Prices live in `data/prices.json` (gpt-6-luna, per 1M tokens, from MGT 409 Lectu
   example. Slight slips: 1 of 3 Priya runs had only 1 Leo-focused starter; a phrase repeats
   across runs. gpt-6-luna efforts: none, low, medium (default), high, xhigh, max ("minimal" is
   rejected). Comparison: `docs/evals/call_topics_compare_baseline_v2_v3.md`.
+- **Drift Agent** (live, seed couple): 1,553 input tokens, ~110 output, 0 reasoning at low effort;
+  $0.00025 cold, $0.00007 with the prompt cached. Rules-only weeks cost $0. Nudges are cached
+  per couple + signals, so both partners share one call.
 - After any prompt change: `python scripts/eval_call_topics.py --label <name>`, then
   `--compare baseline v3 <name>` (about $0.002-0.005 per 5-run eval).
 

@@ -81,9 +81,9 @@ def seed(db_path: Path | str = DB_PATH, today: date | None = None, reset: bool =
         for p in data["pulses"]:
             start = week_start(p["week"], today)
             conn.execute(
-                "INSERT INTO pulses (couple_id, user_id, week_start, score, note, note_shared, created_at) "
-                "VALUES (?, ?, ?, ?, ?, ?, ?)",
-                (couple_id, user_ids[p["who"]], start.isoformat(), p["score"], p["note"],
+                "INSERT INTO pulses (couple_id, user_id, week_start, score, contact, note, note_shared, created_at) "
+                "VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
+                (couple_id, user_ids[p["who"]], start.isoformat(), p["score"], p.get("contact", "right"), p["note"],
                  int(p["note_shared"]), f"{(start + timedelta(days=6)).isoformat()} 20:00:00"),
             )
 
@@ -106,7 +106,7 @@ def seed(db_path: Path | str = DB_PATH, today: date | None = None, reset: bool =
 
 
 def counts(conn) -> dict[str, int]:
-    tables = ["couples", "users", "moments", "pulses", "rituals", "ritual_feedback", "llm_calls"]
+    tables = ["couples", "users", "moments", "pulses", "rituals", "ritual_feedback", "llm_calls", "nudges"]
     return {t: conn.execute(f"SELECT COUNT(*) FROM {t}").fetchone()[0] for t in tables}
 
 

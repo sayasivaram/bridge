@@ -47,19 +47,34 @@ CREATE TABLE IF NOT EXISTS moments (
 );
 CREATE INDEX IF NOT EXISTS idx_moments_couple_time ON moments (couple_id, created_at);
 
--- Connection Pulse: one weekly check-in per partner.
--- note_shared = 0 means the note is private to its author (the drift agent may use the score,
--- but never quotes or reveals a private note to the other partner).
+-- Connection Pulse: one weekly check-in per partner. Read ONLY through app/pulses.py, which
+-- applies the reveal rule: a partner's score/contact for a week are visible only once BOTH have
+-- submitted that week, and a note only if it is also shared (note_shared = 1).
 CREATE TABLE IF NOT EXISTS pulses (
     id           INTEGER PRIMARY KEY,
     couple_id    INTEGER NOT NULL REFERENCES couples(id),
     user_id      INTEGER NOT NULL REFERENCES users(id),
-    week_start   TEXT NOT NULL,                 -- ISO date of that week's Monday
+    week_start   TEXT NOT NULL,                 -- ISO date of that week's Monday (author's local week)
     score        INTEGER NOT NULL CHECK (score BETWEEN 1 AND 5),
+    contact      TEXT NOT NULL DEFAULT 'right' CHECK (contact IN ('too_little', 'right', 'too_much')),
     note         TEXT CHECK (note IS NULL OR length(note) <= 500),
     note_shared  INTEGER NOT NULL DEFAULT 0 CHECK (note_shared IN (0, 1)),
-    created_at   TEXT NOT NULL DEFAULT (datetime('now')),
+    created_at   TEXT NOT NULL DEFAULT (datetime('now')),  -- UTC; updated when the pulse is edited
     UNIQUE (user_id, week_start)
+);
+
+-- This week's nudge from the Drift Detector, cached so both partners see the same one and the
+-- model isn't called again until the signals change.
+CREATE TABLE IF NOT EXISTS nudges (
+    id            INTEGER PRIMARY KEY,
+    couple_id     INTEGER NOT NULL REFERENCES couples(id),
+    signals_hash  TEXT NOT NULL,                -- hash of the computed signals it was made from
+    source        TEXT NOT NULL CHECK (source IN ('llm', 'fallback')),
+    suggestion    TEXT NOT NULL,
+    explanation   TEXT NOT NULL,
+    request_id    TEXT,                         -- llm_calls.request_id, for the token badge
+    created_at    TEXT NOT NULL DEFAULT (datetime('now')),
+    UNIQUE (couple_id, signals_hash)
 );
 
 -- Ritual Builder: shared activities, suggested by the agent or added by hand.
@@ -113,4 +128,4 @@ CREATE TABLE IF NOT EXISTS llm_calls (
 CREATE INDEX IF NOT EXISTS idx_llm_calls_user_time ON llm_calls (user_id, created_at);
 
 -- Bump when the schema changes; app/db.py refuses to open an older database.
-PRAGMA user_version = 4;
+PRAGMA user_version = 5;

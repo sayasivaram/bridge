@@ -272,42 +272,48 @@
       "who": "A",
       "score": 4,
       "note": "Good week. Loved hearing about the redesign launch.",
-      "note_shared": true
+      "note_shared": true,
+      "contact": "right"
     },
     {
       "week": 1,
       "who": "B",
       "score": 4,
       "note": "Our Sunday cook-along was the highlight.",
-      "note_shared": true
+      "note_shared": true,
+      "contact": "right"
     },
     {
       "week": 2,
       "who": "A",
       "score": 4,
       "note": null,
-      "note_shared": false
+      "note_shared": false,
+      "contact": "right"
     },
     {
       "week": 2,
       "who": "B",
       "score": 3,
       "note": "Work crunch. I've been distracted on calls and I don't want her to worry.",
-      "note_shared": false
+      "note_shared": false,
+      "contact": "right"
     },
     {
       "week": 3,
       "who": "A",
       "score": 3,
       "note": "Calls felt rushed this week. We mostly talked logistics.",
-      "note_shared": true
+      "note_shared": true,
+      "contact": "too_little"
     },
     {
       "week": 3,
       "who": "B",
       "score": 2,
       "note": "Felt far away this week. Missed our Sunday cook.",
-      "note_shared": false
+      "note_shared": false,
+      "contact": "too_little"
     }
   ],
   "rituals": [

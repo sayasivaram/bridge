@@ -309,3 +309,61 @@ textarea:focus, input[type="text"]:focus { outline: 2px solid var(--accent-soft)
 }
 
 .source i, h2 i.e { font-style: normal; margin-right: 6px; }
+
+/* ---------- pulse ---------- */
+[hidden] { display: none !important; }
+:root { --series-a: #d9665b; --series-b: #7584c9; }  /* Partner A / B, validated with the dataviz checker */
+.pulse-grid { display: grid; grid-template-columns: minmax(300px, 420px) 1fr; gap: 24px; align-items: start; margin-bottom: 24px; }
+@media (max-width: 860px) { .pulse-grid { grid-template-columns: 1fr; } }
+.pulse-form { display: flex; flex-direction: column; gap: 16px; }
+.pulse-form fieldset { border: 0; padding: 0; margin: 0; }
+.pulse-form legend { font-weight: 600; margin-bottom: 8px; padding: 0; }
+.scale-row { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; }
+.scale input, .contact input { position: absolute; opacity: 0; pointer-events: none; }
+.scale-row span {
+  display: grid; place-items: center; height: 48px; border-radius: 12px; border: 1px solid var(--line);
+  font-size: 1.15rem; font-weight: 600; cursor: pointer; background: #fff;
+}
+.scale input:checked + span { background: var(--accent); border-color: var(--accent); color: #fff; }
+.scale-ends { display: flex; justify-content: space-between; margin-top: 4px; }
+.contact { display: flex; flex-wrap: wrap; gap: 8px; }
+.contact legend { width: 100%; }
+.contact span { display: inline-block; padding: 8px 14px; border-radius: 999px; border: 1px solid var(--line); cursor: pointer; background: #fff; }
+.contact input:checked + span { background: var(--accent-soft); border-color: var(--accent); color: var(--accent-dark); font-weight: 600; }
+.scale input:focus-visible + span, .contact input:focus-visible + span { outline: 2px solid var(--accent); }
+.share-note { font-size: 0.9rem; display: flex; gap: 8px; align-items: baseline; }
+
+.nudge-card h2 { margin-bottom: 12px; }
+.nudge-suggestion { font-family: Georgia, serif; font-size: 1.3rem; line-height: 1.4; margin: 0 0 10px; }
+.nudge-why { margin: 0 0 12px; color: var(--muted); }
+.flag-chips { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 12px; }
+.flag-chip { font-size: 0.78rem; padding: 3px 10px; border-radius: 999px; background: var(--warn-soft); color: var(--ink); }
+.nudge-meta { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; justify-content: space-between; }
+.source-label { font-size: 0.8rem; color: var(--muted); }
+.steady { display: flex; gap: 12px; align-items: flex-start; }
+.steady .icon { font-size: 1.4rem; }
+.support { background: #eef4f8; border-radius: 14px; padding: 16px 18px; }
+.support h3 { margin: 0 0 6px; font-size: 1.05rem; }
+.support ul { margin: 8px 0; padding-left: 20px; }
+.support .footnote { font-size: 0.8rem; color: var(--muted); margin: 8px 0 0; }
+
+.chart-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 16px; flex-wrap: wrap; }
+.legend { display: flex; gap: 16px; font-size: 0.88rem; color: var(--ink); }
+.legend span { display: inline-flex; align-items: center; gap: 6px; }
+.legend i { width: 18px; height: 3px; border-radius: 2px; display: inline-block; }
+.chart-wrap { position: relative; margin-top: 8px; }
+#pulse-chart { width: 100%; height: auto; display: block; overflow: visible; }
+#pulse-chart .grid { stroke: #eee6ea; stroke-width: 1; }
+#pulse-chart .axis-label { fill: var(--muted); font-size: 12px; }
+#pulse-chart .series-line { fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+#pulse-chart .point { stroke: #fff; stroke-width: 2; }
+#pulse-chart .direct-label { font-size: 12px; font-weight: 600; fill: var(--ink); }
+#pulse-chart .crosshair { stroke: #cfc6d6; stroke-width: 1; }
+.chart-tip {
+  position: absolute; pointer-events: none; background: var(--ink); color: #fff; font-size: 0.8rem;
+  padding: 6px 10px; border-radius: 8px; white-space: nowrap; transform: translate(-50%, -110%);
+}
+.chart-tip i { width: 8px; height: 8px; border-radius: 50%; display: inline-block; margin-right: 6px; }
+.chart-table table { border-collapse: collapse; margin-top: 8px; font-size: 0.88rem; }
+.chart-table th, .chart-table td { padding: 4px 14px 4px 0; text-align: left; }
+.chart-table summary { cursor: pointer; font-size: 0.85rem; color: var(--muted); margin-top: 8px; }

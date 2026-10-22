@@ -15,8 +15,10 @@ from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, Field
 
-from app import db, moments, timeutil
-from app.agents import call_topics
+from datetime import timedelta
+
+from app import db, moments, pulses, safety, timeutil
+from app.agents import call_topics, drift
 from app.config import REPO_DIR, MissingAPIKeyError, load_settings
 from app.llm import LLM, BudgetExceededError, StepLimitError
 from app.seed import seed
@@ -42,6 +44,16 @@ async def lifespan(_: FastAPI):
 
 
 app = FastAPI(title="Closer", version="0.1.0", lifespan=lifespan)
+
+
+@app.middleware("http")
+async def revalidate_static(request, call_next):
+    """Browsers must re-check the frontend files on each load (a cheap 304 if unchanged), so an
+    updated app never runs new JavaScript against a stale cached stylesheet."""
+    response = await call_next(request)
+    if request.url.path == "/" or request.url.path.startswith("/static/"):
+        response.headers["Cache-Control"] = "no-cache"
+    return response
 
 
 def current_user(conn, user_id: int | None) -> dict:
@@ -145,6 +157,55 @@ def call_prep(x_user_id: int | None = Header(default=None)) -> dict:
     except Exception as err:  # network/API trouble: say so plainly, keep details in the server log
         print(f"call-prep failed: {type(err).__name__}: {err}")
         raise HTTPException(502, "The AI service didn't answer properly. Please try again in a moment.") from None
+
+
+class PulseIn(BaseModel):
+    score: int = Field(ge=1, le=5)
+    contact: Literal["too_little", "right", "too_much"]
+    note: str | None = Field(default=None, max_length=pulses.NOTE_MAX)
+    note_shared: bool = False
+
+
+HISTORY_WEEKS = 6
+
+
+@app.get("/api/pulse")
+def get_pulse(x_user_id: int | None = Header(default=None)) -> dict:
+    """This week's check-in (if any) and the last weeks, with the reveal rule applied."""
+    with db.session() as conn:
+        user = current_user(conn, x_user_id)
+        week = pulses.current_week(conn, user["id"])
+        weeks = [week - timedelta(weeks=k) for k in range(HISTORY_WEEKS - 1, -1, -1)]
+        history = pulses.history_for_viewer(conn, user["id"], weeks)
+        partner = conn.execute("SELECT name FROM users WHERE couple_id = ? AND id != ?",
+                               (user["couple_id"], user["id"])).fetchone()
+    return {"week_start": week.isoformat(), "partner": partner["name"] if partner else None,
+            "this_week": history[-1], "history": history}
+
+
+@app.post("/api/pulse")
+def save_pulse(body: PulseIn, x_user_id: int | None = Header(default=None)) -> dict:
+    with db.session() as conn:
+        user = current_user(conn, x_user_id)
+        try:
+            saved = pulses.upsert(conn, user["id"], body.score, body.contact, body.note, body.note_shared)
+        except pulses.PulseError as err:
+            raise HTTPException(400, str(err)) from None
+    flag = safety.precheck(saved["note"])
+    return {"saved": saved, "support": safety.support_message(flag, user["timezone"]) if flag else None}
+
+
+@app.get("/api/pulse/nudge")
+def pulse_nudge(x_user_id: int | None = Header(default=None)) -> dict:
+    """Drift Detector: rules first ($0); the agent only if they flag drift."""
+    with db.session() as conn:
+        user = current_user(conn, x_user_id)
+    try:
+        return drift.run(get_llm(), user["id"])
+    except StepLimitError as err:
+        raise HTTPException(503, str(err)) from None
+    except MissingAPIKeyError:
+        raise HTTPException(503, "No API key is set up, so AI features are off. See the README.") from None
 
 
 app.mount("/static", StaticFiles(directory=STATIC_DIR), name="static")

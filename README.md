@@ -61,6 +61,11 @@ You need **Python 3.11 or newer** (`python3 --version` to check).
 - **Prep for our call:** the Call-Topic Agent turns the last 7 days of *shared* moments into 5
   conversation starters (each showing the moment it came from) plus one deeper question. The
   badge shows that run's tokens and cost; "How this was made" shows each step.
+- **Pulse:** a 30-second weekly check-in (connection 1-5, amount of contact, an optional note you
+  can share or keep private). You see your partner's score once you've both checked in. The
+  Drift Detector runs simple rules first and calls the AI only when they flag drift, then shows
+  one gentle suggestion as "this week's nudge". Notes that suggest abuse, self-harm, or serious
+  distress skip coaching and show the author support lines instead.
 
 ## Reset the demo data
 
@@ -88,8 +93,11 @@ app/
   config.py    finds the API key (.env in repo, then one folder up), limits
   llm.py       the one model wrapper: gpt-6-luna via Portkey, token counts, cost,
                logging, per-user daily token budget, per-request step limit
-  agents/      AI agents (call_topics.py: the Call-Topic Agent)
+  agents/      AI agents (call_topics.py: Call-Topic Agent; drift.py: Drift Detector)
   moments.py   Moment Jar data access; the partner-privacy rule lives in its SQL
+  pulses.py    Pulse data access; the "see scores once both checked in" rule lives in its SQL
+  safety.py    crisis pre-check (keyword patterns) and support messages
+  timeutil.py  each partner's local "today" / "this week" (timestamps are stored in UTC)
   prompting.py wraps user text in escaped tags before it goes into any prompt
   schema.sql   database tables
   db.py        SQLite helpers
