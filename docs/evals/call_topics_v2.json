@@ -1,0 +1,842 @@
+{
+  "label": "v2",
+  "date": "2026-10-21",
+  "prompt_version": "v2",
+  "runs": [
+    {
+      "run": 1,
+      "requester": "Priya",
+      "result": {
+        "requester": "Priya",
+        "partner": "Leo",
+        "window": {
+          "since": "2026-10-15",
+          "until": "2026-10-21"
+        },
+        "moment_count": 6,
+        "starters": [
+          {
+            "topic": "Friday meeting win",
+            "opener": "No-meeting Fridays sounds like a satisfying little win. What did the team need to hear before they agreed?",
+            "moment_ids": [
+              27
+            ],
+            "moments": [
+              {
+                "id": 27,
+                "author_name": "Leo",
+                "mood": "proud",
+                "text": "Got the team to agree to no-meeting Fridays. Small win, big relief.",
+                "song": null,
+                "created_at": "2026-10-20 20:06:27",
+                "has_image": false
+              }
+            ],
+            "flags": [
+              "same_source: another starter cites the same moment"
+            ]
+          },
+          {
+            "topic": "Deadline breathing room",
+            "opener": "With deadlines in the mix, what would you most like a meeting-free Friday to make room for?",
+            "moment_ids": [
+              27
+            ],
+            "moments": [
+              {
+                "id": 27,
+                "author_name": "Leo",
+                "mood": "proud",
+                "text": "Got the team to agree to no-meeting Fridays. Small win, big relief.",
+                "song": null,
+                "created_at": "2026-10-20 20:06:27",
+                "has_image": false
+              }
+            ],
+            "flags": [
+              "same_source: another starter cites the same moment"
+            ]
+          },
+          {
+            "topic": "Interview prep verdict",
+            "opener": "Today's interview-prep marathon left me with a verdict I'm still testing: I might be ready. Want to hear my case?",
+            "moment_ids": [
+              28
+            ],
+            "moments": [
+              {
+                "id": 28,
+                "author_name": "Priya",
+                "mood": "stressful",
+                "text": "Interview prep all day. My brain is mush, but I think I'm ready.",
+                "song": null,
+                "created_at": "2026-10-21 00:06:27",
+                "has_image": false
+              }
+            ],
+            "flags": []
+          },
+          {
+            "topic": "Lecture's surprise guest",
+            "opener": "I have a lecture story about an unexpected guest with impeccable Q&A timing. It might be the semester's best cameo.",
+            "moment_ids": [
+              30
+            ],
+            "moments": [
+              {
+                "id": 30,
+                "author_name": "Priya",
+                "mood": "funny",
+                "text": "Someone brought a cat to lecture in a backpack. It meowed during the Q&A and got the biggest laugh of the semester.",
+                "song": null,
+                "created_at": "2026-10-21 20:06:27",
+                "has_image": false
+              }
+            ],
+            "flags": []
+          },
+          {
+            "topic": "Train soundtrack",
+            "opener": "A little train scene made me think of sharing headphones with you. What song would you want in our one-pair-of-headphones soundtrack?",
+            "moment_ids": [
+              31
+            ],
+            "moments": [
+              {
+                "id": 31,
+                "author_name": "Priya",
+                "mood": "sweet",
+                "text": "Saw a couple on the train sharing one pair of headphones and thought of us.",
+                "song": "Harvest Moon - Neil Young",
+                "created_at": "2026-10-21 23:06:27",
+                "has_image": false
+              }
+            ],
+            "flags": []
+          }
+        ],
+        "deeper_question": {
+          "question": "That lo-fi take on “At Last” brought our first-dance song to mind. When we see each other in December, what kind of music-shaped moment would you love for us to make time for?",
+          "why": "The cover connected a song you share to the upcoming December visit.",
+          "moment_ids": [
+            25
+          ],
+          "moments": [
+            {
+              "id": 25,
+              "author_name": "Priya",
+              "mood": "sweet",
+              "text": "Found a lo-fi cover of the song from our first dance at your cousin's wedding.",
+              "song": "At Last (lo-fi cover) - Etta James",
+              "created_at": "2026-10-16 20:00:00",
+              "has_image": false
+            }
+          ],
+          "flags": []
+        },
+        "trace": [
+          "Selected 6 shared moments from Oct 15–Oct 21 by Leo and Priya. Private moments are never selected.",
+          "Call 1: model returned 5 starters (2,206 tokens in, 0 cached, 2,009 out). 5 passed validation.",
+          "Result: 5 starters + a deeper question, 1 model call(s), $0.00128."
+        ],
+        "usage": {
+          "request_id": "ba553a20f83c43358998bb88fff4f704",
+          "calls": 1,
+          "steps": 1,
+          "input_tokens": 2206,
+          "cached_tokens": 0,
+          "cache_write_tokens": 2203,
+          "output_tokens": 2009,
+          "reasoning_tokens": 1653,
+          "cost_usd": 0.00128017,
+          "gateway_cache_hits": 0
+        },
+        "model": "gpt-6-luna-global"
+      },
+      "calls": [
+        {
+          "input_tokens": 2206,
+          "cached_tokens": 0,
+          "cache_write_tokens": 2203,
+          "output_tokens": 2009,
+          "reasoning_tokens": 1653,
+          "cost_usd": 0.00128017,
+          "latency_ms": 17542,
+          "gateway_cache": "REFRESH"
+        }
+      ],
+      "profile_text": "<couple_profile>\n<about>Priya (Partner A) lives in New Haven, CT and is a second-year grad student. Leo (Partner B) lives in London and works as a product designer. Together since June 2023, long-distance since August 2025. London is 5 hours ahead of New Haven. They have a long call on Sunday (morning for Priya, afternoon for Leo) and a short call on Wednesday evening London time. They both love cooking, running, and indie music. They visit each other about every three months; the next visit is in December.</about>\n<partner name=\"Priya\" role=\"A\" city=\"New Haven\" timezone=\"America/New_York\" label=\"stressed about (shared on purpose)\">Recruiting season and job interviews.</partner>\n<partner name=\"Leo\" role=\"B\" city=\"London\" timezone=\"Europe/London\" label=\"stressed about (shared on purpose)\">A heavy stretch at work with tight deadlines.</partner>\n<inside_joke>Gerald: the pigeon who commutes on the Tube. Any pigeon in either city is now Gerald.</inside_joke>\n<inside_joke>\"Very Wes Anderson\": their code for anything oddly symmetrical or pastel.</inside_joke>\n<inside_joke>The Honeycrisp tax: whoever visits has to bring a bag of Honeycrisp apples.</inside_joke>\n</couple_profile>"
+    },
+    {
+      "run": 2,
+      "requester": "Leo",
+      "result": {
+        "requester": "Leo",
+        "partner": "Priya",
+        "window": {
+          "since": "2026-10-15",
+          "until": "2026-10-21"
+        },
+        "moment_count": 6,
+        "starters": [
+          {
+            "topic": "The lo-fi cover",
+            "opener": "That lo-fi take on “At Last” sounds like a little time capsule. What did the cover change about the song for you?",
+            "moment_ids": [
+              25
+            ],
+            "moments": [
+              {
+                "id": 25,
+                "author_name": "Priya",
+                "mood": "sweet",
+                "text": "Found a lo-fi cover of the song from our first dance at your cousin's wedding.",
+                "song": "At Last (lo-fi cover) - Etta James",
+                "created_at": "2026-10-16 20:00:00",
+                "has_image": false
+              }
+            ],
+            "flags": []
+          },
+          {
+            "topic": "Interview prep",
+            "opener": "After a whole day of prep, what helped you feel most ready? Or would you rather give your brain a break from interview talk tonight?",
+            "moment_ids": [
+              28
+            ],
+            "moments": [
+              {
+                "id": 28,
+                "author_name": "Priya",
+                "mood": "stressful",
+                "text": "Interview prep all day. My brain is mush, but I think I'm ready.",
+                "song": null,
+                "created_at": "2026-10-21 00:06:44",
+                "has_image": false
+              }
+            ],
+            "flags": []
+          },
+          {
+            "topic": "The lecture cat",
+            "opener": "I need the play-by-play of the backpack cat’s Q&A debut—what happened just before it got that big laugh?",
+            "moment_ids": [
+              30
+            ],
+            "moments": [
+              {
+                "id": 30,
+                "author_name": "Priya",
+                "mood": "funny",
+                "text": "Someone brought a cat to lecture in a backpack. It meowed during the Q&A and got the biggest laugh of the semester.",
+                "song": null,
+                "created_at": "2026-10-21 20:06:44",
+                "has_image": false
+              }
+            ],
+            "flags": []
+          },
+          {
+            "topic": "Shared headphones",
+            "opener": "When you saw that couple sharing headphones, what about the moment made you think of us?",
+            "moment_ids": [
+              31
+            ],
+            "moments": [
+              {
+                "id": 31,
+                "author_name": "Priya",
+                "mood": "sweet",
+                "text": "Saw a couple on the train sharing one pair of headphones and thought of us.",
+                "song": "Harvest Moon - Neil Young",
+                "created_at": "2026-10-21 23:06:44",
+                "has_image": false
+              }
+            ],
+            "flags": []
+          },
+          {
+            "topic": "A Friday work win",
+            "opener": "I’ve got a small work victory with an unexpectedly satisfying Friday twist. Remind me to tell you the details.",
+            "moment_ids": [
+              27
+            ],
+            "moments": [
+              {
+                "id": 27,
+                "author_name": "Leo",
+                "mood": "proud",
+                "text": "Got the team to agree to no-meeting Fridays. Small win, big relief.",
+                "song": null,
+                "created_at": "2026-10-20 20:06:44",
+                "has_image": false
+              }
+            ],
+            "flags": []
+          }
+        ],
+        "deeper_question": {
+          "question": "That couple sharing headphones brought us to mind—what small, everyday moment would you most like us to share when we’re together next?",
+          "why": "The train-and-headphones moment opens a gentle door to what Priya hopes to share together.",
+          "moment_ids": [
+            31
+          ],
+          "moments": [
+            {
+              "id": 31,
+              "author_name": "Priya",
+              "mood": "sweet",
+              "text": "Saw a couple on the train sharing one pair of headphones and thought of us.",
+              "song": "Harvest Moon - Neil Young",
+              "created_at": "2026-10-21 23:06:44",
+              "has_image": false
+            }
+          ],
+          "flags": []
+        },
+        "trace": [
+          "Selected 6 shared moments from Oct 15–Oct 21 by Leo and Priya. Private moments are never selected.",
+          "Call 1: model returned 5 starters (2,206 tokens in, 1,799 cached, 1,323 out). 5 passed validation.",
+          "Result: 5 starters + a deeper question, 1 model call(s), $0.00073."
+        ],
+        "usage": {
+          "request_id": "2035a5000d4345dfbd625455c4771cd4",
+          "calls": 1,
+          "steps": 1,
+          "input_tokens": 2206,
+          "cached_tokens": 1799,
+          "cache_write_tokens": 404,
+          "output_tokens": 1323,
+          "reasoning_tokens": 974,
+          "cost_usd": 0.00073029,
+          "gateway_cache_hits": 0
+        },
+        "model": "gpt-6-luna-global"
+      },
+      "calls": [
+        {
+          "input_tokens": 2206,
+          "cached_tokens": 1799,
+          "cache_write_tokens": 404,
+          "output_tokens": 1323,
+          "reasoning_tokens": 974,
+          "cost_usd": 0.00073029,
+          "latency_ms": 12083,
+          "gateway_cache": "REFRESH"
+        }
+      ],
+      "profile_text": "<couple_profile>\n<about>Priya (Partner A) lives in New Haven, CT and is a second-year grad student. Leo (Partner B) lives in London and works as a product designer. Together since June 2023, long-distance since August 2025. London is 5 hours ahead of New Haven. They have a long call on Sunday (morning for Priya, afternoon for Leo) and a short call on Wednesday evening London time. They both love cooking, running, and indie music. They visit each other about every three months; the next visit is in December.</about>\n<partner name=\"Priya\" role=\"A\" city=\"New Haven\" timezone=\"America/New_York\" label=\"stressed about (shared on purpose)\">Recruiting season and job interviews.</partner>\n<partner name=\"Leo\" role=\"B\" city=\"London\" timezone=\"Europe/London\" label=\"stressed about (shared on purpose)\">A heavy stretch at work with tight deadlines.</partner>\n<inside_joke>Gerald: the pigeon who commutes on the Tube. Any pigeon in either city is now Gerald.</inside_joke>\n<inside_joke>\"Very Wes Anderson\": their code for anything oddly symmetrical or pastel.</inside_joke>\n<inside_joke>The Honeycrisp tax: whoever visits has to bring a bag of Honeycrisp apples.</inside_joke>\n</couple_profile>"
+    },
+    {
+      "run": 3,
+      "requester": "Priya",
+      "result": {
+        "requester": "Priya",
+        "partner": "Leo",
+        "window": {
+          "since": "2026-10-15",
+          "until": "2026-10-21"
+        },
+        "moment_count": 6,
+        "starters": [
+          {
+            "topic": "Meeting-free Fridays",
+            "opener": "Your no-meeting-Friday win sounds worth a tiny victory lap—how did you get the team on board?",
+            "moment_ids": [
+              27
+            ],
+            "moments": [
+              {
+                "id": 27,
+                "author_name": "Leo",
+                "mood": "proud",
+                "text": "Got the team to agree to no-meeting Fridays. Small win, big relief.",
+                "song": null,
+                "created_at": "2026-10-20 20:06:56",
+                "has_image": false
+              }
+            ],
+            "flags": [
+              "same_source: another starter cites the same moment"
+            ]
+          },
+          {
+            "topic": "A Friday reset",
+            "opener": "Now that Friday's meeting-free, what would make that day feel most useful to you during this deadline-heavy stretch?",
+            "moment_ids": [
+              27
+            ],
+            "moments": [
+              {
+                "id": 27,
+                "author_name": "Leo",
+                "mood": "proud",
+                "text": "Got the team to agree to no-meeting Fridays. Small win, big relief.",
+                "song": null,
+                "created_at": "2026-10-20 20:06:56",
+                "has_image": false
+              }
+            ],
+            "flags": [
+              "same_source: another starter cites the same moment"
+            ]
+          },
+          {
+            "topic": "Interview-prep update",
+            "opener": "I have a post-prep update I want to give you—can I save you the dramatic reveal?",
+            "moment_ids": [
+              28
+            ],
+            "moments": [
+              {
+                "id": 28,
+                "author_name": "Priya",
+                "mood": "stressful",
+                "text": "Interview prep all day. My brain is mush, but I think I'm ready.",
+                "song": null,
+                "created_at": "2026-10-21 00:06:56",
+                "has_image": false
+              }
+            ],
+            "flags": []
+          },
+          {
+            "topic": "Lecture Q&A plot twist",
+            "opener": "I have a lecture Q&A plot twist involving a backpack and a meow; remind me to tell you why the room lost it.",
+            "moment_ids": [
+              30
+            ],
+            "moments": [
+              {
+                "id": 30,
+                "author_name": "Priya",
+                "mood": "funny",
+                "text": "Someone brought a cat to lecture in a backpack. It meowed during the Q&A and got the biggest laugh of the semester.",
+                "song": null,
+                "created_at": "2026-10-21 20:06:56",
+                "has_image": false
+              }
+            ],
+            "flags": []
+          },
+          {
+            "topic": "A new At Last",
+            "opener": "I found a lo-fi At Last that gives our first-dance memory a whole new soundtrack—want to hear what it sounds like?",
+            "moment_ids": [
+              25
+            ],
+            "moments": [
+              {
+                "id": 25,
+                "author_name": "Priya",
+                "mood": "sweet",
+                "text": "Found a lo-fi cover of the song from our first dance at your cousin's wedding.",
+                "song": "At Last (lo-fi cover) - Etta James",
+                "created_at": "2026-10-16 20:00:00",
+                "has_image": false
+              }
+            ],
+            "flags": []
+          }
+        ],
+        "deeper_question": {
+          "question": "That couple sharing headphones on the train got me thinking: when we're together in December, what ordinary little thing would you love us to make room for?",
+          "why": "The shared-headphones moment sparked a gentle question about what you'd enjoy sharing during your next visit.",
+          "moment_ids": [
+            31
+          ],
+          "moments": [
+            {
+              "id": 31,
+              "author_name": "Priya",
+              "mood": "sweet",
+              "text": "Saw a couple on the train sharing one pair of headphones and thought of us.",
+              "song": "Harvest Moon - Neil Young",
+              "created_at": "2026-10-21 23:06:56",
+              "has_image": false
+            }
+          ],
+          "flags": []
+        },
+        "trace": [
+          "Selected 6 shared moments from Oct 15–Oct 21 by Leo and Priya. Private moments are never selected.",
+          "Call 1: model returned 0 starters (2,206 tokens in, 2,203 cached, 2,500 out). 0 passed validation.",
+          "  Dropped: The answer wasn't valid JSON.",
+          "Retrying once with that feedback (max 1 retry).",
+          "Retry: model returned 5 starters (2,246 tokens in, 1,799 cached, 1,389 out). 5 passed validation.",
+          "Result: 5 starters + a deeper question, 2 model call(s), $0.00204."
+        ],
+        "usage": {
+          "request_id": "afc3fdb0f18e40809ce2845fc0a25a0f",
+          "calls": 2,
+          "steps": 2,
+          "input_tokens": 4452,
+          "cached_tokens": 4002,
+          "cache_write_tokens": 444,
+          "output_tokens": 3889,
+          "reasoning_tokens": 3534,
+          "cost_usd": 0.00204062,
+          "gateway_cache_hits": 0
+        },
+        "model": "gpt-6-luna-global"
+      },
+      "calls": [
+        {
+          "input_tokens": 2206,
+          "cached_tokens": 2203,
+          "cache_write_tokens": 0,
+          "output_tokens": 2500,
+          "reasoning_tokens": 2500,
+          "cost_usd": 0.00127233,
+          "latency_ms": 19847,
+          "gateway_cache": "REFRESH"
+        },
+        {
+          "input_tokens": 2246,
+          "cached_tokens": 1799,
+          "cache_write_tokens": 444,
+          "output_tokens": 1389,
+          "reasoning_tokens": 1034,
+          "cost_usd": 0.00076829,
+          "latency_ms": 12368,
+          "gateway_cache": "REFRESH"
+        }
+      ],
+      "profile_text": "<couple_profile>\n<about>Priya (Partner A) lives in New Haven, CT and is a second-year grad student. Leo (Partner B) lives in London and works as a product designer. Together since June 2023, long-distance since August 2025. London is 5 hours ahead of New Haven. They have a long call on Sunday (morning for Priya, afternoon for Leo) and a short call on Wednesday evening London time. They both love cooking, running, and indie music. They visit each other about every three months; the next visit is in December.</about>\n<partner name=\"Priya\" role=\"A\" city=\"New Haven\" timezone=\"America/New_York\" label=\"stressed about (shared on purpose)\">Recruiting season and job interviews.</partner>\n<partner name=\"Leo\" role=\"B\" city=\"London\" timezone=\"Europe/London\" label=\"stressed about (shared on purpose)\">A heavy stretch at work with tight deadlines.</partner>\n<inside_joke>Gerald: the pigeon who commutes on the Tube. Any pigeon in either city is now Gerald.</inside_joke>\n<inside_joke>\"Very Wes Anderson\": their code for anything oddly symmetrical or pastel.</inside_joke>\n<inside_joke>The Honeycrisp tax: whoever visits has to bring a bag of Honeycrisp apples.</inside_joke>\n</couple_profile>"
+    },
+    {
+      "run": 4,
+      "requester": "Leo",
+      "result": {
+        "requester": "Leo",
+        "partner": "Priya",
+        "window": {
+          "since": "2026-10-15",
+          "until": "2026-10-21"
+        },
+        "moment_count": 6,
+        "starters": [
+          {
+            "topic": "Honeycrisp market",
+            "opener": "Your apple tribute made me smile—did the market have any other tempting finds, or was the Honeycrisp the star?",
+            "moment_ids": [
+              24
+            ],
+            "moments": [
+              {
+                "id": 24,
+                "author_name": "Priya",
+                "mood": "sweet",
+                "text": "The farmers market had the Honeycrisp apples you love. Ate one in your honor.",
+                "song": null,
+                "created_at": "2026-10-15 13:15:00",
+                "has_image": false
+              }
+            ],
+            "flags": []
+          },
+          {
+            "topic": "Lo-fi At Last",
+            "opener": "That lo-fi version sounds like such a sweet callback. What did you think of it, and did it bring the wedding moment to mind?",
+            "moment_ids": [
+              25
+            ],
+            "moments": [
+              {
+                "id": 25,
+                "author_name": "Priya",
+                "mood": "sweet",
+                "text": "Found a lo-fi cover of the song from our first dance at your cousin's wedding.",
+                "song": "At Last (lo-fi cover) - Etta James",
+                "created_at": "2026-10-16 20:00:00",
+                "has_image": false
+              }
+            ],
+            "flags": []
+          },
+          {
+            "topic": "Friday calendar win",
+            "opener": "I have a tiny Friday-calendar victory story with a bit of a team-negotiation twist. Remind me to tell you how it happened.",
+            "moment_ids": [
+              27
+            ],
+            "moments": [
+              {
+                "id": 27,
+                "author_name": "Leo",
+                "mood": "proud",
+                "text": "Got the team to agree to no-meeting Fridays. Small win, big relief.",
+                "song": null,
+                "created_at": "2026-10-20 20:07:29",
+                "has_image": false
+              }
+            ],
+            "flags": []
+          },
+          {
+            "topic": "Interview prep",
+            "opener": "That prep marathon sounds like a lot. What part feels most ready now—or would you rather take a little brain-break first?",
+            "moment_ids": [
+              28
+            ],
+            "moments": [
+              {
+                "id": 28,
+                "author_name": "Priya",
+                "mood": "stressful",
+                "text": "Interview prep all day. My brain is mush, but I think I'm ready.",
+                "song": null,
+                "created_at": "2026-10-21 00:07:29",
+                "has_image": false
+              }
+            ],
+            "flags": []
+          },
+          {
+            "topic": "Lecture backpack cat",
+            "opener": "I need the full story on the lecture cat—did it keep stealing the spotlight during Q&A?",
+            "moment_ids": [
+              30
+            ],
+            "moments": [
+              {
+                "id": 30,
+                "author_name": "Priya",
+                "mood": "funny",
+                "text": "Someone brought a cat to lecture in a backpack. It meowed during the Q&A and got the biggest laugh of the semester.",
+                "song": null,
+                "created_at": "2026-10-21 20:07:29",
+                "has_image": false
+              }
+            ],
+            "flags": []
+          }
+        ],
+        "deeper_question": {
+          "question": "That image of sharing headphones on the train is lovely. When we're together next, what kind of small moment would you most like us to make room for—maybe picking a song to share?",
+          "why": "Her train moment and the song she found this week both point to music as a sweet way to feel close.",
+          "moment_ids": [
+            31,
+            25
+          ],
+          "moments": [
+            {
+              "id": 31,
+              "author_name": "Priya",
+              "mood": "sweet",
+              "text": "Saw a couple on the train sharing one pair of headphones and thought of us.",
+              "song": "Harvest Moon - Neil Young",
+              "created_at": "2026-10-21 23:07:29",
+              "has_image": false
+            },
+            {
+              "id": 25,
+              "author_name": "Priya",
+              "mood": "sweet",
+              "text": "Found a lo-fi cover of the song from our first dance at your cousin's wedding.",
+              "song": "At Last (lo-fi cover) - Etta James",
+              "created_at": "2026-10-16 20:00:00",
+              "has_image": false
+            }
+          ],
+          "flags": []
+        },
+        "trace": [
+          "Selected 6 shared moments from Oct 15–Oct 21 by Leo and Priya. Private moments are never selected.",
+          "Call 1: model returned 5 starters (2,206 tokens in, 2,203 cached, 1,060 out). 5 passed validation.",
+          "Result: 5 starters + a deeper question, 1 model call(s), $0.00055."
+        ],
+        "usage": {
+          "request_id": "fcc37d0072ed45e29d0d7b732a934875",
+          "calls": 1,
+          "steps": 1,
+          "input_tokens": 2206,
+          "cached_tokens": 2203,
+          "cache_write_tokens": 0,
+          "output_tokens": 1060,
+          "reasoning_tokens": 687,
+          "cost_usd": 0.00055233,
+          "gateway_cache_hits": 0
+        },
+        "model": "gpt-6-luna-global"
+      },
+      "calls": [
+        {
+          "input_tokens": 2206,
+          "cached_tokens": 2203,
+          "cache_write_tokens": 0,
+          "output_tokens": 1060,
+          "reasoning_tokens": 687,
+          "cost_usd": 0.00055233,
+          "latency_ms": 8358,
+          "gateway_cache": "REFRESH"
+        }
+      ],
+      "profile_text": "<couple_profile>\n<about>Priya (Partner A) lives in New Haven, CT and is a second-year grad student. Leo (Partner B) lives in London and works as a product designer. Together since June 2023, long-distance since August 2025. London is 5 hours ahead of New Haven. They have a long call on Sunday (morning for Priya, afternoon for Leo) and a short call on Wednesday evening London time. They both love cooking, running, and indie music. They visit each other about every three months; the next visit is in December.</about>\n<partner name=\"Priya\" role=\"A\" city=\"New Haven\" timezone=\"America/New_York\" label=\"stressed about (shared on purpose)\">Recruiting season and job interviews.</partner>\n<partner name=\"Leo\" role=\"B\" city=\"London\" timezone=\"Europe/London\" label=\"stressed about (shared on purpose)\">A heavy stretch at work with tight deadlines.</partner>\n<inside_joke>Gerald: the pigeon who commutes on the Tube. Any pigeon in either city is now Gerald.</inside_joke>\n<inside_joke>\"Very Wes Anderson\": their code for anything oddly symmetrical or pastel.</inside_joke>\n<inside_joke>The Honeycrisp tax: whoever visits has to bring a bag of Honeycrisp apples.</inside_joke>\n</couple_profile>"
+    },
+    {
+      "run": 5,
+      "requester": "Priya",
+      "result": {
+        "requester": "Priya",
+        "partner": "Leo",
+        "window": {
+          "since": "2026-10-15",
+          "until": "2026-10-21"
+        },
+        "moment_count": 6,
+        "starters": [
+          {
+            "topic": "No-meeting Fridays",
+            "opener": "That no-meeting-Friday win sounds like it could change the shape of your week. How do you think you’ll use the space it creates?",
+            "moment_ids": [
+              27
+            ],
+            "moments": [
+              {
+                "id": 27,
+                "author_name": "Leo",
+                "mood": "proud",
+                "text": "Got the team to agree to no-meeting Fridays. Small win, big relief.",
+                "song": null,
+                "created_at": "2026-10-20 20:07:37",
+                "has_image": false
+              }
+            ],
+            "flags": [
+              "same_source: another starter cites the same moment"
+            ]
+          },
+          {
+            "topic": "Getting the team onboard",
+            "opener": "What was the trickiest part of getting everyone to agree to Fridays without meetings, especially in a deadline-heavy stretch?",
+            "moment_ids": [
+              27
+            ],
+            "moments": [
+              {
+                "id": 27,
+                "author_name": "Leo",
+                "mood": "proud",
+                "text": "Got the team to agree to no-meeting Fridays. Small win, big relief.",
+                "song": null,
+                "created_at": "2026-10-20 20:07:37",
+                "has_image": false
+              }
+            ],
+            "flags": [
+              "same_source: another starter cites the same moment"
+            ]
+          },
+          {
+            "topic": "Interview-prep brain",
+            "opener": "My interview-prep brain is mush, but I may actually be ready. I owe you the backstage version of how I got there.",
+            "moment_ids": [
+              28
+            ],
+            "moments": [
+              {
+                "id": 28,
+                "author_name": "Priya",
+                "mood": "stressful",
+                "text": "Interview prep all day. My brain is mush, but I think I'm ready.",
+                "song": null,
+                "created_at": "2026-10-21 00:07:37",
+                "has_image": false
+              }
+            ],
+            "flags": []
+          },
+          {
+            "topic": "Lecture celebrity",
+            "opener": "There was an unexpected guest star in lecture today, and the Q&A got upstaged. I have to give you the full cameo report.",
+            "moment_ids": [
+              30
+            ],
+            "moments": [
+              {
+                "id": 30,
+                "author_name": "Priya",
+                "mood": "funny",
+                "text": "Someone brought a cat to lecture in a backpack. It meowed during the Q&A and got the biggest laugh of the semester.",
+                "song": null,
+                "created_at": "2026-10-21 20:07:37",
+                "has_image": false
+              }
+            ],
+            "flags": []
+          },
+          {
+            "topic": "First-dance remix",
+            "opener": "I found a new, late-night-sounding take on our first-dance song. I want to tell you what caught my ear.",
+            "moment_ids": [
+              25
+            ],
+            "moments": [
+              {
+                "id": 25,
+                "author_name": "Priya",
+                "mood": "sweet",
+                "text": "Found a lo-fi cover of the song from our first dance at your cousin's wedding.",
+                "song": "At Last (lo-fi cover) - Etta James",
+                "created_at": "2026-10-16 20:00:00",
+                "has_image": false
+              }
+            ],
+            "flags": []
+          }
+        ],
+        "deeper_question": {
+          "question": "That new version of our first-dance song made me think about the music we share. When we’re together in December, what small moment would you most like us to make room for?",
+          "why": "The song brought a shared memory to mind, and the December visit gives you something ahead to look forward to.",
+          "moment_ids": [
+            25
+          ],
+          "moments": [
+            {
+              "id": 25,
+              "author_name": "Priya",
+              "mood": "sweet",
+              "text": "Found a lo-fi cover of the song from our first dance at your cousin's wedding.",
+              "song": "At Last (lo-fi cover) - Etta James",
+              "created_at": "2026-10-16 20:00:00",
+              "has_image": false
+            }
+          ],
+          "flags": []
+        },
+        "trace": [
+          "Selected 6 shared moments from Oct 15–Oct 21 by Leo and Priya. Private moments are never selected.",
+          "Call 1: model returned 5 starters (2,206 tokens in, 2,203 cached, 1,414 out). 5 passed validation.",
+          "Result: 5 starters + a deeper question, 1 model call(s), $0.00073."
+        ],
+        "usage": {
+          "request_id": "70c4f4c27baa46dd864357d03e47d6e7",
+          "calls": 1,
+          "steps": 1,
+          "input_tokens": 2206,
+          "cached_tokens": 2203,
+          "cache_write_tokens": 0,
+          "output_tokens": 1414,
+          "reasoning_tokens": 1034,
+          "cost_usd": 0.00072933,
+          "gateway_cache_hits": 0
+        },
+        "model": "gpt-6-luna-global"
+      },
+      "calls": [
+        {
+          "input_tokens": 2206,
+          "cached_tokens": 2203,
+          "cache_write_tokens": 0,
+          "output_tokens": 1414,
+          "reasoning_tokens": 1034,
+          "cost_usd": 0.00072933,
+          "latency_ms": 10457,
+          "gateway_cache": "REFRESH"
+        }
+      ],
+      "profile_text": "<couple_profile>\n<about>Priya (Partner A) lives in New Haven, CT and is a second-year grad student. Leo (Partner B) lives in London and works as a product designer. Together since June 2023, long-distance since August 2025. London is 5 hours ahead of New Haven. They have a long call on Sunday (morning for Priya, afternoon for Leo) and a short call on Wednesday evening London time. They both love cooking, running, and indie music. They visit each other about every three months; the next visit is in December.</about>\n<partner name=\"Priya\" role=\"A\" city=\"New Haven\" timezone=\"America/New_York\" label=\"stressed about (shared on purpose)\">Recruiting season and job interviews.</partner>\n<partner name=\"Leo\" role=\"B\" city=\"London\" timezone=\"Europe/London\" label=\"stressed about (shared on purpose)\">A heavy stretch at work with tight deadlines.</partner>\n<inside_joke>Gerald: the pigeon who commutes on the Tube. Any pigeon in either city is now Gerald.</inside_joke>\n<inside_joke>\"Very Wes Anderson\": their code for anything oddly symmetrical or pastel.</inside_joke>\n<inside_joke>The Honeycrisp tax: whoever visits has to bring a bag of Honeycrisp apples.</inside_joke>\n</couple_profile>"
+    }
+  ]
+}

@@ -2,6 +2,7 @@
 
     python scripts/eval_call_topics.py --label baseline           # 5 runs (default)
     python scripts/eval_call_topics.py --label v2 --runs 5
+    python scripts/eval_call_topics.py --compare baseline v2     # side-by-side metrics (no API calls)
 
 Each run uses a freshly seeded throwaway database (your data/closer.db is untouched) and asks
 Portkey to skip its response cache, so every run is a real model call. Runs alternate between
@@ -119,7 +120,8 @@ def run_eval(label: str, runs: int) -> dict:
                   f"in={u['input_tokens']} cached={u['cached_tokens']} out={u['output_tokens']} "
                   f"(reasoning {u['reasoning_tokens']}) ${u['cost_usd']:.5f} "
                   f"gateway={[c['gateway_cache'] for c in calls]}")
-    return {"label": label, "date": date.today().isoformat(), "runs": results}
+    return {"label": label, "date": date.today().isoformat(), "prompt_version": call_topics.PROMPT_VERSION,
+            "runs": results}
 
 
 def annotate(ev: dict) -> dict:
@@ -185,12 +187,63 @@ def to_markdown(ev: dict) -> str:
     return "\n".join(lines)
 
 
+def metrics(ev: dict) -> dict:
+    """Numbers for a before/after table."""
+    ev = annotate(ev)
+    runs = ev["runs"]
+    usage = [r["result"]["usage"] for r in runs]
+    starters = [(r, s) for r in runs for s in r["result"]["starters"]]
+    mean = lambda xs: sum(xs) / len(xs) if xs else 0  # noqa: E731
+    copied = [max((_longest_copied_run(s["opener"], m["text"]) for m in s["moments"]), default=0) for _, s in starters]
+    repeated_openings = 0
+    for r in runs:
+        firsts = Counter(" ".join(s["opener"].lower().split()[:3]) for s in r["result"]["starters"])
+        repeated_openings += sum(n for n in firsts.values() if n > 1)
+    flags = Counter(f.split(":")[0] for _, s in starters for f in s["flags"])
+    deeper = [r["result"]["deeper_question"] for r in runs if r["result"]["deeper_question"]]
+    priya_runs = [r for r in runs if r["requester"] == "Priya"]
+    return {
+        "Runs": len(runs),
+        "Mean cost per run": f"${mean([u['cost_usd'] for u in usage]):.5f}",
+        "Cost range": f"${min(u['cost_usd'] for u in usage):.5f} to ${max(u['cost_usd'] for u in usage):.5f}",
+        "Mean input tokens": f"{mean([u['input_tokens'] for u in usage]):,.0f}",
+        "Mean cached input tokens": f"{mean([u['cached_tokens'] for u in usage]):,.0f}",
+        "Mean output tokens (reasoning)": f"{mean([u['output_tokens'] for u in usage]):,.0f} "
+                                          f"({mean([u['reasoning_tokens'] for u in usage]):,.0f})",
+        "Mean latency": f"{mean([sum(c['latency_ms'] or 0 for c in r['calls']) for r in runs]) / 1000:.1f}s",
+        "Retries": sum(u["calls"] - 1 for u in usage),
+        "Starters returned": f"{len(starters)}/{5 * len(runs)}",
+        "Starters that retell (6+ words copied)": f"{flags['retells']}/{len(starters)}",
+        "Mean longest copied run (words)": f"{mean(copied):.1f}",
+        "Openers sharing first 3 words within a run": repeated_openings,
+        "Starters about the partner's moments": f"{sum(any(m['author_name'] != r['requester'] for m in s['moments']) for r, s in starters)}/{len(starters)}",
+        "Starters about Leo in Priya's runs": f"{sum(any(m['author_name'] == 'Leo' for m in s['moments']) for r in priya_runs for s in r['result']['starters'])}/{sum(len(r['result']['starters']) for r in priya_runs)}",
+        "Flags: generic / unsupported / same_source": f"{flags['generic']} / {flags['unsupported']} / {flags['same_source']}",
+        "Deeper questions citing the headphones moment": f"{sum(any('headphones' in m['text'] for m in d['moments']) for d in deeper)}/{len(deeper)}",
+    }
+
+
+def compare(a: str, b: str) -> str:
+    out_dir = REPO / "docs" / "evals"
+    ea, eb = (json.loads((out_dir / f"call_topics_{x}.json").read_text()) for x in (a, b))
+    ma, mb = metrics(ea), metrics(eb)
+    lines = [f"# Call-Topic Agent: {a} vs {b}", "", f"| Metric | {a} | {b} |", "|---|---|---|"]
+    lines += [f"| {k} | {ma[k]} | {mb[k]} |" for k in ma]
+    md = "\n".join(lines) + "\n"
+    (out_dir / f"call_topics_compare_{a}_{b}.md").write_text(md)
+    return md
+
+
 def main() -> None:
     ap = argparse.ArgumentParser()
     ap.add_argument("--label", default="baseline")
     ap.add_argument("--runs", type=int, default=5)
     ap.add_argument("--report-only", action="store_true", help="rebuild the .md from the saved .json (no API calls)")
+    ap.add_argument("--compare", nargs=2, metavar=("A", "B"), help="compare two saved evals (no API calls)")
     args = ap.parse_args()
+    if args.compare:
+        print(compare(*args.compare))
+        return
     out_dir = REPO / "docs" / "evals"
     out_dir.mkdir(parents=True, exist_ok=True)
     json_path = out_dir / f"call_topics_{args.label}.json"

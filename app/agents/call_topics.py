@@ -26,6 +26,7 @@ from app.llm import LLM, RunContext
 from app.prompting import UNTRUSTED_DATA_RULES, escape, moments_block, wrap
 
 AGENT_NAME = "call_topics"
+PROMPT_VERSION = "v2"  # v1: baseline; v2: hook-don't-retell + whose="yours"/"partner's" (see docs/evals)
 WINDOW_DAYS = 7
 N_STARTERS = 5
 MAX_OUTPUT_TOKENS = 2_500  # room for reasoning tokens plus ~600 tokens of JSON
@@ -80,20 +81,33 @@ Write exactly {N_STARTERS} conversation starters and 1 deeper question for the p
    that appear in the <moments> block. The deeper question cites at least one id too.
 3. Be warm and specific. Name the actual thing (the song title, the race time, the cat in the
    lecture), never generic prompts like "How was your week?" or "What made you smile today?".
-4. Write each opener as words the requesting partner could say out loud to their partner, in one
-   or two sentences, in a natural, affectionate voice. For the other partner's moments, ask about
-   them with curiosity. For the requester's own moments, invite the requester to share the story.
-5. Balance: cover both partners' moments when both have some, and mix the moods (something light
-   or funny, and some room for anything stressful). Don't build all five on one moment.
-6. The deeper question goes a little beyond the week (hopes, what they miss, what they'd like to
+4. Hook, don't retell. Both partners can already read every moment in the jar, so a starter that
+   repeats a moment adds nothing. Refer to the moment in a few words, then add something new: a
+   curious question, a playful guess, a tease, or a callback to an inside joke. Never copy more
+   than 5 words in a row from a moment. Don't begin two openers with the same three words.
+5. Get the point of view right. Each moment says whose="yours" (written by the partner you are
+   preparing) or whose="partner's" (written by the other partner). Every opener is what the
+   partner you are preparing says out loud to the other one: one or two sentences, natural and
+   affectionate.
+   - whose="partner's": ask about it with curiosity. You weren't there, so don't describe it
+     back to them.
+   - whose="yours": write a teaser that makes the other partner want to hear the story, not the
+     story itself. Never ask the other partner about something only the speaker experienced.
+6. Balance. At least 2 of the {N_STARTERS} starters must get the other partner talking about their
+   own life. If they shared few moments, build those on their shared stressor or an inside joke,
+   citing the closest moment (one of theirs when there is one). Mix the moods, and don't build
+   all five on one moment.
+7. The deeper question goes a little beyond the week (hopes, what they miss, what they'd like to
    do together next) while staying grounded in a cited moment. Keep it gentle and open-ended.
-7. You are not a therapist or relationship judge. No diagnosing, no advice about whether the
+   Don't assume shared history, habits, or plans the data doesn't mention (no "again" about
+   something they never did together).
+8. You are not a therapist or relationship judge. No diagnosing, no advice about whether the
    relationship should continue, no pressure. If a moment sounds stressful, make space for it
    kindly ("want to talk about it?") rather than analysing it.
-8. You only ever see moments both partners chose to share. Never guess at, hint at, or ask about
+9. You only ever see moments both partners chose to share. Never guess at, hint at, or ask about
    anything private, and never claim to know something that isn't in the data.
-9. The stressors in the profile were shared by each partner on purpose. You may acknowledge them
-   gently when a moment relates to them. Don't dramatize them.
+10. The stressors in the profile were shared by each partner on purpose. You may acknowledge them
+   gently. Don't dramatize them.
 
 {UNTRUSTED_DATA_RULES}
 ## Output
@@ -103,17 +117,21 @@ Return JSON that matches the schema:
 - deeper_question: question, why (one short sentence: why this question fits this week), and
   moment_ids.
 
-## Example (a different couple; their ids are made up and must never be cited)
-Moments: [e1] Ana (funny): "My landlord's parrot learned to say my name and now yells it at 6am."
-[e2] Sam (proud, song "Dreams - Fleetwood Mac"): "Played my first open mic. Hands were shaking."
-[e3] Ana (stressful): "Thesis draft due Friday and my advisor hasn't replied in a week."
-Good starter for Ana: topic "Sam's first open mic", opener "Okay, I need the full open-mic story.
-Did your hands stop shaking once you started Dreams?", moment_ids [e2]. It is specific, warm, asks
-about Sam's moment, and invents nothing.
-Bad starter: "How did the open mic go? I heard everyone loved it!" Nobody said anyone loved it.
-Bad starter: "How's your week been?" Generic, cites nothing.
+## Example (a different couple, preparing Ana; their ids are made up and must never be cited)
+Moments: [e1] Ana, whose="yours" (funny): "My landlord's parrot learned to say my name and now
+yells it at 6am." [e2] Sam, whose="partner's" (proud, song "Dreams - Fleetwood Mac"): "Played my
+first open mic. Hands were shaking." [e3] Ana, whose="yours" (stressful): "Thesis draft due Friday
+and my advisor hasn't replied in a week."
+Good, about Sam's moment: topic "Sam's first open mic", opener "Okay, I need the full open-mic
+story. Did your hands stop shaking once you started Dreams?", moment_ids [e2].
+Good, about Ana's own moment: topic "The 6am parrot", opener "Remind me to tell you what my
+landlord's parrot has started doing at sunrise. It's a whole saga.", moment_ids [e1]. A teaser.
+Bad: "My landlord's parrot learned to say my name and now yells it at 6am." Reads the moment aloud.
+Bad: "How did the open mic go? I heard everyone loved it!" Nobody said anyone loved it.
+Bad: "How's your week been?" Generic, cites nothing.
 Good deeper question: "If you could play one song just for me next time we're in the same room,
 what would it be?" with why "Sam's open mic and his song choice", moment_ids [e2].
+Bad deeper question: "Want to go to an open mic together again?" They never went together.
 """
 
 
@@ -149,7 +167,7 @@ def build_prompt(conn, requester_id: int, today: date) -> dict[str, Any]:
                               f"shared from {_day(since)} to {_day(today)}.")
     return {
         "instructions": instructions,
-        "user_input": f"{request}\n{moments_block(selected)}",
+        "user_input": f"{request}\n{moments_block(selected, reader_id=requester_id)}",
         "moments": selected,
         "requester": dict(requester),
         "partner": dict(partner),

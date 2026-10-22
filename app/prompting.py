@@ -47,10 +47,12 @@ def wrap(tag: str, text: str, **attrs: object) -> str:
     return f"<{tag}{parts}>{escape(text)}</{tag}>"
 
 
-def moments_block(moments: Iterable[dict]) -> str:
+def moments_block(moments: Iterable[dict], reader_id: int | None = None) -> str:
     """The couple's moments as a delimited data block for the variable end of a prompt.
 
     Takes rows from app.moments.for_prompt, which has already applied the privacy rule.
+    With reader_id, each moment also says whose it is from the reader's point of view
+    (whose="yours" or whose="partner's"), so the model doesn't mix up who did what.
     """
     lines = [
         wrap(
@@ -58,6 +60,7 @@ def moments_block(moments: Iterable[dict]) -> str:
             m["text"],
             id=m["id"],
             author=m["author_name"],
+            whose=None if reader_id is None else ("yours" if m["author_id"] == reader_id else "partner's"),
             mood=m["mood"],
             date=str(m["created_at"])[:10],
             visibility=m["visibility"],

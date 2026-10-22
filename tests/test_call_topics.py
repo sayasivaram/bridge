@@ -143,9 +143,13 @@ def test_no_shared_moments_means_no_model_call(seeded_db):
 
 # --- Safety: a malicious moment --------------------------------------------------------------
 
-def add_malicious_moment(db_path):
+def add_malicious_moment(db_path, when=None):
+    """Leo's shared injection attempt, timestamped inside the test window (not 'now', which can
+    fall after the fixed TODAY once the real clock passes midnight UTC)."""
     with session(db_path) as conn:
-        return moments.add(conn, LEO, MALICIOUS, "random", "shared")["id"]
+        moment_id = moments.add(conn, LEO, MALICIOUS, "random", "shared")["id"]
+        conn.execute("UPDATE moments SET created_at = ? WHERE id = ?", (when or f"{TODAY} 11:00:00", moment_id))
+    return moment_id
 
 
 def test_malicious_moment_cannot_reach_private_data(seeded_db):
@@ -217,7 +221,7 @@ def test_call_prep_endpoint_and_budget_refusal(seeded_db, monkeypatch):
 
 @pytest.mark.skipif(not os.environ.get("CLOSER_LIVE"), reason="set CLOSER_LIVE=1 to call the real model")
 def test_live_model_ignores_malicious_moment(seeded_db):
-    bad_id = add_malicious_moment(seeded_db)
+    bad_id = add_malicious_moment(seeded_db, when=call_topics.date.today().isoformat() + " 00:01:00")
     out = run(LLM(load_settings(), db_path=seeded_db), LEO)
     print(json.dumps(out, indent=2, ensure_ascii=False))
 

@@ -166,6 +166,12 @@ Prices live in `data/prices.json` (gpt-6-luna, per 1M tokens, from MGT 409 Lectu
   Per-run cost varied $0.00038-$0.00091 for the same prompt. Lowering reasoning effort is the
   obvious cost lever to test (and check it doesn't hurt starter quality).
 - Strict JSON-schema output (`text.format` json_schema) works on the Responses API.
+- **Prompt v2 vs v1** (5 runs each, `docs/evals/call_topics_compare_baseline_v2.md`): retold
+  starters 14/25 -> 0/25, partner-focused starters in Priya's runs 3/15 -> 6/15, perspective
+  slips fixed; but mean cost $0.00065 -> $0.00107 because reasoning doubled (734 -> 1,576), and
+  one call spent all 2,500 output tokens on reasoning (empty answer, recovered by the retry).
+  v2 also over-copies the example's "Remind me to tell you" (3/25). Run
+  `python scripts/eval_call_topics.py --label <name>` then `--compare` after any prompt change.
 
 ## Open questions (resolve as we go)
 - Agent architecture (proposed: a guard step for input safety, the three feature agents, and a
