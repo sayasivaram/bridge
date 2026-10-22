@@ -1,11 +1,14 @@
 # Screenshots for the report and slides
 
-Captured 2026-10-21 from the running app (Chrome, 2x resolution) with the seeded demo couple.
+Recaptured 2026-10-22 after the Bridge rebrand (logo, palette, Home page), from the running app (Chrome, 2x
+resolution) with a freshly seeded demo couple. Model calls skipped Portkey's response cache so each shot is a real call.
 App states were created through the real UI: typing, clicking, and uploading a photo.
 Evidence images 07–09 and 11 come from the real code and real test runs, rendered as pages.
 
 | File | What it shows | Report section |
 |---|---|---|
+| `00-home.png` | Home page: Ask Bridge chat and the "What do you want to do today?" bubbles | 1 Title, slides |
+| `00b-home-phone.png` | Home page on a phone (390 px wide) | Look + feel, slides |
 | `01-jar-priya.png` | Moment Jar, viewing as Priya: quick-add box and this week's moments | 4 Agents (walkthrough start), Look + feel |
 | `02-jar-leo.png` | Same week, viewing as Leo; his private moment has the 🔒 Only you badge | 6 Safety (privacy) |
 | `03-privacy-side-by-side.png` | Priya's and Leo's jars side by side: Leo's private moment appears only in his | 6 Safety (privacy), slides |
