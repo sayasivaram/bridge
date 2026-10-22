@@ -242,7 +242,7 @@ it cut the Call-Topic Agent's cost by 61% and its latency in half, and kept the 
     router read neither from the message, so it says what it assumed). It sends the couple's history: highest rated, a
     co-watch and the pasta cook-along (both 5.0/5); lowest, Codenames Duet (2.5/5, "too much strategy after a long
     work day").</li>
-  <li><b>Model call:</b> 2,950 tokens in (2,463 read from the prompt cache), 244 out, {money(0.00021)}. It returns three picks, each with why it fits, a first step, and an
+  <li><b>Model call:</b> 2,943 tokens in (2,463 read from the prompt cache, 477 written to it), 235 out, {money(0.00020)}. It returns three picks, each with why it fits, a first step, and an
     optional twist.</li>
   <li><b>Validation:</b> all three ids are in the catalog and fit tonight, there are no bookings or purchases, and the ratings
     it cites (5/5) match the history. 3 of 3 pass.</li>
@@ -250,14 +250,15 @@ it cut the Call-Topic Agent's cost by 61% and its latency in half, and kept the 
   <li><b>Logged</b> with the trace, tokens, and cost; the badge shows the total.</li>
 </ol>
 {fig("24-chat-end-to-end-rules-routed.png", "The run above as Priya saw it, with “How this was handled” open. Stage labels match the steps.", 72)}
-{pair(fig("12-call-prep-starters.png", "Call-Topic Agent for Leo: five starters, each showing the moment it came from, and a deeper question. 2,365 of 2,368 input tokens came from the prompt cache.", 100, max_px=1200),
+{pair(fig("12-call-prep-starters.png", "Call-Topic Agent for Leo: five starters, each showing the moment it came from, and a deeper question. 1,829 of 2,368 input tokens came from the prompt cache.", 100, max_px=1200),
       fig("15-pulse-drift-nudge.png", "Drift Detector: the rules found three flags for $0; the agent turned them into one suggestion grounded in the couple's best-rated ritual.", 100, max_px=1200))}
 </section>
 
 <section>
 <h2>5. Tokenomics</h2>
 <p>Every model call is logged with its input, cached-input, cache-write, output, and reasoning tokens and its cost
-(<code>llm_calls</code>), and the app shows them: a badge on every answer and a <b>Usage</b> page. The numbers below are
+(<code>llm_calls</code>), and the app shows them: a badge on every answer with all four billed counts (plain input, cached input,
+cache writes, output) and its cost, and a <b>Usage</b> page. The numbers below are
 real runs, measured with <code>python scripts/cost_report.py --measure 4</code> on fresh seed data (18 calls: four rounds of every agent plus four chat messages, two of which the router
 sent on to an agent, so those two agents have 5 runs; Portkey's
 response cache skipped so every call reached the model). Prices: gpt-6-luna per 1M tokens, input ${prices['input_per_1m']},
@@ -362,7 +363,8 @@ run offline and spend no tokens, and one optional live check is skipped unless y
 school, in Philadelphia. They tried Bridge on my laptop, viewing as Priya with the demo couple's data. Every row below
 comes from the app's own logs (<code>llm_calls</code>, <code>agent_runs</code>, and the pulse and ritual tables), except
 the first: their jar entry was erased when I reset the demo database to retake screenshots, so it is recorded from my
-notes. Two of their calls also appear in the Usage page figure in section 5.</p>
+notes. The six model calls are exported, with their token counts and costs, in
+<code>docs/usage/user_test_calls.csv</code>.</p>
 <table>
   <tr><th>What they did</th><th>What Bridge did</th><th>Model use</th></tr>
   <tr><td>Moment Jar: added a moment, <i>"I just finished finals"</i></td><td>Saved it to this week's
@@ -373,7 +375,8 @@ notes. Two of their calls also appear in the Usage page figure in section 5.</p>
   <tr><td>Rituals: "Suggest 3 rituals"</td><td>Ritual Builder picked 3 catalog rituals</td><td class=n>1 call, $0.00031</td></tr>
   <tr><td>Planned "Twenty questions, couple edition" (the agent's twist used the couple's "Honeycrisp tax" inside
     joke), marked it done, and rated it 5 of 5</td><td>Stored the rating</td><td>none</td></tr>
-  <tr><td>Back to Pulse</td><td>A new nudge, because the week's signals had changed: <i>"You two could make your next Sunday
+  <tr><td>Ask Bridge: <i>"Why do I feel distant lately?"</i></td><td>Routed by rules ($0) to the Pulse coach, which wrote a new
+    nudge because the week's signals had changed: <i>"You two could make your next Sunday
     call a relaxed pasta cook-along, with a little time to chat beyond logistics."</i></td><td class=n>1 call, $0.00012</td></tr>
   <tr><td>Ask Bridge: <i>"What were the emotions that I reported to the moment jar this week"</i></td><td>No helper
     fits a summary question, so the classifier said "none" and Bridge asked them to pick a helper</td><td class=n>1 call, $0.00006</td></tr>

@@ -322,7 +322,7 @@ def usage_summary(x_user_id: int | None = Header(default=None)) -> dict:
         rows = usage.load_rows(conn, user["couple_id"])
         budgets = usage.budget_status(conn, user["couple_id"])
     recent = [{k: r.get(k) for k in ("created_at", "agent_name", "user_name", "input_tokens", "cached_tokens",
-                                     "output_tokens", "cost_usd", "gateway_cache", "status")} | {
+                                     "cache_write_tokens", "output_tokens", "cost_usd", "gateway_cache", "status")} | {
         "agent_label": usage.AGENT_LABEL.get(r["agent_name"], r["agent_name"]), "feature": usage.feature_of(r)}
         for r in reversed(rows[-15:])]
     prices = load_prices()

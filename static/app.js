@@ -347,16 +347,9 @@ function renderCallPrep(data) {
 
   const u = data.usage;
   const badge = $("token-badge");
-  badge.textContent =
-    `${u.calls} call${u.calls === 1 ? "" : "s"} · ${u.input_tokens.toLocaleString()} in ` +
-    `(${u.cached_tokens.toLocaleString()} cached) · ${u.output_tokens.toLocaleString()} out · ` +
-    `$${u.cost_usd.toFixed(5)}` +
+  badge.textContent = tokenText(u) +
     (u.gateway_cache_hits ? ` · ⚡ ${u.gateway_cache_hits === u.calls ? "" : u.gateway_cache_hits + " "}Portkey cache hit` : "");
-  badge.title =
-    `Input ${u.input_tokens} = cached ${u.cached_tokens} + cache write ${u.cache_write_tokens} + plain ` +
-    `${u.input_tokens - u.cached_tokens - u.cache_write_tokens}\nOutput ${u.output_tokens} ` +
-    `(reasoning ${u.reasoning_tokens})\nModel ${data.model || "none"}` +
-    (u.gateway_cache_hits ? `\nPortkey answered ${u.gateway_cache_hits} call(s) from its response cache: no model call, $0` : "");
+  badge.title = tokenTitle(u) + `\nModel ${data.model || "none"}`;
 
   const list = $("starter-list");
   list.innerHTML = "";
@@ -512,10 +505,24 @@ function renderNudge(n) {
 function usageBadge(u, firstCost) {
   const badge = el("span", "token-badge");
   badge.textContent = u.calls
-    ? `${u.calls} call${u.calls === 1 ? "" : "s"} · ${u.input_tokens.toLocaleString()} in (${u.cached_tokens.toLocaleString()} cached) · ${u.output_tokens.toLocaleString()} out · $${u.cost_usd.toFixed(5)}` +
-      (u.gateway_cache_hits ? " · ⚡ Portkey cache hit" : "")
+    ? tokenText(u) + (u.gateway_cache_hits ? " · ⚡ Portkey cache hit" : "")
     : firstCost ? `0 calls now · $0 (first made for $${firstCost.toFixed(5)})` : "0 calls · $0";
+  if (u.calls) badge.title = tokenTitle(u);
   return badge;
+}
+
+// Every token badge shows all four billed counts: plain + cached + cache-write input, and output.
+function tokenText(u) {
+  return `${u.calls} call${u.calls === 1 ? "" : "s"} · ${u.input_tokens.toLocaleString()} in ` +
+    `(${u.cached_tokens.toLocaleString()} cached, ${(u.cache_write_tokens || 0).toLocaleString()} cache write) · ` +
+    `${u.output_tokens.toLocaleString()} out · $${u.cost_usd.toFixed(5)}`;
+}
+
+function tokenTitle(u) {
+  const write = u.cache_write_tokens || 0;
+  return `Input ${u.input_tokens} = cached ${u.cached_tokens} + cache write ${write} + plain ` +
+    `${u.input_tokens - u.cached_tokens - write}\nOutput ${u.output_tokens} (reasoning ${u.reasoning_tokens || 0})` +
+    (u.gateway_cache_hits ? `\nPortkey answered ${u.gateway_cache_hits} call(s) from its response cache: no model call, $0` : "");
 }
 
 function traceList(lines) {
@@ -958,14 +965,17 @@ async function loadUsage() {
   };
   table("usage-features", ["Feature", "Requests", "Calls", "Cost"], d.by_feature,
     (f) => [f.feature, f.runs, f.calls, share(f.cost_usd)]);
-  table("usage-agents", ["Agent", "Runs", "Calls / run", "Input / run", "Cached / run", "Output / run", "Cost / run", "Total"],
+  table("usage-agents", ["Agent", "Runs", "Calls / run", "Input / run", "Cached / run", "Cache write / run", "Output / run",
+    "Cost / run", "Total"],
     d.by_agent, (a) => [a.label, a.runs, a.avg_per_run.calls.toFixed(2), fmtN(a.avg_per_run.input_tokens),
-      fmtN(a.avg_per_run.cached_tokens), fmtN(a.avg_per_run.output_tokens), fmtUsd(a.avg_per_run.cost_usd), share(a.cost_usd)]);
+      fmtN(a.avg_per_run.cached_tokens), fmtN(a.avg_per_run.cache_write_tokens), fmtN(a.avg_per_run.output_tokens),
+      fmtUsd(a.avg_per_run.cost_usd), share(a.cost_usd)]);
   table("usage-users", ["Partner", "Calls", "Tokens", "Cost"], d.by_user,
     (u) => [u.user, u.calls, fmtN(u.input_tokens + u.output_tokens), share(u.cost_usd)]);
-  table("usage-recent", ["When", "Feature", "Who", "Tokens in / out", "Cost"], d.recent,
+  table("usage-recent", ["When", "Feature", "Who", "In", "Cache write", "Out", "Cost"], d.recent,
     (r) => [formatTime(r.created_at.replace("T", " ").replace(/\.\d+Z$/, "")), r.feature, r.user_name,
-      `${fmtN(r.input_tokens)} / ${fmtN(r.output_tokens)}`, r.gateway_cache === "HIT" ? "$0 (cache hit)" : fmtUsd(r.cost_usd)],
+      fmtN(r.input_tokens), fmtN(r.cache_write_tokens || 0), fmtN(r.output_tokens),
+      r.gateway_cache === "HIT" ? "$0 (cache hit)" : fmtUsd(r.cost_usd)],
     [0, 1, 2]);
 }
 

@@ -73,6 +73,17 @@ def test_usage_api_summarizes_the_couples_calls(seeded_db):
     assert data["ceiling_per_user_month"] == pytest.approx(0.75)
 
 
+def test_usage_api_reports_cache_write_tokens_everywhere(seeded_db):
+    """Cache writes are billed separately ($0.125 per 1M), so the Usage page shows them per agent and per call."""
+    with session(seeded_db) as conn:
+        conn.execute("INSERT INTO llm_calls (user_id, agent_name, request_id, status, input_tokens, cached_tokens, "
+                     "cache_write_tokens, output_tokens, cost_usd) VALUES (1, 'drift', 'y', 'ok', 1500, 1100, 400, 100, 0.0001)")
+    data = TestClient(app.main.app).get("/api/usage", headers={"X-User-Id": "1"}).json()
+    assert data["recent"][0]["cache_write_tokens"] == 400
+    assert data["by_agent"][0]["avg_per_run"]["cache_write_tokens"] == 400
+    assert data["total"]["cache_write_tokens"] == 400
+
+
 def test_usage_on_a_fresh_install_with_no_calls(seeded_db):
     """Found by the fresh-clone dry run: /api/usage crashed (division by zero) before any call."""
     data = TestClient(app.main.app).get("/api/usage", headers={"X-User-Id": "1"})
