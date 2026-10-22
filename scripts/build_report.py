@@ -310,7 +310,7 @@ spent its whole output cap on reasoning and returned nothing (the retry recovere
 cost below the original with the quality gains intact. The one place v3 looks slightly worse is balance: one of three
 Priya runs had only one starter about Leo, against the rule's two. With 5 runs per version, that difference is within
 run-to-run noise; the large effects (retelling 14 → 0, cost, latency) are not.</p>
-{fig("29-usage-page.png", "The Usage page on a fresh install after a few real requests: totals, each partner's daily allowance against the budget, and cost by feature, agent, and partner. Portkey cache hits show as $0.", 58)}
+{fig("29-usage-page.png", "The Usage page on a fresh install after a few real requests: totals, each partner's daily allowance against the budget, and cost by feature, agent, and partner.", 58)}
 </section>
 
 <section>
