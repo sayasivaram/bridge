@@ -3,11 +3,14 @@
 A multi-agent app that helps long-distance couples stay connected between calls:
 a **Moment Jar** that turns small moments from the week into call topics, a weekly
 **Connection Pulse** that notices drift, and a **Ritual Builder** that suggests shared
-activities. (Work in progress.)
+activities. Three AI agents (gpt-6-luna through Portkey) sit on a privacy layer that keeps each
+partner's private moments and notes away from the other partner, and away from any prompt
+whose output the other partner sees.
 
-## Run it locally (about 5 minutes)
+## Run it locally (about 2 minutes)
 
-You need **Python 3.11 or newer** (`python3 --version` to check).
+You need **Python 3.11 or newer** (`python3 --version` to check; developed on 3.14). Nothing else:
+no database server, no Node, no Docker. SQLite comes with Python.
 
 1. **Clone and enter the repo**
    ```bash
@@ -30,6 +33,9 @@ You need **Python 3.11 or newer** (`python3 --version` to check).
    .venv\Scripts\Activate.ps1
    pip install -r requirements.txt
    ```
+   If PowerShell says running scripts is disabled, run
+   `Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass` first (this window only).
+   On Ubuntu/Debian, if `venv` is missing: `sudo apt install python3-venv`.
 
 3. **Add an API key.** The app looks for a `.env` file in two places, in this order:
    1. this repo's folder (`closer/.env`)
@@ -48,11 +54,25 @@ You need **Python 3.11 or newer** (`python3 --version` to check).
    ```bash
    python run.py
    ```
-   Open <http://127.0.0.1:8000>. On first start the app creates `data/closer.db` and loads a
-   demo couple (Priya in New Haven and Leo in London) with three weeks of moments, weekly
-   pulses, and rituals. Use the **Viewing as** dropdown (top right) to switch partners.
-   The status box says whether a key was found and where it came from. If no key is found,
-   `run.py` stops and lists the exact places it looked.
+   Open the address it prints, normally <http://127.0.0.1:8000>. If port 8000 is busy (another
+   app is running), it picks the next free port and tells you; `python run.py --port 9000`
+   chooses one. On first start it creates `data/closer.db` and loads a demo couple (Priya in New
+   Haven and Leo in London) with three weeks of moments, weekly check-ins, and rituals.
+   The line at the bottom of the page says which key was found and where it came from. If no
+   key is found, `run.py` stops and lists the exact places it looked.
+
+## Try this first (2 minutes)
+
+1. **Moment Jar** (home page): read this week's moments as Priya, then switch **Viewing as** to
+   Leo (top right). His private moment ("Still behind at work…") shows only in his jar.
+2. Press **Prep for our call**: 5 conversation starters, each with the moment it came from,
+   plus a token and cost badge.
+3. In **Ask Closer**, try "What should we do tonight?" and open **How this was handled** to see
+   the guard, router, and agent steps.
+4. **Pulse** tab: the trend chart and this week's nudge (the rules found drift: Leo's score fell
+   4 → 3 → 2).
+5. **Rituals** tab: pick a time and energy level, press **Suggest 3 rituals**, plan one, mark it
+   done, and rate it.
 
 ## What you can do
 
@@ -95,6 +115,8 @@ gpt-6-luna (a malicious moment the real model must ignore, about $0.001):
 ```bash
 CLOSER_LIVE=1 pytest -k live -s
 ```
+
+(PowerShell: `$env:CLOSER_LIVE=1; pytest -k live -s`)
 
 ## Project layout
 
