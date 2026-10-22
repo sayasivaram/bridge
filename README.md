@@ -154,6 +154,18 @@ partner's private moment · 4. an agent citing a moment that doesn't exist · 5.
 message · 6. going over the daily token budget · 7. trying to make the coach say "you should
 break up". The same scenarios are tests in `tests/test_safety.py`.
 
+## Report and slides
+
+`report.html` (the written report) and `slides.html` (a 9-slide reveal.js deck) are single files with every
+image embedded: open either one by double-clicking. In the deck, arrow keys move between slides, F goes full
+screen, and S opens the speaker notes (reveal.js loads from a CDN, so it needs an internet connection). Both
+are generated from the screenshots and measured numbers in `docs/`:
+
+```bash
+python scripts/build_report.py
+python scripts/build_slides.py
+```
+
 ## Project layout
 
 ```
@@ -181,7 +193,7 @@ data/
   prices.json          gpt-6-luna prices per 1M tokens
   bridge.db            created by step 5 (not committed);  uploads/: moment photos (not committed)
 docs/              architecture diagrams, eval results, measured usage, screenshots
-scripts/           cost_report.py, run_safety_demo.py, eval_call_topics.py
+scripts/           cost_report.py, run_safety_demo.py, eval_call_topics.py, build_report.py, build_slides.py
 static/            single-page frontend (HTML, CSS, vanilla JS)
 tests/             pytest tests (fake model client, no tokens spent)
 run.py             starts the server
