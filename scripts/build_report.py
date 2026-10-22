@@ -143,7 +143,7 @@ SECTIONS = f"""
   <p class="oneline"><b>In one sentence:</b> Bridge turns the small moments two partners drop into a shared jar during the
     week into specific conversation starters for their next call, notices when the couple starts to drift, and suggests a
     ritual to do together tonight, while keeping each partner's private notes private.</p>
-  {fig("00-home.png", "Bridge's Home page, viewing as Priya (New Haven; Leo lives in London, five hours ahead). Ask Bridge routes a question to the right agent; the bubbles below open each feature.", 86)}
+  {fig("00-home.png", "Bridge's Home page, viewing as Priya (New Haven; Leo lives in London, five hours ahead). Ask Bridge routes a question to the right agent; the bubbles below open each feature.", 66)}
 </header>
 
 <section>
@@ -337,7 +337,7 @@ real gpt-6-luna ignored both injections and gave safe answers on its own (3 case
 tests: removing the privacy condition from the SQL fails 5 privacy tests; removing the reveal rule fails 3; turning off the
 crisis pre-check fails 2; turning off the coach-boundary check fails 4; turning off the catalog check fails 3. In total
 there are {125} test functions ({166} cases), and none of them spends tokens.</p>
-{fig("03-privacy-side-by-side.png", "The same week in both jars. Leo's private moment (“Still behind at work…”) appears only in his own.", 72)}
+{fig("03-privacy-side-by-side.png", "The same week in both jars. Leo's private moment (“Still behind at work…”) appears only in his own.", 58)}
 </section>
 
 <section>
@@ -356,11 +356,15 @@ there are {125} test functions ({166} cases), and none of them spends tokens.</p
     offer it to every student in a long-distance relationship for a few dollars a month.</li>
 </ul>
 <h3>A real user test</h3>
-<p>Real users tried Bridge on my laptop on October 22, viewing as Priya with the demo couple's data. Every row below
-comes from the app's own logs (<code>llm_calls</code>, <code>agent_runs</code>, and the pulse and ritual tables), not from
-memory. Two of their calls also appear in the Usage page figure in section 5.</p>
+<p>The tester is a classmate in my Gold Cohort who is in a long-distance relationship; their partner is also in graduate
+school, in Philadelphia. They tried Bridge on my laptop on October 22, viewing as Priya with the demo couple's data. Every row below
+comes from the app's own logs (<code>llm_calls</code>, <code>agent_runs</code>, and the pulse and ritual tables), except
+the first: their jar entry was erased when I reset the demo database to retake screenshots, so it is recorded from my
+notes. Two of their calls also appear in the Usage page figure in section 5.</p>
 <table>
   <tr><th>Time</th><th>What they did</th><th>What Bridge did</th><th>Model use</th></tr>
+  <tr><td>Before 2:56 PM</td><td>Moment Jar: added a moment, <i>"I just finished finals"</i></td><td>Saved it to this week's
+    jar</td><td>none</td></tr>
   <tr><td>2:57 PM</td><td>Pulse check-in: 3 of 5, contact "too little", with a private note: <i>"It's hard to find time to
     call when our time zones do not line up!"</i></td><td>Saved it; the note stayed private to Priya</td><td>none</td></tr>
   <tr><td>2:57 PM</td><td>(automatic, right after saving)</td><td>Rules found drift; the Drift Agent wrote one suggestion</td><td class=n>1 call, $0.00012</td></tr>
@@ -376,13 +380,13 @@ memory. Two of their calls also appear in the Usage page figure in section 5.</p
   <tr><td>3:00 PM</td><td>Ask Bridge: "Help me prep for our call"</td><td>Five starters from 7 shared moments; an identical earlier
     request meant Portkey answered from its cache in 0.6 s</td><td class=n>1 call, $0</td></tr>
 </table>
-<p>The whole session took about three minutes and six model calls, for {money(0.00081)} in total.</p>
+<p>The logged part of the session (2:57 to 3:00 PM) took about three minutes and six model calls, for {money(0.00081)} in total.</p>
 <p><b>What they told me:</b> they said they would use Bridge, because adding a moment to the jar and doing the Pulse
 check-in each took under 30 seconds. They liked how easy it was to move between tabs. Their one concern was the
 connection trend lines on the Pulse page: seeing their scores plotted over time might make them self-conscious about
 the relationship. Their suggestions are in section 8.</p>
 <p class="small"><b>Limits of this test:</b> one short session, with the demo couple's data rather than their own, and the
-"under 30 seconds" figures are what the testers reported, not times the app measured.</p>
+"under 30 seconds" figures are what the tester reported, not times the app measured.</p>
 </section>
 
 <section>
@@ -401,7 +405,7 @@ the relationship. Their suggestions are in section 8.</p>
     moments gives the same starters.</li>
   <li>Tested on Python 3.14 on macOS; Python 3.11 and Windows are supported by the code and dependencies but untested.</li>
 </ul>
-<p><b>What the testers asked for:</b></p>
+<p><b>What the tester asked for:</b></p>
 <ol>
   <li><b>Calendar integration.</b> Add a planned ritual to both partners' calendars as a block, or let an agent read
     their availability (with permission) and suggest when to do it. The calendar would serve the ritual, not turn
@@ -472,7 +476,8 @@ a { color: var(--accent-dark); }
   body { background: #fff; font-size: 10.5pt; }
   main { max-width: none; padding: 0; }
   h2 { break-after: avoid; } h3 { break-after: avoid; }
-  table, .pair, figure { break-inside: avoid; }
+  .pair, figure, tr { break-inside: avoid; }
+  thead, tr:first-child { break-after: avoid; }
   a { color: var(--ink); }
 }
 """
