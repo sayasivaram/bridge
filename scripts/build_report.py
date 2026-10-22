@@ -355,12 +355,34 @@ there are {125} test functions ({166} cases), and none of them spends tokens.</p
     {money(2 * proj['ceiling_per_user_month'])} even in the worst case. A nonprofit or university counseling center could
     offer it to every student in a long-distance relationship for a few dollars a month.</li>
 </ul>
-{TODO.format("a real user test. Even one couple for 15 minutes counts, and it is the strongest evidence. A simple protocol: "
-             "(1) ask one partner to write down what they'd talk about on their next call, timing it; (2) have them drop 5–10 moments "
-             "from their week into Bridge (or use the demo couple) and press Prep for our call; (3) ask them to rate the starters 1–5 for "
-             "“would actually use this” and pick their favorite; (4) after the call, ask how many starters they used. Report the time "
-             "before and after, the ratings, one quote, and a screenshot. If you can't run it in time, say so plainly here and present "
-             "the bullets above as estimates.")}
+<h3>A real user test</h3>
+<p>Real users tried Bridge on my laptop on October 22, viewing as Priya with the demo couple's data. Every row below
+comes from the app's own logs (<code>llm_calls</code>, <code>agent_runs</code>, and the pulse and ritual tables), not from
+memory. Two of their calls also appear in the Usage page figure in section 5.</p>
+<table>
+  <tr><th>Time</th><th>What they did</th><th>What Bridge did</th><th>Model use</th></tr>
+  <tr><td>2:57 PM</td><td>Pulse check-in: 3 of 5, contact "too little", with a private note: <i>"It's hard to find time to
+    call when our time zones do not line up!"</i></td><td>Saved it; the note stayed private to Priya</td><td>none</td></tr>
+  <tr><td>2:57 PM</td><td>(automatic, right after saving)</td><td>Rules found drift; the Drift Agent wrote one suggestion</td><td class=n>1 call, $0.00012</td></tr>
+  <tr><td>2:57 PM</td><td>Rituals: "Suggest 3 rituals"</td><td>Ritual Builder picked 3 catalog rituals in 4.6 s</td><td class=n>1 call, $0.00031</td></tr>
+  <tr><td>2:57 PM</td><td>Planned "Twenty questions, couple edition" (the agent's twist used the couple's "Honeycrisp tax" inside
+    joke), marked it done, and rated it 5 of 5</td><td>Stored the rating</td><td>none</td></tr>
+  <tr><td>2:58 PM</td><td>Back to Pulse</td><td>A new nudge, because the week's signals had changed: <i>"You two could make your next Sunday
+    call a relaxed pasta cook-along, with a little time to chat beyond logistics."</i></td><td class=n>1 call, $0.00012</td></tr>
+  <tr><td>2:59 PM</td><td>Ask Bridge: <i>"What were the emotions that I reported to the moment jar this week"</i></td><td>No helper
+    fits a summary question, so the classifier said "none" and Bridge asked them to pick a helper</td><td class=n>1 call, $0.00006</td></tr>
+  <tr><td>3:00 PM</td><td>Ask Bridge: "What should we do tonight?"</td><td>Routed by rules ($0) to the Ritual Builder, whose history now
+    had their new 5 of 5 rating at the top: the feedback loop working in real use</td><td class=n>1 call, $0.00020</td></tr>
+  <tr><td>3:00 PM</td><td>Ask Bridge: "Help me prep for our call"</td><td>Five starters from 7 shared moments; an identical earlier
+    request meant Portkey answered from its cache in 0.6 s</td><td class=n>1 call, $0</td></tr>
+</table>
+<p>The whole session took about three minutes and six model calls, for {money(0.00081)} in total.</p>
+<p><b>What they told me:</b> they said they would use Bridge, because adding a moment to the jar and doing the Pulse
+check-in each took under 30 seconds. They liked how easy it was to move between tabs. Their one concern was the
+connection trend lines on the Pulse page: seeing their scores plotted over time might make them self-conscious about
+the relationship. Their suggestions are in section 8.</p>
+<p class="small"><b>Limits of this test:</b> one short session, with the demo couple's data rather than their own, and the
+"under 30 seconds" figures are what the testers reported, not times the app measured.</p>
 </section>
 
 <section>
@@ -379,6 +401,19 @@ there are {125} test functions ({166} cases), and none of them spends tokens.</p
     moments gives the same starters.</li>
   <li>Tested on Python 3.14 on macOS; Python 3.11 and Windows are supported by the code and dependencies but untested.</li>
 </ul>
+<p><b>What the testers asked for:</b></p>
+<ol>
+  <li><b>Calendar integration.</b> Add a planned ritual to both partners' calendars as a block, or let an agent read
+    their availability (with permission) and suggest when to do it. The calendar would serve the ritual, not turn
+    Bridge into a scheduler.</li>
+  <li><b>Ask Bridge as a relationship coach.</b> Offer reassurance and summaries, such as "what emotions did I report
+    this week?", the question it couldn't answer in the test. The coach boundary would stay: no diagnosing, no
+    relationship decisions, and the crisis check first.</li>
+  <li><b>Custom rituals.</b> Let couples add their own rituals to the catalog the agent picks from, checked the same way as
+    the built-in 25 (time, energy, no purchases or bookings).</li>
+  <li><b>A gentler view of the trend.</b> Make the connection chart optional, or show a softer summary instead of plotted
+    scores, so a dip doesn't make a couple feel watched.</li>
+</ol>
 <p><b>With another month:</b></p>
 <ol>
   <li><b>A real pilot</b> with 5–10 long-distance couples for three weeks, measuring how many starters they use per call
