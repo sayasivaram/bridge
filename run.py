@@ -48,8 +48,8 @@ if __name__ == "__main__":
         sys.exit(f"\n{err}\n")
 
     port = free_port(args.port)
-    print(f"Using {settings.provider} key from {settings.key_source}, model {settings.model}.")
+    print(f"Using {settings.provider} key from {settings.key_source}, model {settings.model}.", flush=True)
     if port != args.port:
-        print(f"Port {args.port} is busy, so Closer is using {port} instead.")
-    print(f"Closer is running at http://127.0.0.1:{port}  (Ctrl+C to stop)")
+        print(f"Port {args.port} is busy, so Closer is using {port} instead.", flush=True)
+    print(f"Closer is running at http://127.0.0.1:{port}  (Ctrl+C to stop)", flush=True)
     uvicorn.run("app.main:app", host="127.0.0.1", port=port)
