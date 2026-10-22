@@ -96,6 +96,7 @@ async function switchUser(userId) {
 async function loadMe() {
   state.me = await api("/api/me");
   if (state.page === "pulse") loadPulse();
+  if (state.page === "rituals") { $("suggest-result").hidden = true; loadRituals(); }
   const partner = state.me.partner?.name || "partner";
   document.querySelectorAll(".partner-name").forEach((el) => (el.textContent = partner));
   $("add-hint").textContent =
@@ -398,6 +399,7 @@ function showPage(page) {
   document.querySelectorAll(".tab[data-page]").forEach((t) => t.classList.toggle("tab--active", t.dataset.page === page));
   document.querySelectorAll("main [data-page]").forEach((s) => (s.hidden = s.dataset.page !== page));
   if (page === "pulse") loadPulse();
+  if (page === "rituals") loadRituals();
 }
 
 // ---------- Connection Pulse ----------
@@ -612,6 +614,158 @@ function renderChart(data) {
   });
 }
 
+// ---------- Ritual Builder ----------
+
+const CATEGORY_EMOJI = { cook: "🍳", watch: "📺", game: "🎲", creative: "🎨", letters: "💌", goodnight: "🌙", other: "✨" };
+
+function setupRituals() {
+  $("suggest-btn").addEventListener("click", suggestRituals);
+}
+
+async function suggestRituals() {
+  const btn = $("suggest-btn");
+  const time = document.querySelector("input[name=r-time]:checked").value;
+  const energy = document.querySelector("input[name=r-energy]:checked").value;
+  btn.disabled = true;
+  btn.classList.add("loading");
+  btn.textContent = "Picking";
+  $("suggest-msg").textContent = "";
+  $("suggest-result").hidden = true;
+  try {
+    renderPicks(await api("/api/rituals/suggest", { method: "POST", body: { time, energy } }));
+  } catch (err) {
+    $("suggest-msg").textContent = err.message;
+    $("suggest-msg").className = "form-msg form-msg--error";
+  } finally {
+    btn.disabled = false;
+    btn.classList.remove("loading");
+    btn.textContent = "Suggest 3 rituals";
+  }
+}
+
+function renderPicks(data) {
+  const label = { 15: "15 minutes", 60: "an hour", 120: "2+ hours" }[data.time];
+  $("suggest-meta").textContent = `For tonight: ${label}, ${data.energy} energy`;
+  $("ritual-badge").replaceWith(Object.assign(usageBadge(data.usage), { id: "ritual-badge" }));
+  const list = $("ritual-picks");
+  list.innerHTML = "";
+  for (const p of data.picks) {
+    const li = el("li", "pick");
+    const h = el("h3");
+    h.append(el("i", "", CATEGORY_EMOJI[p.category] || "✨"), p.name);
+    li.append(h, el("div", "facts", `${p.minutes} min · ${p.energy} energy · ${p.cost}`), el("p", "why", p.why));
+    const step = el("p", "step");
+    step.append(el("b", "", "First step: "), p.first_step);
+    li.appendChild(step);
+    if (p.variation) {
+      const tw = el("p", "twist");
+      tw.append(el("b", "", "Your twist: "), p.variation);
+      li.appendChild(tw);
+    }
+    if (p.source === "rules") li.appendChild(el("span", "rules-tag", "Picked by the rules (no AI)"));
+    const btn = el("button", "", "Plan this");
+    btn.type = "button";
+    btn.addEventListener("click", async () => {
+      btn.disabled = true;
+      await api("/api/rituals", { method: "POST", body: { catalog_id: p.id, variation: p.variation || null } });
+      btn.textContent = "Planned ✓";
+      loadRituals();
+    });
+    li.appendChild(btn);
+    list.appendChild(li);
+  }
+  const trace = $("ritual-trace");
+  trace.innerHTML = "";
+  for (const line of data.trace) trace.appendChild(el("li", line.trim().startsWith("Dropped:") ? "dropped" : "", line.trim()));
+  $("suggest-result").hidden = false;
+}
+
+async function loadRituals() {
+  const items = await api("/api/rituals");
+  const list = $("ritual-list");
+  list.innerHTML = "";
+  const partner = state.me.partner?.name || "your partner";
+  for (const r of items) {
+    const li = el("li", "ritual-item");
+    const top = el("div", "top");
+    const title = el("span", "title");
+    title.append(el("i", "", CATEGORY_EMOJI[r.category] || "✨"), r.title);
+    top.append(title, el("span", `status status--${r.status}`, r.status));
+    const actions = el("div", "actions");
+    if (r.status === "planned") {
+      for (const [label, status] of [["Mark done", "done"], ["Skip", "skipped"]]) {
+        const b = el("button", "", label);
+        b.type = "button";
+        b.addEventListener("click", async () => {
+          await api(`/api/rituals/${r.id}/status`, { method: "POST", body: { status } });
+          loadRituals();
+        });
+        actions.appendChild(b);
+      }
+    }
+    top.appendChild(actions);
+    li.appendChild(top);
+    const core = (r.variation || "").toLowerCase().replace(/^the /, "");
+    if (core && !r.title.toLowerCase().includes(core)) {
+      li.appendChild(el("div", "twist-line", `Twist: ${r.variation}`)); // shown once, not glued onto the title
+    }
+
+    if (r.status === "done") {
+      const ratings = el("div", "ratings");
+      if (r.partner_rating) {
+        const line = el("span");
+        line.append(el("b", "", `${partner}: ${r.partner_rating}/5`), r.partner_note ? ` · ${r.partner_note}` : "");
+        ratings.appendChild(line);
+      } else {
+        ratings.appendChild(el("span", "", `${partner} hasn't rated it yet.`));
+      }
+      li.append(ratings, rateForm(r, partner));
+    }
+    list.appendChild(li);
+  }
+  if (!items.length) list.appendChild(el("li", "muted small", "No rituals yet. Plan one above."));
+}
+
+function rateForm(r, partner) {
+  const form = el("form", "rate-form");
+  let rating = r.my_rating || 0;
+  const stars = el("span", "stars");
+  const paint = () => [...stars.children].forEach((b, i) => b.classList.toggle("on", i < rating));
+  for (let n = 1; n <= 5; n++) {
+    const b = el("button", "", "★");
+    b.type = "button";
+    b.setAttribute("aria-label", `${n} out of 5`);
+    b.addEventListener("click", () => { rating = n; paint(); });
+    stars.appendChild(b);
+  }
+  paint();
+  const note = document.createElement("input");
+  note.type = "text";
+  note.maxLength = 200;
+  note.placeholder = `Optional note (${partner} will see it)`;
+  note.value = r.my_note || "";
+  const save = el("button", "save", r.my_rating ? "Update" : "Save rating");
+  save.type = "submit";
+  const msg = el("span", "muted small", "");
+  form.append(el("span", "small", "You:"), stars, note, save, msg);
+  form.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    if (!rating) { msg.textContent = "Pick 1 to 5 stars."; return; }
+    const res = await api(`/api/rituals/${r.id}/feedback`, { method: "POST", body: { rating, note: note.value.trim() || null } });
+    if (res.support) {  // the note tripped the crisis pre-check: show support, hide the note from the partner
+      const box = el("div", "support");
+      box.append(el("h3", "", res.support.title), el("p", "", res.support.body));
+      for (const x of res.support.resources) box.appendChild(el("p", "", `${x.name}: ${x.contact}`));
+      box.append(el("p", "", res.support.emergency), el("p", "footnote", res.support.footnote));
+      form.replaceWith(box);
+      return;
+    }
+    msg.textContent = "Saved. This helps the next suggestions.";
+    save.textContent = "Update";
+  });
+  return form;
+}
+
 // ---------- helpers ----------
 
 function el(tag, className, text) {
@@ -641,5 +795,6 @@ setupWeekNav();
 setupCallPrep();
 setupTabs();
 setupPulseForm();
+setupRituals();
 showSetupStatus();
 setupUserSwitch();

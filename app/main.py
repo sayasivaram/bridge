@@ -17,8 +17,8 @@ from pydantic import BaseModel, Field
 
 from datetime import timedelta
 
-from app import db, moments, pulses, safety, timeutil
-from app.agents import call_topics, drift
+from app import db, moments, pulses, rituals, safety, timeutil
+from app.agents import call_topics, drift, ritual_builder
 from app.config import REPO_DIR, MissingAPIKeyError, load_settings
 from app.llm import LLM, BudgetExceededError, StepLimitError
 from app.seed import seed
@@ -206,6 +206,87 @@ def pulse_nudge(x_user_id: int | None = Header(default=None)) -> dict:
         raise HTTPException(503, str(err)) from None
     except MissingAPIKeyError:
         raise HTTPException(503, "No API key is set up, so AI features are off. See the README.") from None
+
+
+class SuggestIn(BaseModel):
+    time: Literal["15", "60", "120"]
+    energy: Literal["low", "medium", "high"]
+
+
+class PlanIn(BaseModel):
+    catalog_id: str = Field(max_length=60)
+    variation: str | None = Field(default=None, max_length=300)
+
+
+class StatusIn(BaseModel):
+    status: Literal["planned", "done", "skipped"]
+
+
+class RatingIn(BaseModel):
+    rating: int = Field(ge=1, le=5)
+    note: str | None = Field(default=None, max_length=rituals.NOTE_MAX)
+
+
+@app.get("/api/rituals/catalog")
+def ritual_catalog() -> list[dict]:
+    return list(rituals.catalog().values())
+
+
+@app.get("/api/rituals")
+def list_rituals(x_user_id: int | None = Header(default=None)) -> list[dict]:
+    with db.session() as conn:
+        user = current_user(conn, x_user_id)
+        return rituals.list_for_viewer(conn, user["id"])
+
+
+@app.post("/api/rituals/suggest")
+def suggest_rituals(body: SuggestIn, x_user_id: int | None = Header(default=None)) -> dict:
+    """Ritual Builder: 3 catalog rituals for tonight, personalized from the couple's ratings."""
+    with db.session() as conn:
+        user = current_user(conn, x_user_id)
+    try:
+        return ritual_builder.run(get_llm(), user["id"], body.time, body.energy)
+    except BudgetExceededError as err:
+        raise HTTPException(429, str(err)) from None
+    except StepLimitError as err:
+        raise HTTPException(503, str(err)) from None
+    except MissingAPIKeyError:
+        raise HTTPException(503, "No API key is set up, so AI features are off. See the README.") from None
+    except Exception as err:
+        print(f"ritual suggest failed: {type(err).__name__}: {err}")
+        raise HTTPException(502, "The AI service didn't answer properly. Please try again in a moment.") from None
+
+
+@app.post("/api/rituals", status_code=201)
+def plan_ritual(body: PlanIn, x_user_id: int | None = Header(default=None)) -> dict:
+    with db.session() as conn:
+        user = current_user(conn, x_user_id)
+        try:
+            return rituals.add_planned(conn, user["id"], body.catalog_id, body.variation)
+        except rituals.RitualError as err:
+            raise HTTPException(400, str(err)) from None
+
+
+@app.post("/api/rituals/{ritual_id}/status")
+def ritual_status(ritual_id: int, body: StatusIn, x_user_id: int | None = Header(default=None)) -> dict:
+    with db.session() as conn:
+        user = current_user(conn, x_user_id)
+        try:
+            rituals.set_status(conn, user["id"], ritual_id, body.status)
+        except rituals.RitualError as err:
+            raise HTTPException(404, str(err)) from None
+    return {"ok": True}
+
+
+@app.post("/api/rituals/{ritual_id}/feedback")
+def rate_ritual(ritual_id: int, body: RatingIn, x_user_id: int | None = Header(default=None)) -> dict:
+    """Rate a ritual 1-5 with an optional note. Feeds the Ritual Builder's next suggestions."""
+    with db.session() as conn:
+        user = current_user(conn, x_user_id)
+        try:
+            return rituals.rate(conn, user["id"], ritual_id, body.rating, body.note)
+        except rituals.RitualError as err:
+            raise HTTPException(400 if "Rate" in str(err) or "note" in str(err) else 404, str(err)) from None
 
 
 app.mount("/static", StaticFiles(directory=STATIC_DIR), name="static")

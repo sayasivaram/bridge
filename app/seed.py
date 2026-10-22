@@ -90,16 +90,17 @@ def seed(db_path: Path | str = DB_PATH, today: date | None = None, reset: bool =
         for r in data["rituals"]:
             day = (week_start(r["week"], today) + timedelta(days=r["day"])).isoformat()
             ritual_id = conn.execute(
-                "INSERT INTO rituals (couple_id, title, category, description, minutes, energy, "
-                "status, source, done_on, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, 'seed', ?, ?)",
-                (couple_id, r["title"], r["category"], r["description"], r["minutes"], r["energy"],
+                "INSERT INTO rituals (couple_id, catalog_id, title, variation, category, description, minutes, "
+                "energy, status, source, done_on, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 'seed', ?, ?)",
+                (couple_id, r.get("catalog_id"), r["title"], r.get("variation"), r["category"], r["description"],
+                 r["minutes"], r["energy"],
                  r["status"], day if r["status"] == "done" else None, f"{day} 09:00:00"),
             ).lastrowid
             for f in r["feedback"]:
                 conn.execute(
-                    "INSERT INTO ritual_feedback (ritual_id, user_id, rating, would_repeat, comment, created_at) "
-                    "VALUES (?, ?, ?, ?, ?, ?)",
-                    (ritual_id, user_ids[f["who"]], f["rating"], int(f["would_repeat"]), f["comment"],
+                    "INSERT INTO ritual_feedback (ritual_id, user_id, rating, note, created_at) "
+                    "VALUES (?, ?, ?, ?, ?)",
+                    (ritual_id, user_ids[f["who"]], f["rating"], f["note"],
                      f"{day} 22:00:00"),
                 )
         return counts(conn)

@@ -120,6 +120,10 @@ Tier 3 needs a real user trying it and measured improvement versus how couples d
   partner who will see the output, or `moments.BOTH` when both will see it (shared only).
 - **User text goes into prompts only via `app/prompting.py`** (`wrap` / `moments_block`): it is
   HTML-escaped and tagged. `UNTRUSTED_DATA_RULES` goes in every agent's stable system prompt.
+- **Ritual Builder picks only catalog ids** (`data/ritual_catalog.json`), filtered to tonight's
+  time/energy in code; validation drops unknown or non-fitting ids and invented purchases or
+  bookings. Ritual feedback notes are visible to both partners unless the crisis pre-check flags
+  them (then hidden from the partner and never sent to a model).
 - The frontend renders user text with `textContent`, never `innerHTML`.
 - **Time zones:** timestamps are stored in UTC; "today" / "this week" / agent windows are in the
   viewing or requesting partner's `users.timezone`. Use `app/timeutil.py` (`local_today`,
@@ -188,6 +192,9 @@ Prices live in `data/prices.json` (gpt-6-luna, per 1M tokens, from MGT 409 Lectu
 - **Drift Agent** (live, seed couple): 1,553 input tokens, ~110 output, 0 reasoning at low effort;
   $0.00025 cold, $0.00007 with the prompt cached. Rules-only weeks cost $0. Nudges are cached
   per couple + signals, so both partners share one call.
+- **Ritual Builder** (live, 4 runs): ~2,850 input tokens with 2,465 cached (the catalog is in the
+  stable prefix), 230-550 output; $0.00015-0.00035 per run. A too-broad "invented numbers"
+  check once rejected "10 minutes" and forced a retry ($0.00075); it now checks ratings only.
 - After any prompt change: `python scripts/eval_call_topics.py --label <name>`, then
   `--compare baseline v3 <name>` (about $0.002-0.005 per 5-run eval).
 

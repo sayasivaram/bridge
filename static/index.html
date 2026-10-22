@@ -12,7 +12,7 @@
     <nav class="tabs" aria-label="Sections">
       <button class="tab tab--active" data-page="jar">Moment Jar</button>
       <button class="tab" data-page="pulse">Pulse</button>
-      <button class="tab" disabled title="Coming soon">Rituals</button>
+      <button class="tab" data-page="rituals">Rituals</button>
     </nav>
     <label class="user-switch">
       <span>Viewing as</span>
@@ -164,6 +164,50 @@
           <summary>Show as a table</summary>
           <table><thead><tr><th>Week of</th><th id="th-a"></th><th id="th-b"></th></tr></thead><tbody id="chart-tbody"></tbody></table>
         </details>
+      </section>
+    </section>
+    <!-- Ritual Builder -->
+    <section id="page-rituals" data-page="rituals" hidden>
+      <section class="card planner">
+        <div class="prep-head">
+          <div>
+            <h2><i class="e">🕯️</i>Plan tonight's ritual</h2>
+            <p class="muted small">Three ideas from Closer's catalog of 25, picked for the two of you from how you rated past rituals.</p>
+          </div>
+        </div>
+        <div class="planner-controls">
+          <fieldset class="seg" aria-label="Time tonight">
+            <legend>Time tonight</legend>
+            <label><input type="radio" name="r-time" value="15"><span>15 min</span></label>
+            <label><input type="radio" name="r-time" value="60" checked><span>1 hr</span></label>
+            <label><input type="radio" name="r-time" value="120"><span>2+ hrs</span></label>
+          </fieldset>
+          <fieldset class="seg" aria-label="Energy">
+            <legend>Energy</legend>
+            <label><input type="radio" name="r-energy" value="low" checked><span>Low</span></label>
+            <label><input type="radio" name="r-energy" value="medium"><span>Medium</span></label>
+            <label><input type="radio" name="r-energy" value="high"><span>High</span></label>
+          </fieldset>
+          <button type="button" class="primary" id="suggest-btn">Suggest 3 rituals</button>
+        </div>
+        <p id="suggest-msg" class="form-msg" role="status"></p>
+        <div id="suggest-result" hidden>
+          <div class="prep-meta">
+            <span id="suggest-meta" class="muted small"></span>
+            <span id="ritual-badge" class="token-badge"></span>
+          </div>
+          <ol id="ritual-picks" class="ritual-picks"></ol>
+          <details class="trace">
+            <summary>How these were picked</summary>
+            <ol id="ritual-trace"></ol>
+          </details>
+        </div>
+      </section>
+
+      <section class="card ritual-list-card">
+        <h2>Your rituals</h2>
+        <p class="muted small">Rate a ritual after you do it. Closer feeds your favorites and least favorites into the next suggestions.</p>
+        <ul id="ritual-list" class="ritual-list"></ul>
       </section>
     </section>
   </main>

@@ -77,30 +77,36 @@ CREATE TABLE IF NOT EXISTS nudges (
     UNIQUE (couple_id, signals_hash)
 );
 
--- Ritual Builder: shared activities, suggested by the agent or added by hand.
+-- Ritual Builder: shared activities the couple planned or did. Each one comes from the catalog
+-- (data/ritual_catalog.json, by catalog_id) with an optional personal variation.
 CREATE TABLE IF NOT EXISTS rituals (
     id           INTEGER PRIMARY KEY,
     couple_id    INTEGER NOT NULL REFERENCES couples(id),
+    catalog_id   TEXT,                          -- id in data/ritual_catalog.json (NULL for old manual ones)
     title        TEXT NOT NULL,
-    category     TEXT NOT NULL CHECK (category IN ('cook', 'watch', 'game', 'letter', 'other')),
+    variation    TEXT CHECK (variation IS NULL OR length(variation) <= 300),
+    category     TEXT NOT NULL CHECK (category IN ('cook', 'watch', 'game', 'creative', 'letters', 'goodnight', 'other')),
     description  TEXT NOT NULL DEFAULT '',
     minutes      INTEGER CHECK (minutes IS NULL OR minutes > 0),
     energy       TEXT CHECK (energy IN ('low', 'medium', 'high')),
-    status       TEXT NOT NULL DEFAULT 'suggested'
+    status       TEXT NOT NULL DEFAULT 'planned'
                  CHECK (status IN ('suggested', 'planned', 'done', 'skipped')),
     source       TEXT NOT NULL DEFAULT 'manual' CHECK (source IN ('manual', 'agent', 'seed')),
     done_on      TEXT,                          -- ISO date, when status = 'done'
     created_at   TEXT NOT NULL DEFAULT (datetime('now'))
 );
 
--- How each partner felt about a ritual they tried. The Ritual Builder learns from this.
+-- How each partner felt about a ritual they did (1-5 + optional note, visible to both partners).
+-- The Ritual Builder feeds the highest- and lowest-rated rituals into its next suggestions.
+-- flagged = 1: the note tripped the crisis pre-check, so it is hidden from the partner and never
+-- sent to a model.
 CREATE TABLE IF NOT EXISTS ritual_feedback (
     id            INTEGER PRIMARY KEY,
     ritual_id     INTEGER NOT NULL REFERENCES rituals(id) ON DELETE CASCADE,
     user_id       INTEGER NOT NULL REFERENCES users(id),
     rating        INTEGER NOT NULL CHECK (rating BETWEEN 1 AND 5),
-    would_repeat  INTEGER NOT NULL DEFAULT 1 CHECK (would_repeat IN (0, 1)),
-    comment       TEXT CHECK (comment IS NULL OR length(comment) <= 500),
+    note          TEXT CHECK (note IS NULL OR length(note) <= 200),
+    flagged       INTEGER NOT NULL DEFAULT 0 CHECK (flagged IN (0, 1)),
     created_at    TEXT NOT NULL DEFAULT (datetime('now')),
     UNIQUE (ritual_id, user_id)
 );
@@ -128,4 +134,4 @@ CREATE TABLE IF NOT EXISTS llm_calls (
 CREATE INDEX IF NOT EXISTS idx_llm_calls_user_time ON llm_calls (user_id, created_at);
 
 -- Bump when the schema changes; app/db.py refuses to open an older database.
-PRAGMA user_version = 5;
+PRAGMA user_version = 6;

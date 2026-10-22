@@ -330,16 +330,16 @@
         {
           "who": "A",
           "rating": 5,
-          "would_repeat": true,
-          "comment": "Felt like we were in the same kitchen."
+          "note": "Felt like we were in the same kitchen."
         },
         {
           "who": "B",
           "rating": 5,
-          "would_repeat": true,
-          "comment": "Best call in weeks."
+          "note": "Best call in weeks."
         }
-      ]
+      ],
+      "catalog_id": "cook-same-recipe",
+      "variation": "Pasta alla vodka"
     },
     {
       "title": "Co-watch: one episode of Great British Bake Off",
@@ -354,16 +354,16 @@
         {
           "who": "A",
           "rating": 4,
-          "would_repeat": true,
-          "comment": "Cozy, low effort."
+          "note": "Cozy, low effort."
         },
         {
           "who": "B",
           "rating": 4,
-          "would_repeat": true,
-          "comment": "Good for a tired evening."
+          "note": "Good for a tired evening."
         }
-      ]
+      ],
+      "catalog_id": "co-watch-episode",
+      "variation": "The Great British Bake Off"
     },
     {
       "title": "Codenames Duet online",
@@ -378,16 +378,16 @@
         {
           "who": "A",
           "rating": 3,
-          "would_repeat": true,
-          "comment": "Fun but we got competitive."
+          "note": "Fun but we got competitive."
         },
         {
           "who": "B",
           "rating": 2,
-          "would_repeat": false,
-          "comment": "Too much strategy after a long work day."
+          "note": "Too much strategy after a long work day."
         }
-      ]
+      ],
+      "catalog_id": "coop-word-game",
+      "variation": "Codenames Duet"
     },
     {
       "title": "Sunday cook-along: shakshuka",
@@ -398,18 +398,22 @@
       "week": 3,
       "day": 6,
       "description": "Same recipe, same time, on video.",
-      "feedback": []
+      "feedback": [],
+      "catalog_id": "cook-same-recipe",
+      "variation": "Shakshuka"
     },
     {
       "title": "Letter swap: a favorite memory",
-      "category": "letter",
+      "category": "letters",
       "minutes": 20,
       "energy": "low",
       "status": "planned",
       "week": 3,
       "day": 3,
       "description": "Each writes a short letter about a favorite memory together, then reads it aloud on the next call.",
-      "feedback": []
+      "feedback": [],
+      "catalog_id": "letter-favorite-memory",
+      "variation": null
     }
   ],
   "recent_moments": [

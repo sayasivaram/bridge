@@ -66,6 +66,10 @@ You need **Python 3.11 or newer** (`python3 --version` to check).
   Drift Detector runs simple rules first and calls the AI only when they flag drift, then shows
   one gentle suggestion as "this week's nudge". Notes that suggest abuse, self-harm, or serious
   distress skip coaching and show the author support lines instead.
+- **Rituals:** say how much time and energy you have tonight and the Ritual Builder picks 3
+  rituals from a catalog of 25 (`data/ritual_catalog.json`), explaining why each fits you two
+  based on how you rated past rituals. Plan one, mark it done, and both rate it 1-5; your
+  favorites and least favorites shape the next suggestions.
 
 ## Reset the demo data
 
@@ -93,9 +97,11 @@ app/
   config.py    finds the API key (.env in repo, then one folder up), limits
   llm.py       the one model wrapper: gpt-6-luna via Portkey, token counts, cost,
                logging, per-user daily token budget, per-request step limit
-  agents/      AI agents (call_topics.py: Call-Topic Agent; drift.py: Drift Detector)
+  agents/      AI agents (call_topics.py: Call-Topic Agent; drift.py: Drift Detector;
+               ritual_builder.py: Ritual Builder)
   moments.py   Moment Jar data access; the partner-privacy rule lives in its SQL
   pulses.py    Pulse data access; the "see scores once both checked in" rule lives in its SQL
+  rituals.py   ritual catalog, the couple's rituals and ratings (the feedback loop)
   safety.py    crisis pre-check (keyword patterns) and support messages
   timeutil.py  each partner's local "today" / "this week" (timestamps are stored in UTC)
   prompting.py wraps user text in escaped tags before it goes into any prompt
@@ -105,6 +111,7 @@ app/
   main.py      FastAPI routes
 data/
   seed_couple.json   demo couple (edit freely)
+  ritual_catalog.json  the 25 starter rituals the Ritual Builder picks from
   prices.json        gpt-6-luna prices per 1M tokens
   closer.db          created on first run (not committed)
   uploads/           moment photos (not committed)
