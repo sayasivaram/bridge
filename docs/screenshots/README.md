@@ -30,5 +30,6 @@ Evidence images 07–09 and 11 come from the real code and real test runs, rende
 | `18-crisis-support-for-author.png` | Leo's note trips the crisis pre-check: a private support card with UK helplines, no coaching | 6 Safety (coach boundary) |
 | `19-crisis-partner-sees-quiet-card.png` | Same week, Priya's view: the neutral "No nudge this week" card, with no hint of why | 6 Safety (coach boundary + privacy) |
 | `20-pulse-chart-both-checked-in.png` | Trend chart once both checked in, with the hover tooltip | Look + feel |
-
-Not captured yet (feature not built): Rituals.
+| `21-ritual-builder-picks.png` | Ritual Builder for "1 hr, low energy": 3 catalog rituals with why (citing past ratings and notes), first step, and twist; trace shows the code-side filter and the history sent. (This capture was a Portkey cache hit, $0; the first real call for the same request was $0.00020.) | 4 Agents, 5 Tokenomics |
+| `22-ritual-history-and-rating.png` | Ritual history: planned / done / skipped, both partners' ratings and notes, the rating form | 4 Agents (feedback loop), Look + feel |
+| `23-ritual-partner-sees-rating.png` | Leo's view of the ritual Priya just rated 5/5 | Look + feel |
