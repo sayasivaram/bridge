@@ -4,7 +4,9 @@ Before (on the chat message):
   * length limits (empty, or longer than MAX_MESSAGE characters),
   * prompt-injection screening (the message only ever reaches the router's classifier, but a
     message that looks like an attack is refused outright, not classified),
-  * the crisis pre-check (app/safety.py): support resources instead of any agent.
+  * the crisis pre-check (app/safety.py): support resources instead of any agent,
+  * the coach boundary for relationship decisions ("should we break up?"): a gentle referral to a
+    counselor instead of any agent,
 After (on the agent's result):
   * schema validation: the result must match that agent's output contract (pydantic), or the
     user gets an error instead of half-formed output,
@@ -16,6 +18,7 @@ The agents have their own checks too; this is the second, uniform layer.
 from __future__ import annotations
 
 import re
+import sys
 from dataclasses import dataclass
 from typing import Any, Literal
 
@@ -35,11 +38,25 @@ INJECTION_PATTERNS = [
 ]
 _INJECTION = [re.compile(p, re.IGNORECASE) for p in INJECTION_PATTERNS]
 
+# Coach boundary: a relationship decision is not an app's call. Answered with a gentle referral,
+# before any agent or model runs, so no model can be talked into "you should break up".
+DECISION_PATTERNS = [
+    r"\bshould (?:we|i) (?:break up|split up|divorce|leave (?:him|her|them)|end (?:it|things|this|the relationship))\b",
+    r"\b(?:tell|convince) (?:me|us|him|her|them) (?:that )?(?:we|i|they) should (?:break up|split up|leave|end it)\b",
+    r"\bsay (?:that )?(?:we|you) should (?:break up|split up)\b",
+    r"\bis (?:it|this|our relationship|this relationship) (?:over|worth saving|doomed)\b",
+    r"\bshould (?:we|i) (?:stay together|give up on (?:us|this|him|her))\b",
+]
+_DECISION = [re.compile(p, re.IGNORECASE) for p in DECISION_PATTERNS]
+DECISION_REPLY = ("That's a big question, and it isn't one an app should answer for you. A couples counselor "
+                  "can help the two of you think it through together, at your own pace. If it would help, I can "
+                  "suggest something to talk about on your next call.")
+
 
 @dataclass
 class InputVerdict:
     ok: bool
-    kind: str = "ok"  # ok | empty | too_long | injection | crisis
+    kind: str = "ok"  # ok | empty | too_long | injection | crisis | decision
     reply: str = ""
     support: dict | None = None
     detail: str = ""
@@ -56,6 +73,12 @@ def check_input(message: str, tz_name: str | None) -> InputVerdict:
     if flag:
         return InputVerdict(False, "crisis", "", safety.support_message(flag, tz_name),
                             detail=f"crisis pre-check matched ({flag.category}); no agent, no model")
+    for p in _DECISION:
+        m = p.search(text)
+        if m:
+            return InputVerdict(False, "decision", DECISION_REPLY,
+                                detail=f"coach boundary: relationship-decision request ({m.group(0)!r}); "
+                                       "gentle referral, no agent, no model")
     for p in _INJECTION:
         m = p.search(text)
         if m:
@@ -149,7 +172,8 @@ def check_output(intent: str, result: Any, names: list[str]) -> tuple[dict | Non
         for s in out["starters"]:
             bad = hits(s["topic"], s["opener"])
             if bad:
-                notes.append(f"removed starter '{s['topic']}': coach-boundary phrase {', '.join(bad)}")
+                notes.append("removed a starter: coach-boundary phrase (wording withheld)")
+                print(f"guard: removed starter {s['topic']!r}: {bad}", file=sys.stderr)
             else:
                 kept.append(s)
         out["starters"] = kept
@@ -160,14 +184,16 @@ def check_output(intent: str, result: Any, names: list[str]) -> tuple[dict | Non
     elif intent == "pulse_coach" and out["kind"] == "nudge":
         bad = hits(out.get("suggestion"), out.get("explanation"))
         if bad:
-            notes.append(f"replaced the nudge with the quiet card: coach-boundary phrase {', '.join(bad)}")
+            notes.append("replaced the nudge with the quiet card: coach-boundary phrase (wording withheld)")
+            print(f"guard: replaced nudge: {bad}", file=sys.stderr)
             out = {**QUIET, "flags": [], "trace": out.get("trace", []), "usage": out["usage"]}
     elif intent == "ritual_builder":
         kept = []
         for p in out["picks"]:
             bad = hits(p["why"], p["first_step"], p.get("variation"))
             if bad:
-                notes.append(f"removed pick '{p['id']}': coach-boundary phrase {', '.join(bad)}")
+                notes.append(f"removed pick '{p['id']}': coach-boundary phrase (wording withheld)")
+                print(f"guard: removed pick {p['id']!r}: {bad}", file=sys.stderr)
             else:
                 kept.append(p)
         out["picks"] = kept

@@ -23,6 +23,7 @@ from __future__ import annotations
 import hashlib
 import json
 import re
+import sys
 from datetime import date, datetime, timedelta
 from typing import Any
 
@@ -108,6 +109,15 @@ _BOUNDARY = [
     r"\bdrifting apart for good\b", r"\byour relationship (?:will|is going to)\b", r"\bto blame\b",
     r"\b(?:his|her|their) fault\b", r"\bis the problem\b", r"\bpulling away\b",
 ]
+
+
+def user_facing(problem: str) -> str:
+    """Trace text users can see: say THAT a coach-boundary phrase was blocked, never quote it (the
+    exact words still go to the model as retry feedback, and to the server log)."""
+    if problem.startswith("Crossed the coach boundary"):
+        print(f"drift: blocked output: {problem}", file=sys.stderr)
+        return "Crossed the coach boundary (wording withheld)."
+    return problem
 
 
 def boundary_violations(text: str, names: list[str]) -> list[str]:
@@ -326,7 +336,7 @@ def run(llm: LLM, viewer_id: int, ctx: RunContext | None = None) -> dict[str, An
             nudge, problems = validate(answer, sig, sig_text, fingerprints)
             trace.append(f"{'Agent' if attempt == 0 else 'Retry'}: {r.usage.input_tokens:,} tokens in "
                          f"({r.usage.cached_tokens:,} cached), {r.usage.output_tokens:,} out. "
-                         + ("Passed checks." if nudge else "Rejected: " + " ".join(problems)))
+                         + ("Passed checks." if nudge else "Rejected: " + " ".join(map(user_facing, problems))))
             if nudge:
                 break
             user_input += ("\n<validation_feedback>\n" + "\n".join(f"- {escape(p)}" for p in problems)

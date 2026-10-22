@@ -60,7 +60,7 @@ def handle(llm: LLM, user_id: int, message: str) -> dict[str, Any]:
     verdict = guard.check_input(message, user["timezone"])
     trace.append({"stage": "guard_in", "detail": verdict.detail})
     if not verdict.ok:
-        status = "support" if verdict.kind == "crisis" else "blocked"
+        status = "support" if verdict.kind in ("crisis", "decision") else "blocked"  # referrals aren't refusals
         out |= {"status": status, "route_method": "guard", "reply": verdict.reply, "support": verdict.support}
         return _finish(llm, ctx, user_id, out, trace)
 

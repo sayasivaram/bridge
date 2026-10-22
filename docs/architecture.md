@@ -108,7 +108,11 @@ about a third of the cost, see `docs/evals/`). Each agent's prompt puts the stab
 | Prompt injection: chat messages screened before routing | `app/guard.py` | `tests/test_orchestrator.py` |
 | Privacy: private moments, the pulse reveal rule, only the privacy layer reads those tables | `app/moments.py`, `app/pulses.py` | `tests/test_moments_privacy.py`, `tests/test_pulse.py` |
 | No invented facts: citations must be real, numbers and ratings must come from the data | each agent's `validate()` | `tests/test_call_topics.py`, `tests/test_pulse.py`, `tests/test_rituals.py` |
-| Coach boundary: crisis pre-check before any coaching, boundary phrases blocked in output | `app/safety.py`, `app/agents/drift.py`, `app/guard.py` | `tests/test_pulse.py`, `tests/test_orchestrator.py` |
+| Coach boundary: crisis pre-check before any coaching, relationship-decision requests get a counselor referral, boundary phrases blocked in output (and withheld from traces) | `app/safety.py`, `app/guard.py`, `app/agents/drift.py` | `tests/test_pulse.py`, `tests/test_orchestrator.py`, `tests/test_safety.py` |
 | Per-user daily token budget (Portkey cache hits are free) | `app/llm.py` | `tests/test_llm.py` |
 | Step limit per request (shared by router + agent) | `app/llm.py`, `app/orchestrator.py` | `tests/test_llm.py`, `tests/test_orchestrator.py` |
 | Model lock: only gpt-6-luna, checked on every response | `app/llm.py` | `tests/test_llm.py` |
+
+All seven attack/malfunction scenarios run end to end with readable output:
+`python scripts/run_safety_demo.py` (and `--live` for the real model); `tests/test_safety.py`
+asserts the same scenarios.

@@ -118,6 +118,20 @@ CLOSER_LIVE=1 pytest -k live -s
 
 (PowerShell: `$env:CLOSER_LIVE=1; pytest -k live -s`)
 
+## Safety demo
+
+Seven attacks and malfunctions, run against the real app code with readable results:
+
+```bash
+python scripts/run_safety_demo.py          # scripted model that plays a compromised model (free)
+python scripts/run_safety_demo.py --live   # cases 1, 2 and 7 against the real gpt-6-luna (~$0.001)
+```
+
+1. prompt injection in a moment · 2. prompt injection in a pulse note · 3. trying to read the
+partner's private moment · 4. an agent citing a moment that doesn't exist · 5. a distress
+message · 6. going over the daily token budget · 7. trying to make the coach say "you should
+break up". The same scenarios are tests in `tests/test_safety.py`.
+
 ## Project layout
 
 ```
