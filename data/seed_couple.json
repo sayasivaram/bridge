@@ -1,5 +1,5 @@
 {
-  "_about": "Demo couple for Closer. Fake people. Dates are relative: week 1 is three weeks ago, week 3 is last week; day 0 = Monday. recent_moments are placed hours before seeding (clamped to this week) so the jar is never empty. Story: week 1 is warm, by week 3 Leo is stretched thin at work, his scores fall, he logs fewer moments, and they skip their Sunday cook. Priya notices the calls feel rushed but doesn't know why (Leo's notes are private).",
+  "_about": "Demo couple for Bridge. Fake people. Dates are relative: week 1 is three weeks ago, week 3 is last week; day 0 = Monday. recent_moments are placed hours before seeding (clamped to this week) so the jar is never empty. Story: week 1 is warm, by week 3 Leo is stretched thin at work, his scores fall, he logs fewer moments, and they skip their Sunday cook. Priya notices the calls feel rushed but doesn't know why (Leo's notes are private).",
   "couple": {
     "name": "Priya & Leo",
     "together_since": "2023-06-10",

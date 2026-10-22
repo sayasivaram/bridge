@@ -9,8 +9,8 @@ from app.config import MODEL, SOURCE_PARENT, SOURCE_REPO, SOURCE_SHELL, load_set
 
 
 def make_layout(tmp_path: Path) -> Path:
-    """submissions/closer, like the graders' folder layout. Returns the repo dir."""
-    repo = tmp_path / "submissions" / "closer"
+    """submissions/bridge, like the graders' folder layout. Returns the repo dir."""
+    repo = tmp_path / "submissions" / "bridge"
     repo.mkdir(parents=True)
     return repo
 

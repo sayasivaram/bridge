@@ -3,18 +3,18 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Closer</title>
-  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='46' fill='%23d9665b'/><text x='50' y='68' font-size='52' text-anchor='middle' fill='white' font-family='Georgia'>C</text></svg>">
+  <title>Bridge: stay connected, grow together</title>
+  <link rel="icon" type="image/svg+xml" href="/static/mark.svg">
   <link rel="stylesheet" href="/static/style.css">
 </head>
 <body>
   <header class="topbar">
-    <div class="brand">Closer</div>
+    <a class="brand" href="/" aria-label="Bridge home"><img src="/static/mark.svg" alt="">Bridge</a>
     <nav class="tabs" aria-label="Sections">
-      <button class="tab tab--active" data-page="jar">Moment Jar</button>
-      <button class="tab" data-page="pulse">Pulse</button>
-      <button class="tab" data-page="rituals">Rituals</button>
-      <button class="tab" data-page="usage">Usage</button>
+      <button class="tab tab--active" data-page="jar"><img src="/static/icons/jar.svg" alt=""><span>Moment Jar</span></button>
+      <button class="tab" data-page="pulse"><img src="/static/icons/pulse.svg" alt=""><span>Pulse Check</span></button>
+      <button class="tab" data-page="rituals"><img src="/static/icons/rituals.svg" alt=""><span class="long">Ritual Builder</span><span class="short">Rituals</span></button>
+      <button class="tab" data-page="usage"><img src="/static/icons/usage.svg" alt=""><span>Usage</span></button>
     </nav>
     <label class="user-switch">
       <span>Viewing as</span>
@@ -25,11 +25,17 @@
   <main class="container">
     <!-- First visit: what this is -->
     <section id="welcome" class="card welcome" data-page="jar" hidden>
+      <img class="welcome-logo" src="/static/mark.svg" alt="">
       <div>
-        <h2><i class="e">👋</i>Welcome to Closer</h2>
+        <h2><i class="e">👋</i>Welcome to Bridge</h2>
         <p>A small, private space for a long-distance couple to stay close between calls. Drop little
           <b>moments</b> from your day in the jar, <b>prep for your next call</b> with starters made from them,
           do a 30-second weekly <b>Pulse</b> check-in, and pick a <b>ritual</b> to do together tonight.</p>
+        <div class="welcome-features">
+          <span><img src="/static/icons/jar.svg" alt="">Moment Jar</span>
+          <span><img src="/static/icons/pulse.svg" alt="">Pulse Check</span>
+          <span><img src="/static/icons/rituals.svg" alt="">Ritual Builder</span>
+        </div>
         <p class="muted small">This is a demo couple, Priya (New Haven) and Leo (London). Use <b>Viewing as</b>
           at the top right to switch partners and see each side. Private moments and notes stay with their author.</p>
       </div>
@@ -38,10 +44,15 @@
 
     <!-- Chat: guard -> router -> agent -> guard -->
     <section id="chat" class="card chat-card" data-page="jar">
-      <h2><i class="e">💬</i>Ask Closer</h2>
-      <p class="muted small">Ask for call prep, how you two are doing lately, or something to do tonight. Closer picks the right helper.</p>
+      <div class="chat-head">
+        <span class="chat-mark"><img src="/static/mark.svg" alt=""></span>
+        <div>
+          <h2>Ask Bridge</h2>
+          <p class="small">Ask for call prep, how you two are doing lately, or something to do tonight. Bridge picks the right helper.</p>
+        </div>
+      </div>
       <form id="chat-form" class="chat-form" autocomplete="off">
-        <input type="text" id="chat-input" maxlength="300" placeholder="Ask Closer something…" aria-label="Ask Closer">
+        <input type="text" id="chat-input" maxlength="300" placeholder="Ask Bridge something…" aria-label="Ask Bridge">
         <button type="submit" class="primary" id="chat-btn">Ask</button>
       </form>
       <div class="chat-examples" id="chat-examples">
@@ -80,7 +91,7 @@
     <section id="page-jar" class="jar" data-page="jar">
       <!-- Quick add -->
       <form id="add-form" class="card add-card" autocomplete="off">
-        <h2>Drop a moment in the jar</h2>
+        <h2 class="with-icon"><img src="/static/icons/jar.svg" alt="">Drop a moment in the jar</h2>
         <p class="muted small" id="add-hint">Little things from your day, so your next call has something real to start with.</p>
 
         <div class="field">
@@ -139,7 +150,7 @@
     <section id="page-pulse" class="pulse" data-page="pulse" hidden>
       <div class="pulse-grid">
         <form id="pulse-form" class="card pulse-form" autocomplete="off">
-          <h2>This week's check-in</h2>
+          <h2 class="with-icon"><img src="/static/icons/pulse.svg" alt="">This week's check-in</h2>
           <p class="muted small" id="pulse-week">Takes about 30 seconds.</p>
 
           <fieldset class="scale" aria-label="How connected did you feel this week?">
@@ -202,8 +213,8 @@
       <section class="card planner">
         <div class="prep-head">
           <div>
-            <h2><i class="e">🕯️</i>Plan tonight's ritual</h2>
-            <p class="muted small">Three ideas from Closer's catalog of 25, picked for the two of you from how you rated past rituals.</p>
+            <h2 class="with-icon"><img src="/static/icons/rituals.svg" alt="">Plan tonight's ritual</h2>
+            <p class="muted small">Three ideas from Bridge's catalog of 25, picked for the two of you from how you rated past rituals.</p>
           </div>
         </div>
         <div class="planner-controls">
@@ -237,15 +248,15 @@
 
       <section class="card ritual-list-card">
         <h2>Your rituals</h2>
-        <p class="muted small">Rate a ritual after you do it. Closer feeds your favorites and least favorites into the next suggestions.</p>
+        <p class="muted small">Rate a ritual after you do it. Bridge feeds your favorites and least favorites into the next suggestions.</p>
         <ul id="ritual-list" class="ritual-list"></ul>
       </section>
     </section>
     <!-- Usage (tokens + cost from llm_calls) -->
     <section id="page-usage" data-page="usage" hidden>
       <section class="card">
-        <h2><i class="e">📊</i>AI usage and cost</h2>
-        <p class="muted small">Every model call Closer has made for the two of you, from the call log. Prices:
+        <h2 class="with-icon"><img src="/static/icons/usage.svg" alt="">AI usage and cost</h2>
+        <p class="muted small">Every model call Bridge has made for the two of you, from the call log. Prices:
           gpt-6-luna per 1M tokens, <span id="usage-prices"></span>.</p>
         <div class="tiles" id="usage-tiles"></div>
         <p id="usage-empty" class="empty" hidden>No AI calls yet. Try <b>Prep for our call</b> on the Moment Jar page,

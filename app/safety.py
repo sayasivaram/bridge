@@ -90,7 +90,7 @@ RESOURCES = {
 _BODY = {
     "self_harm": "It sounds like you might be going through something really painful. You deserve support "
                  "right now, from a person, not an app. Please reach out to one of these, or to someone you trust.",
-    "abuse": "What you wrote sounds frightening. You deserve to feel safe. Closer won't share this with your "
+    "abuse": "What you wrote sounds frightening. You deserve to feel safe. Bridge won't share this with your "
              "partner. Trained, confidential advocates can help you think through your options.",
     "distress": "It sounds like this week has been really heavy. You don't have to carry that alone. Talking "
                 "to someone you trust, or a counselor, can help. These lines are there any time.",
@@ -114,5 +114,5 @@ def support_message(flag: SafetyFlag, tz_name: str | None) -> dict:
         "body": _BODY[flag.category],
         "resources": [{"name": n, "contact": c} for n, c in res[flag.category]],
         "emergency": res["emergency"],
-        "footnote": "Closer is not a counseling service. If we misread your note, you can ignore this.",
+        "footnote": "Bridge is not a counseling service. If we misread your note, you can ignore this.",
     }

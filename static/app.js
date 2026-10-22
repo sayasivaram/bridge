@@ -1,4 +1,4 @@
-// Closer frontend. Plain JS, no build step.
+// Bridge frontend. Plain JS, no build step.
 //
 // No real login: this is a local demo. The chosen partner is remembered in localStorage and
 // sent to the server as the X-User-Id header on every API call.
@@ -8,7 +8,7 @@
 const MOOD_EMOJI = { funny: "😂", sweet: "🥰", stressful: "😣", proud: "🌟", random: "🎲" };
 
 const state = {
-  userId: Number(localStorage.getItem("closer.userId")) || null,
+  userId: Number(localStorage.getItem("bridge.userId")) || null,
   me: null,
   weekOf: null, // ISO date inside the week being shown; null = this week
   photo: null, // data URL of the resized photo waiting to be added
@@ -30,7 +30,7 @@ async function api(path, options = {}) {
   try {
     res = await fetch(path, { ...options, headers });
   } catch {
-    throw new Error("Can't reach Closer right now. Check that the app is still running (python run.py), then try again.");
+    throw new Error("Can't reach Bridge right now. Check that the app is still running (python run.py), then try again.");
   }
   if (!res.ok) {
     // Our API sends readable messages in `detail`; anything else gets a plain-language fallback.
@@ -68,7 +68,7 @@ async function showSetupStatus() {
       box.className = "status status--warn";
     }
   } catch {
-    box.textContent = "Could not reach the Closer server.";
+    box.textContent = "Could not reach the Bridge server.";
     box.className = "status status--warn";
   }
 }
@@ -93,7 +93,7 @@ async function setupUserSwitch() {
 
 async function switchUser(userId) {
   state.userId = userId;
-  localStorage.setItem("closer.userId", String(userId));
+  localStorage.setItem("bridge.userId", String(userId));
   resetForm();
   clearCallPrep(); // starters were written for the other partner
   $("chat-log").innerHTML = ""; // each partner's chat is their own
@@ -789,9 +789,9 @@ const STAGE_LABEL = { guard_in: "guard in", router: "router", agent: "agent", gu
 
 function setupWelcome() {
   const card = $("welcome");
-  card.hidden = localStorage.getItem("closer.welcomed") === "1";
+  card.hidden = localStorage.getItem("bridge.welcomed") === "1";
   $("welcome-ok").addEventListener("click", () => {
-    localStorage.setItem("closer.welcomed", "1");
+    localStorage.setItem("bridge.welcomed", "1");
     card.hidden = true;
   });
 }

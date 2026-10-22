@@ -5,7 +5,7 @@ above it:
 
     submissions/
         .env            <- graders' keys
-        closer/         <- this repo
+        bridge/         <- this repo
             .env        <- (optional) your own keys
 
 So we look for .env in the repo folder first, then in the folder above it.
@@ -71,7 +71,7 @@ class Settings:
             return self.api_key
         repo_env, parent_env = env_file_candidates(repo_dir)
         raise MissingAPIKeyError(
-            "No API key found. Closer looked for PORTKEY_API_KEY or OPENAI_API_KEY in:\n"
+            "No API key found. Bridge looked for PORTKEY_API_KEY or OPENAI_API_KEY in:\n"
             f"  1. {repo_env}\n"
             f"  2. {parent_env}\n"
             "  3. your shell environment\n"

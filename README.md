@@ -1,4 +1,6 @@
-# Closer
+<p align="center"><img src="static/logo.svg" alt="Bridge: stay connected, grow together" width="220"></p>
+
+# Bridge
 
 A multi-agent app that helps long-distance couples stay close between calls:
 
@@ -7,7 +9,7 @@ A multi-agent app that helps long-distance couples stay close between calls:
 - a 30-second weekly **Connection Pulse**, where simple rules spot drift and a Drift Agent
   suggests one gentle fix,
 - a **Ritual Builder** that picks shared activities for tonight and learns from your ratings,
-- an **Ask Closer** chat box that routes a question to the right agent.
+- an **Ask Bridge** chat box that routes a question to the right agent.
 
 The agents use gpt-6-luna through Portkey. They sit on a privacy layer that keeps each partner's
 private moments and notes away from the other partner, and away from any prompt whose output the
@@ -21,8 +23,8 @@ Nothing else: no database server, no Node, no Docker. SQLite comes with Python.
 ### 1. Clone the repo
 
 ```bash
-git clone <this-repo-url> closer
-cd closer
+git clone <this-repo-url> bridge
+cd bridge
 ```
 
 ### 2. Create a virtual environment
@@ -50,17 +52,17 @@ pip install -r requirements.txt
 
 ### 4. Put your `.env` one folder up
 
-Closer looks for a `.env` file in two places, in this order:
+Bridge looks for a `.env` file in two places, in this order:
 
-1. this repo's folder (`closer/.env`)
+1. this repo's folder (`bridge/.env`)
 2. the folder **one level above** the repo (`../.env`)
 
-The usual setup is a `.env` in the folder that contains `closer/`:
+The usual setup is a `.env` in the folder that contains `bridge/`:
 
 ```
 your-folder/
 ├── .env          <- PORTKEY_API_KEY=... (and/or OPENAI_API_KEY=...)
-└── closer/       <- this repo
+└── bridge/       <- this repo
 ```
 
 If you don't have one yet, copy the example and fill in a key (`.env.example` lists the two
@@ -80,7 +82,7 @@ both `.env` files. Never commit a real `.env` (it is in `.gitignore`).
 python -m app.seed
 ```
 
-This creates `data/closer.db` with a demo couple: Priya in New Haven and Leo in London, with three
+This creates `data/bridge.db` with a demo couple: Priya in New Haven and Leo in London, with three
 weeks of moments, weekly check-ins, and rituals. (Step 6 also does this automatically if you skip
 it.) To start over later: `python -m app.seed --reset`.
 
@@ -101,7 +103,7 @@ places it looked.
    Leo (top right). His private moment ("Still behind at work…") shows only in his jar.
 2. Press **Prep for our call**: 5 conversation starters, each with the moment it came from,
    plus a token and cost badge.
-3. In **Ask Closer**, try "What should we do tonight?" and open **How this was handled** to see
+3. In **Ask Bridge**, try "What should we do tonight?" and open **How this was handled** to see
    the guard, router, and agent steps.
 4. **Pulse** tab: the trend chart and this week's nudge (the rules found drift: Leo's score fell
    4 → 3 → 2).
@@ -118,7 +120,7 @@ The Usage tab shows what this install has spent. To project costs:
 python scripts/cost_report.py
 ```
 
-It prints average tokens and cost per run for each agent (from `data/closer.db`, or the measured
+It prints average tokens and cost per run for each agent (from `data/bridge.db`, or the measured
 sample in `docs/usage/measured_calls.csv` on a fresh install) and monthly cost for 1, 100, and
 10,000 users. The runs-per-user-per-week assumptions are at the top of the script, or override
 them: `python scripts/cost_report.py --per-week call_topics=3 ritual_builder=1`.
@@ -134,10 +136,10 @@ The tests use a fake model, so they spend no tokens. To also run the live check 
 gpt-6-luna (a malicious moment the real model must ignore, about $0.001):
 
 ```bash
-CLOSER_LIVE=1 pytest -k live -s
+BRIDGE_LIVE=1 pytest -k live -s
 ```
 
-(PowerShell: `$env:CLOSER_LIVE=1; pytest -k live -s`)
+(PowerShell: `$env:BRIDGE_LIVE=1; pytest -k live -s`)
 
 Seven attacks and malfunctions, run against the real app code with readable results:
 
@@ -176,7 +178,7 @@ data/
   seed_couple.json     demo couple (edit freely)
   ritual_catalog.json  the 25 starter rituals the Ritual Builder picks from
   prices.json          gpt-6-luna prices per 1M tokens
-  closer.db            created by step 5 (not committed);  uploads/: moment photos (not committed)
+  bridge.db            created by step 5 (not committed);  uploads/: moment photos (not committed)
 docs/              architecture diagrams, eval results, measured usage, screenshots
 scripts/           cost_report.py, run_safety_demo.py, eval_call_topics.py
 static/            single-page frontend (HTML, CSS, vanilla JS)

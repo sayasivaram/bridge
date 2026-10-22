@@ -1,8 +1,8 @@
-# CLAUDE.md — "Closer" (AI Foundations final project)
+# CLAUDE.md — "Bridge" (AI Foundations final project)
 
 ## What this is
 
-**Closer** (working name) is a multi-agent app for long-distance couples. It is **not a scheduler**.
+**Bridge** (working name) is a multi-agent app for long-distance couples. It is **not a scheduler**.
 It helps a couple stay emotionally connected between calls. Solo university final project, graded
 on novelty, a working app, a 10–15 page report, and a ≤10-slide deck.
 
@@ -76,7 +76,7 @@ Each defense below gets a simple automated test that shows it working:
 
 100 points total:
 - **Idea, 21:** novel, solves a real problem, could actually be used. Overdone ideas (chat with
-  PDFs, trip planner, study buddy, etc.) are capped at Tier 1; Closer must stay clearly *not* a
+  PDFs, trip planner, study buddy, etc.) are capped at Tier 1; Bridge must stay clearly *not* a
   generic scheduler or chatbot.
 - **App, 30:** it works end to end with real agents/tools/data (15), staff can run it from a fresh
   clone with `.env` one folder up (5), looks good and is easy to use (10).
@@ -166,7 +166,7 @@ Prices live in `data/prices.json` (gpt-6-luna, per 1M tokens, from MGT 409 Lectu
   which is *more* than plain input. So the variable tail of each prompt costs extra, every call.
 - Tool definitions are sent before the instructions, so they are part of the cached opening.
   Keep tool schemas stable.
-- Implications for Closer: keep the stable prefix (tools, system prompt, safety rules, couple
+- Implications for Bridge: keep the stable prefix (tools, system prompt, safety rules, couple
   profile) byte-identical and in front; keep the variable tail (this week's moments, the request)
   as short as possible; avoid extra model calls that resend the whole prefix.
 

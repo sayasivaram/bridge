@@ -5,7 +5,7 @@ each defense did. Made for screenshots.
     python scripts/run_safety_demo.py --live     # cases 1, 2, 7 against the real gpt-6-luna (~$0.002)
     python scripts/run_safety_demo.py --case 5   # just one
 
-Every case uses its own freshly seeded throwaway database; your data/closer.db is untouched.
+Every case uses its own freshly seeded throwaway database; your data/bridge.db is untouched.
 Exit code is 1 if any defense fails.
 """
 
@@ -62,7 +62,7 @@ def main() -> int:
     args = ap.parse_args()
 
     mode = "live gpt-6-luna for cases 1, 2, 7" if args.live else "scripted model (plays a compromised model)"
-    print(c(f"Closer safety demo · {mode}", "1"))
+    print(c(f"Bridge safety demo · {mode}", "1"))
     results = []
     for fn in CASES:
         n = int(fn.__name__.split("_")[1])

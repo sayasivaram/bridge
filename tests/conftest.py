@@ -13,7 +13,7 @@ TODAY = date(2026, 10, 21)  # a Wednesday; fixed so date tests are stable
 
 @pytest.fixture
 def seeded_db(tmp_path, monkeypatch):
-    path = tmp_path / "closer.db"
+    path = tmp_path / "bridge.db"
     seed(path, today=TODAY)
     monkeypatch.setattr(db, "DB_PATH", path)  # the API endpoints use this database
     monkeypatch.setattr(db, "UPLOADS_DIR", tmp_path / "uploads")

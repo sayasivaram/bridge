@@ -1,6 +1,6 @@
 """Load the demo couple from data/seed_couple.json.
 
-    python -m app.seed           # create data/closer.db with the demo couple (if empty)
+    python -m app.seed           # create data/bridge.db with the demo couple (if empty)
     python -m app.seed --reset   # wipe the database and start over
 
 Dates are relative to today, so the demo always shows "the last three weeks":
@@ -112,7 +112,7 @@ def counts(conn) -> dict[str, int]:
 
 
 def main() -> None:
-    parser = argparse.ArgumentParser(description="Load the Closer demo couple.")
+    parser = argparse.ArgumentParser(description="Load the Bridge demo couple.")
     parser.add_argument("--reset", action="store_true", help="delete the database first")
     args = parser.parse_args()
     result = seed(reset=args.reset)

@@ -97,7 +97,7 @@ def environment(live: bool = False):
     """Fresh seeded database + the app wired to it + a scripted (or live) model."""
     old = (db.DB_PATH, db.UPLOADS_DIR, app.main._llm)
     with tempfile.TemporaryDirectory() as tmp:
-        path = Path(tmp) / "closer.db"
+        path = Path(tmp) / "bridge.db"
         seed(path)
         db.DB_PATH, db.UPLOADS_DIR = path, Path(tmp) / "uploads"
         client = LiveClient() if live else ScriptedClient()

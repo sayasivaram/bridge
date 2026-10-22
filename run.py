@@ -1,4 +1,4 @@
-"""Start Closer locally: python run.py  (then open the address it prints)
+"""Start Bridge locally: python run.py  (then open the address it prints)
 
 Picks port 8000, or the next free one if something else (say, another app) is already using it.
 Use --port to choose one. Works from any folder.
@@ -11,7 +11,7 @@ import sys
 from pathlib import Path
 
 REPO = Path(__file__).resolve().parent
-sys.path.insert(0, str(REPO))  # so `python closer/run.py` works from the folder above, too
+sys.path.insert(0, str(REPO))  # so `python bridge/run.py` works from the folder above, too
 os.chdir(REPO)
 
 import uvicorn  # noqa: E402
@@ -33,7 +33,7 @@ def free_port(start: int, tries: int = 20) -> int:
 
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description="Start Closer.")
+    parser = argparse.ArgumentParser(description="Start Bridge.")
     parser.add_argument("--port", type=int, default=8000, help="port to use (default 8000, or the next free one)")
     args = parser.parse_args()
 
@@ -43,13 +43,13 @@ if __name__ == "__main__":
     except MissingAPIKeyError as err:
         sys.exit(f"\n{err}\n")
     try:
-        seed()  # create and fill data/closer.db on first run (no-op afterwards)
+        seed()  # create and fill data/bridge.db on first run (no-op afterwards)
     except SchemaOutdatedError as err:
         sys.exit(f"\n{err}\n")
 
     port = free_port(args.port)
     print(f"Using {settings.provider} key from {settings.key_source}, model {settings.model}.", flush=True)
     if port != args.port:
-        print(f"Port {args.port} is busy, so Closer is using {port} instead.", flush=True)
-    print(f"Closer is running at http://127.0.0.1:{port}  (Ctrl+C to stop)", flush=True)
+        print(f"Port {args.port} is busy, so Bridge is using {port} instead.", flush=True)
+    print(f"Bridge is running at http://127.0.0.1:{port}  (Ctrl+C to stop)", flush=True)
     uvicorn.run("app.main:app", host="127.0.0.1", port=port)

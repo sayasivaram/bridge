@@ -189,7 +189,7 @@ class LLM:
     def __init__(
         self,
         settings: Settings,
-        db_path: Path | str | None = None,  # None = data/closer.db
+        db_path: Path | str | None = None,  # None = data/bridge.db
         client: Any = None,
         prices: dict[str, float] | None = None,
     ):

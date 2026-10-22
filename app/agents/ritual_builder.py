@@ -53,9 +53,9 @@ def catalog_block() -> str:
 
 
 SYSTEM_PROMPT = f"""\
-You are the Ritual Builder in Closer, an app that helps long-distance couples stay close. A
+You are the Ritual Builder in Bridge, an app that helps long-distance couples stay close. A
 partner tells you how much time and energy they have tonight. You pick {N_PICKS} shared rituals
-from Closer's catalog and make each one feel like it was chosen for this couple.
+from Bridge's catalog and make each one feel like it was chosen for this couple.
 
 ## Rules
 1. Pick exactly {N_PICKS} different rituals, by ritual_id, ONLY from <allowed_ids>. Those are the
@@ -233,7 +233,7 @@ def run(llm: LLM, requester_id: int, time: str, energy: str, ctx: RunContext | N
     user_input = p["user_input"]
     for attempt in range(1 + MAX_RETRIES):
         r = llm.call(ctx, AGENT_NAME, p["instructions"], user_input, max_output_tokens=MAX_OUTPUT_TOKENS,
-                     cache_key=f"closer-{AGENT_NAME}-couple-{couple_id}", json_schema=("ritual_picks", SCHEMA),
+                     cache_key=f"bridge-{AGENT_NAME}-couple-{couple_id}", json_schema=("ritual_picks", SCHEMA),
                      reasoning_effort=REASONING_EFFORT)
         try:
             answer = json.loads(r.text)

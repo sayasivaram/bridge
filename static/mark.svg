@@ -1,0 +1,74 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="110 45 280 280" width="100%" height="100%">
+  <!-- Bridge logo mark: the two figures and the bridge, without background or wordmark (header, favicon) -->
+  <defs>
+    <!-- Background Gradient -->
+    <radialGradient id="bgGrad" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#FAF9F6"/>
+      <stop offset="100%" stop-color="#F2EFE9"/>
+    </radialGradient>
+
+    <!-- Left Figure / Heart Loop Gradient -->
+    <linearGradient id="leftGrad" x1="0%" y1="100%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#2B4C7E"/>
+      <stop offset="100%" stop-color="#4A7BB0"/>
+    </linearGradient>
+
+    <!-- Right Figure / Heart Loop Gradient -->
+    <linearGradient id="rightGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#E07A5F"/>
+      <stop offset="100%" stop-color="#F4A261"/>
+    </linearGradient>
+
+    <!-- Arch Bridge Highlight Gradient -->
+    <linearGradient id="archGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#4A7BB0"/>
+      <stop offset="50%" stop-color="#9B7287"/>
+      <stop offset="100%" stop-color="#E07A5F"/>
+    </linearGradient>
+
+    <!-- Drop Shadow for Depth -->
+    <filter id="softShadow" x="-10%" y="-10%" width="120%" height="120%">
+      <feDropShadow dx="0" dy="6" stdDeviation="8" flood-color="#1E293B" flood-opacity="0.08"/>
+    </filter>
+  </defs>
+  <g transform="translate(0, -10)">
+    
+    <!-- Outer Heart / Intersecting Loops -->
+    <!-- Left Loop (Partner 1) -->
+    <path d="M 250,330 
+             C 210,290 140,240 140,180 
+             C 140,135 175,105 215,115 
+             C 240,121 250,140 250,140" 
+          fill="none" 
+          stroke="url(#leftGrad)" 
+          stroke-width="22" 
+          stroke-linecap="round" 
+          stroke-linejoin="round"/>
+
+    <!-- Right Loop (Partner 2) -->
+    <path d="M 250,330 
+             C 290,290 360,240 360,180 
+             C 360,135 325,105 285,115 
+             C 260,121 250,140 250,140" 
+          fill="none" 
+          stroke="url(#rightGrad)" 
+          stroke-width="22" 
+          stroke-linecap="round" 
+          stroke-linejoin="round"/>
+
+    <!-- Inner Arch (The Bridge Connection) -->
+    <path d="M 185,280 
+             Q 250,190 315,280" 
+          fill="none" 
+          stroke="url(#archGrad)" 
+          stroke-width="18" 
+          stroke-linecap="round"/>
+
+    <!-- Left Partner Head -->
+    <circle cx="205" cy="85" r="15" fill="#2B4C7E"/>
+
+    <!-- Right Partner Head -->
+    <circle cx="295" cy="85" r="15" fill="#E07A5F"/>
+    
+  </g>
+</svg>

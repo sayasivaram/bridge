@@ -141,7 +141,7 @@ def test_other_model_is_rejected_and_logged(seeded_db):
 
 
 def test_missing_key_fails_with_clear_message(tmp_path):
-    repo = tmp_path / "closer"
+    repo = tmp_path / "bridge"
     no_key = Settings(provider=None, api_key=None, model=MODEL, env_files_loaded=())
 
     with pytest.raises(MissingAPIKeyError) as err:

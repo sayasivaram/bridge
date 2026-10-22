@@ -34,7 +34,7 @@ def test_runs_count_requests_and_include_retries():
 
 def test_features_attribute_chat_requests_to_the_chat():
     features = {f["feature"]: f for f in usage.summarize(ROWS)["by_feature"]}
-    assert features["Ask Closer chat"]["calls"] == 2  # router + the agent it routed to
+    assert features["Ask Bridge chat"]["calls"] == 2  # router + the agent it routed to
     assert features["Prep for our call"]["calls"] == 3
     assert features["Pulse nudge"]["gateway_hits"] == 1
 

@@ -1,6 +1,6 @@
-# Closer: architecture
+# Bridge: architecture
 
-Closer is a FastAPI app with a single-page frontend and a SQLite database. Four AI components
+Bridge is a FastAPI app with a single-page frontend and a SQLite database. Four AI components
 (three agents and a router's classifier) all call gpt-6-luna through one wrapper, `app/llm.py`,
 which enforces the token budget, step limit, and model lock, and logs every call's tokens and
 cost. Privacy rules live in the data layer's SQL, so no agent can read what it shouldn't.
@@ -9,7 +9,7 @@ cost. Privacy rules live in the data layer's SQL, so no agent can read what it s
 
 ```mermaid
 flowchart TB
-    UI["Browser: one page<br/>Moment Jar · Pulse · Rituals · Ask Closer chat"]
+    UI["Browser: one page<br/>Moment Jar · Pulse · Rituals · Ask Bridge chat"]
 
     subgraph Orch["Orchestrator: chat requests only"]
         direction LR

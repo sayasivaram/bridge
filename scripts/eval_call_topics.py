@@ -4,7 +4,7 @@
     python scripts/eval_call_topics.py --label v2 --runs 5
     python scripts/eval_call_topics.py --compare baseline v2 v3  # side-by-side metrics (no API calls)
 
-Each run uses a freshly seeded throwaway database (your data/closer.db is untouched) and asks
+Each run uses a freshly seeded throwaway database (your data/bridge.db is untouched) and asks
 Portkey to skip its response cache, so every run is a real model call. Runs alternate between
 Priya and Leo. Writes docs/evals/call_topics_<label>.json and .md.
 

@@ -1,0 +1,57 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="-122 -122 244 244" width="100%" height="100%" role="img" aria-label="Ritual Builder">
+  <!-- Bridge tab icon: Ritual Builder -->
+  <defs>
+    <!-- Background Gradient -->
+    <radialGradient id="bgGrad" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#FAF9F6" />
+      <stop offset="100%" stop-color="#F2EFE9" />
+    </radialGradient>
+
+    <!-- Colors -->
+    <linearGradient id="blueGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#2B4C7E"/>
+      <stop offset="100%" stop-color="#4A7BB0"/>
+    </linearGradient>
+
+    <linearGradient id="coralGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#E07A5F"/>
+      <stop offset="100%" stop-color="#F4A261"/>
+    </linearGradient>
+
+    <!-- Drop Shadow for Icon Plates -->
+    <filter id="softShadow" x="-10%" y="-10%" width="120%" height="120%">
+      <feDropShadow dx="0" dy="8" stdDeviation="12" flood-color="#2B4C7E" flood-opacity="0.08"/>
+    </filter>
+  </defs>
+  <g>
+    <!-- Base Plate -->
+    <circle cx="0" cy="0" r="110" fill="#FFFFFF" filter="url(#softShadow)" />
+
+    <!-- Block 1 (Bottom - Movie/Co-watch) -->
+    <g transform="translate(-25, 15)">
+      <rect x="-30" y="-25" width="55" height="50" rx="8" fill="#F4A261" stroke="#2B4C7E" stroke-width="3"/>
+      <!-- Play Icon -->
+      <polygon points="-8,-12 12,0 -8,12" fill="#FFFFFF"/>
+    </g>
+
+    <!-- Block 2 (Middle Right - Game/Activity) -->
+    <g transform="translate(25, -10)">
+      <rect x="-25" y="-25" width="50" height="50" rx="8" fill="#81B29A" stroke="#2B4C7E" stroke-width="3"/>
+      <!-- Gamepad D-Pad icon -->
+      <path d="M-10,0 L10,0 M0,-10 L0,10" stroke="#FFFFFF" stroke-width="4" stroke-linecap="round"/>
+    </g>
+
+    <!-- Block 3 (Top Left - Letter/Conversation) -->
+    <g transform="translate(-15, -45)">
+      <rect x="-25" y="-25" width="50" height="50" rx="8" fill="#E07A5F" stroke="#2B4C7E" stroke-width="3"/>
+      <!-- Heart/Envelope icon -->
+      <path d="M-12,-8 L12,-8 L0,4 Z" fill="#FFFFFF"/>
+      <rect x="-12" y="-8" width="24" height="16" fill="none" stroke="#FFFFFF" stroke-width="2" rx="2"/>
+    </g>
+
+    <!-- Connecting Sparkles/Magic -->
+    <circle cx="35" cy="-50" r="4" fill="#E9C46A"/>
+    <circle cx="-45" cy="40" r="3" fill="#E9C46A"/>
+    <path d="M40,35 L44,45 L54,49 L44,53 L40,63 L36,53 L26,49 L36,45 Z" fill="#E9C46A" transform="scale(0.5) translate(40,40)"/>
+  </g>
+</svg>

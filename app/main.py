@@ -39,11 +39,11 @@ def get_llm() -> LLM:
 
 @asynccontextmanager
 async def lifespan(_: FastAPI):
-    seed(db.DB_PATH)  # creates and fills data/closer.db on first run; no-op afterwards
+    seed(db.DB_PATH)  # creates and fills data/bridge.db on first run; no-op afterwards
     yield
 
 
-app = FastAPI(title="Closer", version="0.1.0", lifespan=lifespan)
+app = FastAPI(title="Bridge", version="0.1.0", lifespan=lifespan)
 
 
 @app.middleware("http")

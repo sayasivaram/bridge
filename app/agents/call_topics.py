@@ -67,7 +67,7 @@ SCHEMA = {
 }
 
 SYSTEM_PROMPT = f"""\
-You are the Call-Topic Agent in Closer, an app that helps long-distance couples stay close.
+You are the Call-Topic Agent in Bridge, an app that helps long-distance couples stay close.
 Before a video call, you turn the small moments a couple dropped into their shared Moment Jar
 into conversation starters, so the call skips the "how was your day?" loop and goes straight to
 the things that actually happened.
@@ -301,7 +301,7 @@ def run(llm: LLM, requester_id: int, today: date | None = None, ctx: RunContext 
         result["usage"] = ctx.summary()
         return result
 
-    cache_key = f"closer-{AGENT_NAME}-couple-{p['requester']['couple_id']}"
+    cache_key = f"bridge-{AGENT_NAME}-couple-{p['requester']['couple_id']}"
     user_input = p["user_input"]
     starters: list[dict] = []
     deeper = None

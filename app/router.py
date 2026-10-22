@@ -54,7 +54,7 @@ def rule_scores(message: str) -> dict[str, int]:
 
 
 CLASSIFIER_PROMPT = f"""\
-You route messages in Closer, an app for long-distance couples, to one of three helpers:
+You route messages in Bridge, an app for long-distance couples, to one of three helpers:
 - call_topics: preparing for an upcoming call: what to talk about, conversation starters.
 - pulse_coach: how connected they feel lately: distance, drifting, feeling off, how they're doing as a couple.
 - ritual_builder: something to do together: tonight, an activity, a date idea, a game, a show.

@@ -65,7 +65,7 @@ SCHEMA = {
 }
 
 SYSTEM_PROMPT = """\
-You are the Drift Agent in Closer, an app that helps long-distance couples stay close. Each week
+You are the Drift Agent in Bridge, an app that helps long-distance couples stay close. Each week
 both partners do a 30-second check-in. Simple rules have already looked at the last few weeks
 and flagged some drift (for example falling connection scores, contact that feels too little,
 or fewer moments shared). Your job is to turn those flags into ONE small, specific, gentle thing
@@ -327,7 +327,7 @@ def run(llm: LLM, viewer_id: int, ctx: RunContext | None = None) -> dict[str, An
     try:
         for attempt in range(1 + MAX_RETRIES):
             r = llm.call(ctx, AGENT_NAME, instructions, user_input, max_output_tokens=MAX_OUTPUT_TOKENS,
-                         cache_key=f"closer-{AGENT_NAME}-couple-{couple_id}", json_schema=("drift_nudge", SCHEMA),
+                         cache_key=f"bridge-{AGENT_NAME}-couple-{couple_id}", json_schema=("drift_nudge", SCHEMA),
                          reasoning_effort=REASONING_EFFORT)
             try:
                 answer = json.loads(r.text)

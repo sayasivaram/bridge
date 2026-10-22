@@ -3,7 +3,7 @@ scripts/cost_report.py, so both always report the same numbers.
 
   * per agent: calls, runs (one user request = one run; a retry is a second call in the same run),
     average tokens and cost per run, prompt-cache share, Portkey response-cache hits
-  * per feature: which part of the app spent it (a call belongs to "Ask Closer chat" when its
+  * per feature: which part of the app spent it (a call belongs to "Ask Bridge chat" when its
     request came through the chat, otherwise to the page that triggered it)
   * per user: calls, tokens and cost, and today's tokens against the daily budget
 """
@@ -20,7 +20,7 @@ from app.llm import daily_budget, tokens_used_today
 AGENT_LABEL = {"call_topics": "Call-Topic Agent", "drift": "Drift Agent (Pulse)", "ritual_builder": "Ritual Builder",
                "router": "Router classifier"}
 FEATURE = {"call_topics": "Prep for our call", "drift": "Pulse nudge", "ritual_builder": "Rituals: plan tonight",
-           "router": "Ask Closer chat"}
+           "router": "Ask Bridge chat"}
 TOKEN_FIELDS = ("input_tokens", "cached_tokens", "cache_write_tokens", "output_tokens", "reasoning_tokens")
 
 
@@ -39,7 +39,7 @@ def load_rows(conn: sqlite3.Connection, couple_id: int | None = None) -> list[di
 
 
 def feature_of(row: dict) -> str:
-    return "Ask Closer chat" if row.get("via_chat") else FEATURE.get(row["agent_name"], "Other")
+    return "Ask Bridge chat" if row.get("via_chat") else FEATURE.get(row["agent_name"], "Other")
 
 
 def _blank() -> dict:

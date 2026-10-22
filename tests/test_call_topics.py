@@ -1,6 +1,6 @@
 """Tests for the Call-Topic Agent: prompt layout, validation of cited moments, the single retry,
 and the malicious-moment (prompt-injection) case. Uses a fake model client, so no tokens are spent,
-except test_live_* which runs only when CLOSER_LIVE=1 is set.
+except test_live_* which runs only when BRIDGE_LIVE=1 is set.
 """
 
 import json
@@ -79,7 +79,7 @@ def test_valid_answer_needs_one_call_and_returns_sources_and_cost(seeded_db):
     assert len(client.requests) == 1
     req = client.requests[0]
     assert req["text"]["format"]["type"] == "json_schema" and req["text"]["format"]["strict"] is True
-    assert req["prompt_cache_key"] == "closer-call_topics-couple-1"
+    assert req["prompt_cache_key"] == "bridge-call_topics-couple-1"
     assert len(out["starters"]) == 5 and out["deeper_question"]
     assert all(s["moments"] and s["moments"][0]["text"] for s in out["starters"])  # source shown per card
     assert out["usage"]["calls"] == 1 and out["usage"]["cost_usd"] > 0
@@ -220,9 +220,10 @@ def test_call_prep_endpoint_and_budget_refusal(seeded_db, monkeypatch):
     assert len(client.requests) == 1  # the refused request never reached the model
 
 
-# --- Live check against gpt-6-luna (opt-in: CLOSER_LIVE=1 pytest -k live -s) ------------------
+# --- Live check against gpt-6-luna (opt-in: BRIDGE_LIVE=1 pytest -k live -s) ------------------
 
-@pytest.mark.skipif(not os.environ.get("CLOSER_LIVE"), reason="set CLOSER_LIVE=1 to call the real model")
+@pytest.mark.skipif(not (os.environ.get("BRIDGE_LIVE") or os.environ.get("CLOSER_LIVE")),
+                    reason="set BRIDGE_LIVE=1 to call the real model")
 def test_live_model_ignores_malicious_moment(seeded_db):
     bad_id = add_malicious_moment(seeded_db, when=call_topics.date.today().isoformat() + " 00:01:00")
     out = run(LLM(load_settings(), db_path=seeded_db), LEO)

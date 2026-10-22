@@ -1,6 +1,6 @@
 """Cost report: average tokens and cost per run for each agent, then monthly cost projections.
 
-    python scripts/cost_report.py                       # from data/closer.db, or the measured sample
+    python scripts/cost_report.py                       # from data/bridge.db, or the measured sample
     python scripts/cost_report.py --per-week call_topics=3 ritual_builder=1
     python scripts/cost_report.py --users 1 100 10000 50000
     python scripts/cost_report.py --measure 3           # run every agent live 3x (~$0.006), save sample
@@ -8,7 +8,7 @@
 
 A "run" is one user request; if an agent retried, both calls count toward that run.
 
-Data source, in order: --csv PATH, --db PATH, data/closer.db if it has any calls, else
+Data source, in order: --csv PATH, --db PATH, data/bridge.db if it has any calls, else
 docs/usage/measured_calls.csv (real calls measured with --measure and committed, so the report
 works on a fresh clone).
 """
@@ -101,7 +101,7 @@ def money(x: float) -> str:
 
 def print_report(summary: dict, proj: dict, source: str, per_week: dict[str, float]) -> None:
     t = summary["total"]
-    print(f"Closer cost report\nSource: {source}\n{t['calls']} model calls in {t['runs']} runs, "
+    print(f"Bridge cost report\nSource: {source}\n{t['calls']} model calls in {t['runs']} runs, "
           f"{money(t['cost_usd'])} total; prompt-cache share {t['cached_share']:.0%}; "
           f"Portkey response-cache hits {t['gateway_hits']}\n")
     print("Average per run, by agent")

@@ -1,4 +1,4 @@
--- Closer database schema (SQLite).
+-- Bridge database schema (SQLite).
 -- One couple, two partners. Every row a partner writes records its author, so the
 -- app can enforce privacy: a partner's private content is never shown to the other.
 
