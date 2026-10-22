@@ -71,3 +71,11 @@ def test_usage_api_summarizes_the_couples_calls(seeded_db):
     assert data["total"]["calls"] == 1 and data["by_user"][0]["user"] == "Priya"
     assert {b["user"] for b in data["budgets"]} == {"Priya", "Leo"}
     assert data["ceiling_per_user_month"] == pytest.approx(0.75)
+
+
+def test_usage_on_a_fresh_install_with_no_calls(seeded_db):
+    """Found by the fresh-clone dry run: /api/usage crashed (division by zero) before any call."""
+    data = TestClient(app.main.app).get("/api/usage", headers={"X-User-Id": "1"})
+    assert data.status_code == 200
+    assert data.json()["total"]["calls"] == 0 and data.json()["by_agent"] == []
+    assert data.json()["total"]["avg_per_run"]["cost_usd"] == 0

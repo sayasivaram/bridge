@@ -60,9 +60,9 @@ def _finish(bucket: dict) -> dict:
     runs = len(bucket.pop("requests"))
     out = dict(bucket, runs=runs, cost_usd=round(bucket["cost_usd"], 6))
     out["cached_share"] = round(bucket["cached_tokens"] / bucket["input_tokens"], 3) if bucket["input_tokens"] else 0.0
-    out["avg_per_run"] = {f: round(bucket[f] / runs, 1) for f in TOKEN_FIELDS} | {
-        "cost_usd": round(bucket["cost_usd"] / runs, 6) if runs else 0.0,
-        "calls": round(bucket["calls"] / runs, 2) if runs else 0.0}
+    per = (lambda x, nd: round(x / runs, nd)) if runs else (lambda x, nd: 0.0)  # no calls yet: zeros, not a crash
+    out["avg_per_run"] = {f: per(bucket[f], 1) for f in TOKEN_FIELDS} | {
+        "cost_usd": per(bucket["cost_usd"], 6), "calls": per(bucket["calls"], 2)}
     return out
 
 
