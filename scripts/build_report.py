@@ -162,7 +162,7 @@ time of the call they're forgotten, or they feel too small to bring up.</p>
 <p>The second problem is slower. Distance hides drift. Partners in the same city notice when the other is quieter than
 usual; partners five time zones apart often don't, until it surfaces as a fight. In the demo couple's own words (seed
 data, written to mirror this pattern): Priya's week-3 check-in note says <i>"Calls felt rushed this week. We mostly
-talked logistics."</i> Leo's private note the same week says <i>"Felt far away this week."</i> Neither knows the
+talked logistics."</i> Leo's private note the same week says <i>"Felt far away this week. Missed our Sunday cook."</i> Neither knows the
 other felt it.</p>
 <p><b>How people deal with it today:</b> a running notes app or a starred-messages folder of "things to tell them",
 daily-question apps that ask both partners the same generic question, a shared calendar, or pasting texts into ChatGPT
@@ -178,18 +178,18 @@ costs about {money(per_couple_month)} per couple per month to run (section 5), s
 below come from each app's own site or store listing and from review roundups, so they are self-reported.</p>
 <table class="compare">
   <tr><th>Product</th><th>What it does</th><th>Uses this couple's own week?</th><th>Partner privacy</th><th>Notices drift</th></tr>
-  <tr><td><b>Paired</b></td><td>A daily question and quizzes for both partners; "1000+ expert-led quizzes and games"; ~5 minutes a day</td><td>No: same questions for every couple</td><td>Answers revealed to each other</td><td>No</td></tr>
-  <tr><td><b>Lasting</b></td><td>Self-guided "Series" of lessons (communication, conflict), journaling, therapist-led workshops; not a substitute for counseling</td><td>No</td><td>n/a</td><td>No</td></tr>
-  <tr><td><b>Couply</b></td><td>Quizzes, date ideas, daily feeling check-ins, an AI coach, a long-distance mode</td><td>Partly: AI advice, not from shared moments</td><td>Unclear</td><td>No</td></tr>
-  <tr><td><b>Love Nudge</b></td><td>Love-language goals and "nudges", a "Love Tank" gauge</td><td>No</td><td>n/a</td><td>A self-reported gauge</td></tr>
-  <tr><td><b>Pairy, Amora, CoupleSpace</b></td><td>Private chat, shared calendar, photo albums or a shared journal, daily questions</td><td>Stores moments, but doesn't use them for prompts</td><td>A shared space</td><td>No</td></tr>
+  <tr><td><b>Paired</b></td><td>A daily question and quizzes for both partners; "1000+ expert-led quizzes and games"; ~5 minutes a day</td><td>No: same questions for every couple</td><td>Answers revealed to each other once both have answered</td><td>No</td></tr>
+  <tr><td><b>Lasting</b></td><td>Self-guided "Series" of sessions (communication, conflict), journaling, therapist-led workshops; not a substitute for counseling</td><td>No</td><td>n/a</td><td>No</td></tr>
+  <tr><td><b>Couply</b></td><td>Quizzes, date ideas, conversation cards, an AI coach, a long-distance mode</td><td>Partly: AI advice, not from shared moments</td><td>Unclear</td><td>No</td></tr>
+  <tr><td><b>Love Nudge</b></td><td>Love-language goals and "nudges", a "Love Tank" gauge</td><td>No</td><td>n/a</td><td>A "Love Tank" gauge partners update themselves</td></tr>
+  <tr><td><b>Pairy, Amora, CoupleSpace</b></td><td>Private chat, shared calendar and photo albums (Pairy); a shared photo journal and daily questions (Amora, CoupleSpace)</td><td>Stores moments, but doesn't use them for prompts</td><td>A shared space</td><td>No</td></tr>
   <tr><td><b>ChatGPT</b></td><td>Can write conversation starters from whatever you paste in</td><td>Only what one partner pastes</td><td>None: it sees what you paste</td><td>No</td></tr>
   <tr class="us"><td><b>Bridge</b></td><td>Call starters from the week's shared moments, a weekly 30-second Pulse, rituals that learn from ratings</td><td><b>Yes</b>, and every starter cites the moment it came from</td><td><b>Per item</b>, enforced in the database queries</td><td><b>Yes</b>: rules first, then one gentle suggestion</td></tr>
 </table>
-<p class="small">Sources: <a href="https://www.paired.com/">paired.com</a>; Lasting on the <a href="https://apps.apple.com/app/id1225049619">App Store</a>
-and <a href="https://www.choosingtherapy.com/lasting-app-review/">ChoosingTherapy's review</a>; Couply on <a href="https://appshunter.io/ios/app/1484241314">AppsHunter</a>;
-Love Nudge in <a href="https://www.marriage.com/advice/communication/apps-long-distance-relationship/">marriage.com's roundup</a>;
-<a href="https://apps.apple.com/app/id522155251">Pairy</a>; Amora on <a href="https://www.producthunt.com/products/amora-3/makers">Product Hunt</a>;
+<p class="small">Sources (checked October 22, 2026): <a href="https://www.paired.com/">paired.com</a> and Paired's <a href="https://www.paired.com/articles/5-ways-this-new-app-helps-couples-have-essential-conversations">article on how answers are revealed</a>; Lasting on the <a href="https://apps.apple.com/app/id1225049619">App Store</a>
+and <a href="https://www.choosingtherapy.com/lasting-app-review/">ChoosingTherapy's review</a>; Couply on the <a href="https://apps.apple.com/app/id1484241314">App Store</a>;
+Love Nudge on the <a href="https://apps.apple.com/app/id495326842">App Store</a> and in <a href="https://www.marriage.com/advice/communication/apps-long-distance-relationship/">marriage.com's roundup</a>;
+<a href="https://apps.apple.com/app/id522155251">Pairy</a> (its App Store listing has since been removed); Amora on <a href="https://www.producthunt.com/products/amora-3/makers">Product Hunt</a>;
 CoupleSpace on <a href="https://mwm.ai/apps/couplespace-relationship-app/6757912257">mwm.ai</a>.</p>
 <p><b>What Bridge does that these don't.</b> Each piece exists somewhere: journals, daily questions, AI coaches. What is
 new is putting them together around the call, and doing it safely:</p>
@@ -229,7 +229,7 @@ before anything is shown. Rules do the work wherever rules are enough: routing c
 filtering the ritual catalog, and screening for crisis language all cost nothing.</p>
 <p><b>Model.</b> gpt-6-luna through Portkey is the only model allowed on the course key, so every agent uses it, with
 strict JSON-schema output so answers can be validated. I set <b>reasoning effort to "low"</b> after measuring it (section 5):
-it cut the Call-Topic Agent's cost by 61% and its latency in half, with no loss on the quality checks.</p>
+it cut the Call-Topic Agent's cost by 61% and its latency in half, and kept the quality gains of the better prompt.</p>
 
 <h3>One real run, step by step</h3>
 <p>Priya types <i>"What should we do tonight?"</i> into the chat. The trace below is the app's own log of that request
@@ -258,7 +258,8 @@ it cut the Call-Topic Agent's cost by 61% and its latency in half, with no loss 
 <h2>5. Tokenomics</h2>
 <p>Every model call is logged with its input, cached-input, cache-write, output, and reasoning tokens and its cost
 (<code>llm_calls</code>), and the app shows them: a badge on every answer and a <b>Usage</b> page. The numbers below are
-real runs, measured with <code>python scripts/cost_report.py --measure 4</code> on fresh seed data (18 calls, Portkey's
+real runs, measured with <code>python scripts/cost_report.py --measure 4</code> on fresh seed data (18 calls: four rounds of every agent plus four chat messages, two of which the router
+sent on to an agent, so those two agents have 5 runs; Portkey's
 response cache skipped so every call reached the model). Prices: gpt-6-luna per 1M tokens, input ${prices['input_per_1m']},
 cached ${prices['cached_input_per_1m']}, cache write ${prices['cache_write_per_1m']}, output ${prices['output_per_1m']}.</p>
 {per_run_table()}
@@ -330,13 +331,14 @@ code. By default the model is <i>scripted to act compromised</i>, so it tries to
 the code-side checks catching it even when the model misbehaves. All seven are defended. With <code>--live</code>, the
 real gpt-6-luna ignored both injections and gave safe answers on its own (3 cases, {money(0.00057)}).</p>
 {pair(fig("27-safety-demo-summary.png", "The safety demo's summary: seven attacks and malfunctions, all defended.", 100, max_px=1300),
-      fig("07-what-the-model-receives.png", "What the model actually receives: the injection arrives escaped inside its tag, and Priya's private moment is never selected for output to Leo.", 100, max_px=1300))}
+      fig("07-what-the-model-receives.png", "What the Call-Topic Agent actually sends the model when Leo preps: the injection arrives escaped inside its tag, and neither partner's private moments are selected.", 100, max_px=1300))}
 {pair(fig("18-crisis-support-for-author.png", "Leo's note trips the crisis pre-check: a private support card with UK helplines, no coaching.", 100, max_px=1200),
       fig("19-crisis-partner-sees-quiet-card.png", "The same week from Priya's side: the ordinary quiet card, with no hint of why.", 100, max_px=1200))}
 <p><b>Do the tests really test something?</b> For each defense, I deleted it in a throwaway copy of the code and ran its
-tests: removing the privacy condition from the SQL fails 5 privacy tests; removing the reveal rule fails 3; turning off the
-crisis pre-check fails 2; turning off the coach-boundary check fails 4; turning off the catalog check fails 3. In total
-there are {125} test functions ({166} cases), and none of them spends tokens.</p>
+tests: removing the privacy condition from the SQL fails 7 tests; removing the pulse reveal rule (enforced twice,
+in SQL and again in Python) fails 1; turning off the crisis pre-check fails 14; turning off the coach-boundary check fails
+9; turning off the catalog check fails 3. In total there are 125 test functions (167 cases with their parameters): 166
+run offline and spend no tokens, and one optional live check is skipped unless you turn it on.</p>
 {fig("03-privacy-side-by-side.png", "The same week in both jars. Leo's private moment (“Still behind at work…”) appears only in his own.", 58)}
 </section>
 
@@ -353,7 +355,7 @@ there are {125} test functions ({166} cases), and none of them spends tokens.</p
     fix, without revealing either partner's private notes to the other.</li>
   <li><b>Cheap enough to be free:</b> about {money(per_couple_month)} per couple per month, and at most
     {money(2 * proj['ceiling_per_user_month'])} even in the worst case. A nonprofit or university counseling center could
-    offer it to every student in a long-distance relationship for a few dollars a month.</li>
+    offer it free: 1,000 students would cost about {money(1000 * proj['cost_per_user_month'])} a month at the measured rate.</li>
 </ul>
 <h3>A real user test</h3>
 <p>The tester is a classmate in my Gold Cohort who is in a long-distance relationship; their partner is also in graduate

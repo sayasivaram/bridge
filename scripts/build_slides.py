@@ -154,10 +154,10 @@ SLIDES = f"""
   <h2>Built from <em>this</em> couple's real week</h2>
   <table class="compare">
     <tr><th>Product</th><th>Uses the couple's own week?</th><th>Partner privacy</th><th>Notices drift</th></tr>
-    <tr><td>Paired</td><td class="no">No: same questions for everyone</td><td>Answers revealed to each other</td><td class="no">No</td></tr>
+    <tr><td>Paired</td><td class="no">No: same questions for everyone</td><td>Answers revealed once both have answered</td><td class="no">No</td></tr>
     <tr><td>Lasting</td><td class="no">No: lessons and journaling</td><td>n/a</td><td class="no">No</td></tr>
     <tr><td>Couply</td><td>Partly: AI advice, not from shared moments</td><td>Unclear</td><td class="no">No</td></tr>
-    <tr><td>Love Nudge</td><td class="no">No</td><td>n/a</td><td>A self-reported gauge</td></tr>
+    <tr><td>Love Nudge</td><td class="no">No</td><td>n/a</td><td>A gauge partners update themselves</td></tr>
     <tr><td>ChatGPT</td><td>Only what one partner pastes</td><td>None: it sees what you paste</td><td class="no">No</td></tr>
     <tr class="us"><td>Bridge</td><td><b>Yes:</b> every starter cites the moment it came from</td>
       <td><b>Per item</b>, enforced in the database</td><td><b>Yes:</b> rules first, then one gentle suggestion</td></tr>
@@ -209,7 +209,8 @@ SLIDES = f"""
     {shot("15-pulse-drift-nudge.png", "Pulse: rules flag drift, one gentle nudge", 1100)}
     {shot("21-ritual-builder-picks.png", "Rituals: 3 picks for tonight's time and energy")}
   </div>
-  {notes("Every screenshot is a real gpt-6-luna run on the seeded demo couple, Priya in New Haven and Leo in London.")}
+  {notes("The starters, nudge and ritual picks are real gpt-6-luna output on the seeded demo couple, Priya in New Haven "
+         "and Leo in London.")}
 </section>
 
 <section>
@@ -227,12 +228,13 @@ SLIDES = f"""
       {cost_chart()}
       <ul class="levers">
         <li><b>{cached_share:.0%}</b> of input tokens read from the prompt cache (stable prefix first)</li>
-        <li><b>Reasoning effort "low":</b> 61% cheaper than the second prompt version, same quality</li>
+        <li><b>Reasoning effort "low":</b> 61% cheaper than the second prompt version, quality gains kept</li>
         <li><b>Rules before models:</b> routing clear messages and detecting drift cost $0</li>
       </ul>
     </div>
   </div>
-  {notes("Measured on real gpt-6-luna calls, logged in the app's llm_calls table and shown on its Usage page.")}
+  {notes("Measured on 18 real gpt-6-luna calls (docs/usage/measured_calls.csv), skipping Portkey's response cache so every "
+         "call reached the model. The app logs every call the same way and shows it on its Usage page.")}
 </section>
 
 <section>
