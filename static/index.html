@@ -21,6 +21,22 @@
   </header>
 
   <main class="container">
+    <!-- Chat: guard -> router -> agent -> guard -->
+    <section id="chat" class="card chat-card" data-page="jar">
+      <h2><i class="e">💬</i>Ask Closer</h2>
+      <p class="muted small">Ask for call prep, how you two are doing lately, or something to do tonight. Closer picks the right helper.</p>
+      <form id="chat-form" class="chat-form" autocomplete="off">
+        <input type="text" id="chat-input" maxlength="300" placeholder="e.g. what should we do tonight?" aria-label="Ask Closer">
+        <button type="submit" class="primary" id="chat-btn">Ask</button>
+      </form>
+      <div class="chat-examples" id="chat-examples">
+        <button type="button">What should we do tonight?</button>
+        <button type="button">Help me prep for our call</button>
+        <button type="button">Why do I feel distant lately?</button>
+      </div>
+      <div id="chat-log" class="chat-log"></div>
+    </section>
+
     <!-- Call-Topic Agent -->
     <section id="call-prep" class="card prep-card" data-page="jar">
       <div class="prep-head">

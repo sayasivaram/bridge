@@ -107,7 +107,7 @@ def seed(db_path: Path | str = DB_PATH, today: date | None = None, reset: bool =
 
 
 def counts(conn) -> dict[str, int]:
-    tables = ["couples", "users", "moments", "pulses", "rituals", "ritual_feedback", "llm_calls", "nudges"]
+    tables = ["couples", "users", "moments", "pulses", "rituals", "ritual_feedback", "llm_calls", "nudges", "agent_runs"]
     return {t: conn.execute(f"SELECT COUNT(*) FROM {t}").fetchone()[0] for t in tables}
 
 

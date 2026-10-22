@@ -17,7 +17,7 @@ from pydantic import BaseModel, Field
 
 from datetime import timedelta
 
-from app import db, moments, pulses, rituals, safety, timeutil
+from app import db, moments, orchestrator, pulses, rituals, safety, timeutil
 from app.agents import call_topics, drift, ritual_builder
 from app.config import REPO_DIR, MissingAPIKeyError, load_settings
 from app.llm import LLM, BudgetExceededError, StepLimitError
@@ -287,6 +287,29 @@ def rate_ritual(ritual_id: int, body: RatingIn, x_user_id: int | None = Header(d
             return rituals.rate(conn, user["id"], ritual_id, body.rating, body.note)
         except rituals.RitualError as err:
             raise HTTPException(400 if "Rate" in str(err) or "note" in str(err) else 404, str(err)) from None
+
+
+class ChatIn(BaseModel):
+    message: str = Field(max_length=2000)  # the guard enforces the real (shorter) limit, politely
+
+
+@app.post("/api/chat")
+def chat(body: ChatIn, x_user_id: int | None = Header(default=None)) -> dict:
+    """The home-page chat box: guard -> router -> agent -> guard, logged to agent_runs."""
+    with db.session() as conn:
+        user = current_user(conn, x_user_id)
+    try:
+        return orchestrator.handle(get_llm(), user["id"], body.message)
+    except MissingAPIKeyError:
+        raise HTTPException(503, "No API key is set up, so AI features are off. See the README.") from None
+
+
+@app.get("/api/runs")
+def recent_runs(limit: int = 10, x_user_id: int | None = Header(default=None)) -> list[dict]:
+    """Your own recent chat runs with their full traces (for the run log / screenshots)."""
+    with db.session() as conn:
+        user = current_user(conn, x_user_id)
+        return orchestrator.runs_for_viewer(conn, user["id"], min(max(limit, 1), 50))
 
 
 app.mount("/static", StaticFiles(directory=STATIC_DIR), name="static")

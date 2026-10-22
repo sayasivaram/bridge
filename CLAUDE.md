@@ -124,6 +124,9 @@ Tier 3 needs a real user trying it and measured improvement versus how couples d
   time/energy in code; validation drops unknown or non-fitting ids and invented purchases or
   bookings. Ritual feedback notes are visible to both partners unless the crisis pre-check flags
   them (then hidden from the partner and never sent to a model).
+- **Chat goes through `app/orchestrator.py`**: guard in -> router -> agent -> guard out, one shared
+  `RunContext` (request id + step limit), every request logged to `agent_runs` with its trace.
+  Agents take an optional `ctx`. New agents need an output contract in `app/guard.py`.
 - The frontend renders user text with `textContent`, never `innerHTML`.
 - **Time zones:** timestamps are stored in UTC; "today" / "this week" / agent windows are in the
   viewing or requesting partner's `users.timezone`. Use `app/timeutil.py` (`local_today`,
@@ -195,6 +198,8 @@ Prices live in `data/prices.json` (gpt-6-luna, per 1M tokens, from MGT 409 Lectu
 - **Ritual Builder** (live, 4 runs): ~2,850 input tokens with 2,465 cached (the catalog is in the
   stable prefix), 230-550 output; $0.00015-0.00035 per run. A too-broad "invented numbers"
   check once rejected "10 minutes" and forced a retry ($0.00075); it now checks ratings only.
+- **Router classifier** (live): ~394 tokens in, ~37 out, $0.00006 per ambiguous message; clear
+  messages are routed by keyword rules for $0.
 - After any prompt change: `python scripts/eval_call_topics.py --label <name>`, then
   `--compare baseline v3 <name>` (about $0.002-0.005 per 5-run eval).
 

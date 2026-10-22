@@ -89,6 +89,7 @@ async function switchUser(userId) {
   localStorage.setItem("closer.userId", String(userId));
   resetForm();
   clearCallPrep(); // starters were written for the other partner
+  $("chat-log").innerHTML = ""; // each partner's chat is their own
   setPulseMsg("");
   await loadMe();
 }
@@ -766,6 +767,116 @@ function rateForm(r, partner) {
   return form;
 }
 
+// ---------- chat (orchestrator) ----------
+
+const ROUTE_LABEL = { rules: "routed by keyword rules ($0)", llm: "routed by the LLM classifier", clarify: "not sure which helper",
+  guard: "stopped by the guard" };
+const STAGE_LABEL = { guard_in: "guard in", router: "router", agent: "agent", guard_out: "guard out", done: "done" };
+
+function setupChat() {
+  $("chat-form").addEventListener("submit", (e) => {
+    e.preventDefault();
+    const text = $("chat-input").value.trim();
+    if (text) sendChat(text);
+  });
+  document.querySelectorAll("#chat-examples button").forEach((b) => b.addEventListener("click", () => sendChat(b.textContent)));
+}
+
+async function sendChat(message) {
+  const btn = $("chat-btn");
+  btn.disabled = true;
+  btn.classList.add("loading");
+  $("chat-input").value = "";
+  const ex = el("div", "exchange");
+  ex.append(el("div", "bubble-user", message));
+  const pending = el("div", "reply muted small", "Thinking…");
+  ex.append(pending);
+  $("chat-log").prepend(ex);
+  try {
+    const res = await api("/api/chat", { method: "POST", body: { message } });
+    pending.replaceWith(renderReply(res));
+  } catch (err) {
+    pending.textContent = err.message;
+  } finally {
+    btn.disabled = false;
+    btn.classList.remove("loading");
+  }
+}
+
+function renderReply(res) {
+  const card = el("div", "reply");
+  const head = el("div", "reply-head");
+  if (res.agent) head.appendChild(el("span", "agent-badge", res.agent));
+  head.appendChild(el("span", "route-badge", ROUTE_LABEL[res.route_method] || ""));
+  if (res.status !== "ok") head.appendChild(el("span", `status-badge ${res.status}`, res.status));
+  card.append(head);
+  if (res.reply) card.appendChild(el("p", "reply-text", res.reply));
+
+  const r = res.result;
+  if (res.status === "support" && res.support) card.appendChild(supportCard(res.support));
+  if (res.status === "clarify") {
+    const opts = el("div", "clarify");
+    for (const q of ["Help me prep for our call", "How are we doing lately?", "What should we do tonight?"]) {
+      const b = el("button", "", q);
+      b.type = "button";
+      b.addEventListener("click", () => sendChat(q));
+      opts.appendChild(b);
+    }
+    card.appendChild(opts);
+  }
+  if (r && res.intent === "call_topics") {
+    const ol = el("ol", "items");
+    for (const s of r.starters) {
+      const li = document.createElement("li");
+      li.append(el("b", "", `${s.topic}: `), s.opener);
+      ol.appendChild(li);
+    }
+    card.appendChild(ol);
+    if (r.deeper_question) card.appendChild(el("p", "sub", `Deeper question: ${r.deeper_question.question}`));
+  }
+  if (r && res.intent === "pulse_coach") {
+    if (r.kind === "nudge") card.append(el("p", "nudge-suggestion", r.suggestion), el("p", "sub", r.explanation));
+    else if (r.kind === "support") card.appendChild(supportCard(r.support));
+    else card.appendChild(el("p", "sub", r.body));
+  }
+  if (r && res.intent === "ritual_builder") {
+    const ol = el("ol", "items");
+    for (const p of r.picks) {
+      const li = document.createElement("li");
+      li.append(el("b", "", `${CATEGORY_EMOJI[p.category] || "✨"} ${p.name} (${p.minutes} min): `), `${p.why} `,
+        el("span", "sub", `First step: ${p.first_step}`));
+      ol.appendChild(li);
+    }
+    card.appendChild(ol);
+  }
+  card.appendChild(usageBadge(res.usage));
+
+  const d = document.createElement("details");
+  d.className = "trace";
+  d.append(el("summary", "", `How this was handled (run #${res.run_id})`));
+  const ul = el("ul", "trace-stages");
+  for (const step of res.trace) {
+    const li = document.createElement("li");
+    li.append(el("span", `stage ${step.stage}`, STAGE_LABEL[step.stage] || step.stage), el("span", "", step.detail));
+    ul.appendChild(li);
+  }
+  d.appendChild(ul);
+  card.appendChild(d);
+  return card;
+}
+
+function supportCard(s) {
+  const box = el("div", "support");
+  box.append(el("h3", "", s.title), el("p", "", s.body));
+  for (const x of s.resources) {
+    const p = document.createElement("p");
+    p.append(el("b", "", x.name), `: ${x.contact}`);
+    box.appendChild(p);
+  }
+  box.append(el("p", "", s.emergency), el("p", "footnote", s.footnote));
+  return box;
+}
+
 // ---------- helpers ----------
 
 function el(tag, className, text) {
@@ -796,5 +907,6 @@ setupCallPrep();
 setupTabs();
 setupPulseForm();
 setupRituals();
+setupChat();
 showSetupStatus();
 setupUserSwitch();

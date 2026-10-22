@@ -214,8 +214,9 @@ def rule_picks(allowed: set[str], history: dict, exclude: set[str], k: int) -> l
     return out
 
 
-def run(llm: LLM, requester_id: int, time: str, energy: str) -> dict[str, Any]:
-    ctx = RunContext(user_id=requester_id)
+def run(llm: LLM, requester_id: int, time: str, energy: str, ctx: RunContext | None = None) -> dict[str, Any]:
+    """ctx: pass the orchestrator's context to share its request id and step limit."""
+    ctx = ctx or RunContext(user_id=requester_id)
     trace: list[str] = []
     with session(llm.db_path) as conn:
         p = build_prompt(conn, requester_id, time, energy)

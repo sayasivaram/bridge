@@ -71,6 +71,12 @@ You need **Python 3.11 or newer** (`python3 --version` to check).
   based on how you rated past rituals. Plan one, mark it done, and both rate it 1-5; your
   favorites and least favorites shape the next suggestions.
 
+- **Ask Closer:** the chat box on the home page sends your message through a guard, a router
+  (keyword rules first, an LLM classifier only when unclear), the right agent, and an output
+  guard. Each answer shows which agent handled it, its token cost, and the full trace.
+
+See [docs/architecture.md](docs/architecture.md) for the architecture diagrams.
+
 ## Reset the demo data
 
 ```bash
@@ -99,6 +105,9 @@ app/
                logging, per-user daily token budget, per-request step limit
   agents/      AI agents (call_topics.py: Call-Topic Agent; drift.py: Drift Detector;
                ritual_builder.py: Ritual Builder)
+  orchestrator.py  chat requests: guard -> router -> agent -> guard, logged to agent_runs
+  router.py    keyword routing, LLM classifier only when ambiguous
+  guard.py     input checks (length, injection, crisis) and output checks (schema, coach boundary)
   moments.py   Moment Jar data access; the partner-privacy rule lives in its SQL
   pulses.py    Pulse data access; the "see scores once both checked in" rule lives in its SQL
   rituals.py   ritual catalog, the couple's rituals and ratings (the feedback loop)

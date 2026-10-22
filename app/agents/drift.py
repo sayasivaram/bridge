@@ -268,9 +268,9 @@ def _cached(conn, couple_id: int, h: str) -> dict | None:
             "first_cost_usd": round(cost, 8)}
 
 
-def run(llm: LLM, viewer_id: int) -> dict[str, Any]:
+def run(llm: LLM, viewer_id: int, ctx: RunContext | None = None) -> dict[str, Any]:
     """This week's nudge for the viewer. Calls the model only if rules flag drift and nothing is cached."""
-    ctx = RunContext(user_id=viewer_id)
+    ctx = ctx or RunContext(user_id=viewer_id)  # the orchestrator passes its own to share the request id
     trace: list[str] = []
     with session(llm.db_path) as conn:
         viewer = conn.execute("SELECT id, couple_id, name, timezone FROM users WHERE id = ?", (viewer_id,)).fetchone()

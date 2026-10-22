@@ -277,8 +277,9 @@ def _public_moment(m: dict) -> dict:
         "has_image": bool(m.get("image_file"))}
 
 
-def run(llm: LLM, requester_id: int, today: date | None = None) -> dict[str, Any]:
-    ctx = RunContext(user_id=requester_id)
+def run(llm: LLM, requester_id: int, today: date | None = None, ctx: RunContext | None = None) -> dict[str, Any]:
+    """ctx: pass the orchestrator's context to share its request id and step limit."""
+    ctx = ctx or RunContext(user_id=requester_id)
     trace: list[str] = []
 
     with session(llm.db_path) as conn:

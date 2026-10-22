@@ -133,5 +133,27 @@ CREATE TABLE IF NOT EXISTS llm_calls (
 );
 CREATE INDEX IF NOT EXISTS idx_llm_calls_user_time ON llm_calls (user_id, created_at);
 
+-- One row per chat request handled by the orchestrator: which agent ran, how it was routed, the
+-- full step-by-step trace (guard in -> router -> agent -> guard out), and the request's totals.
+-- request_id links to llm_calls. Each partner sees only their own runs.
+CREATE TABLE IF NOT EXISTS agent_runs (
+    id             INTEGER PRIMARY KEY,
+    created_at     TEXT NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%fZ', 'now')),
+    user_id        INTEGER NOT NULL REFERENCES users(id),
+    message        TEXT NOT NULL,
+    status         TEXT NOT NULL CHECK (status IN ('ok', 'blocked', 'support', 'clarify', 'error')),
+    intent         TEXT,
+    agent          TEXT,
+    route_method   TEXT,                        -- rules | llm | clarify | guard
+    request_id     TEXT NOT NULL,
+    model_calls    INTEGER NOT NULL DEFAULT 0,
+    input_tokens   INTEGER NOT NULL DEFAULT 0,
+    cached_tokens  INTEGER NOT NULL DEFAULT 0,
+    output_tokens  INTEGER NOT NULL DEFAULT 0,
+    cost_usd       REAL NOT NULL DEFAULT 0,
+    trace          TEXT NOT NULL                -- JSON list of {stage, detail}
+);
+CREATE INDEX IF NOT EXISTS idx_agent_runs_user ON agent_runs (user_id, id);
+
 -- Bump when the schema changes; app/db.py refuses to open an older database.
-PRAGMA user_version = 6;
+PRAGMA user_version = 7;

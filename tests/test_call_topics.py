@@ -5,12 +5,13 @@ except test_live_* which runs only when CLOSER_LIVE=1 is set.
 
 import json
 import os
+from datetime import datetime, timezone
 
 import pytest
 from fastapi.testclient import TestClient
 
 import app.main
-from app import moments
+from app import moments, timeutil
 from app.agents import call_topics
 from app.agents.call_topics import SYSTEM_PROMPT, build_prompt, private_fingerprints, run
 from app.config import MODEL, Settings, load_settings
@@ -201,6 +202,8 @@ def test_fingerprints_ignore_phrases_that_are_also_shared(seeded_db):
 # --- API --------------------------------------------------------------------------------------
 
 def test_call_prep_endpoint_and_budget_refusal(seeded_db, monkeypatch):
+    # the endpoint uses the real clock; pin it to the seed's TODAY so the 7-day window matches
+    monkeypatch.setattr(timeutil, "now_utc", lambda: datetime(TODAY.year, TODAY.month, TODAY.day, 16, tzinfo=timezone.utc))
     with session(seeded_db) as conn:
         shared, _, _ = window(conn)
     client = FakeClient(response=answer(five_good(shared)))
