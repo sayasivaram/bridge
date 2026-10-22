@@ -136,7 +136,7 @@ SECTIONS = f"""
   <h1>Bridge</h1>
   <p class="lede">A multi-agent app that helps long-distance couples stay close between calls.</p>
   <table class="meta">
-    <tr><td>Author</td><td><span class="todo-inline">[YOUR NAME]</span></td></tr>
+    <tr><td>Author</td><td>Saya Sivaram</td></tr>
     <tr><td>Code</td><td><span class="todo-inline">[GITHUB REPO URL]</span> (the same link submitted on Canvas)</td></tr>
     <tr><td>App</td><td>Runs locally from the repo in about two minutes (README: clone, venv, install, <code>.env</code> one folder up, seed, run)</td></tr>
   </table>
@@ -148,7 +148,13 @@ SECTIONS = f"""
 
 <section>
 <h2>2. Motivation</h2>
-<p>Couples who live apart, such as grad students, early-career professionals, people waiting on a visa, or military
+<p><b>Why I built this.</b> I moved away from my partner to attend Yale for two years, and so did several of my
+classmates. Between recruiting, classes, clubs, and everything else, it is easy for a relationship to take the back
+seat. My partner also travels abroad for months at a time (right now, Europe for the next six weeks), and we found
+ourselves simply connecting less. This is my life partner, and I don't want to come out of these two years with a
+weaker relationship. So I wanted a tool that helps us stay connected and still fits into both of our crazy
+schedules.</p>
+<p>Couples who live apart, such as grad students like us, early-career professionals, people waiting on a visa, or military
 families, keep a relationship going mostly through scheduled calls. Those calls have a known failure mode: they open with
 "how was your day?", slide into logistics (flights, schedules, who calls when), and end before anything that actually
 happened that week comes up. The funny thing on the train, the song stuck in your head, the small win at work: by the
@@ -158,9 +164,6 @@ usual; partners five time zones apart often don't, until it surfaces as a fight.
 data, written to mirror this pattern): Priya's week-3 check-in note says <i>"Calls felt rushed this week. We mostly
 talked logistics."</i> Leo's private note the same week says <i>"Felt far away this week."</i> Neither knows the
 other felt it.</p>
-{TODO.format("one real person behind this problem: a friend, classmate, or yourself in a long-distance relationship. "
-             "Two or three sentences: who they are, how they handle calls today, and what it costs them (time, frustration, "
-             "a missed moment). A short quote is ideal. This is what the rubric means by a real person behind the problem.")}
 <p><b>How people deal with it today:</b> a running notes app or a starred-messages folder of "things to tell them",
 daily-question apps that ask both partners the same generic question, a shared calendar, or pasting texts into ChatGPT
 and asking for ideas. Each covers a piece. None of them uses what <i>this</i> couple actually lived this week, and none
